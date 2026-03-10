@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TripFlow – Login</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 360px;
+    }
+    h1 { color: #2d6a4f; margin-bottom: 1.5rem; text-align: center; }
+    label { display: block; font-size: 0.875rem; color: #555; margin-bottom: 0.25rem; }
+    input {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    input:focus { outline: none; border-color: #2d6a4f; }
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      background: #2d6a4f;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover { background: #1b4332; }
+    .tabs { display: flex; margin-bottom: 1.5rem; border-bottom: 2px solid #e0e0e0; }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.5rem;
+      cursor: pointer;
+      color: #888;
+      font-weight: 600;
+    }
+    .tab.active { color: #2d6a4f; border-bottom: 2px solid #2d6a4f; margin-bottom: -2px; }
+    #message { margin-top: 1rem; text-align: center; font-size: 0.9rem; }
+    .success { color: #2d6a4f; }
+    .error { color: #c0392b; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>✈️ TripFlow</h1>
+    <div class="tabs">
+      <div class="tab active" id="tab-login" onclick="showTab('login')">Login</div>
+      <div class="tab" id="tab-register" onclick="showTab('register')">Register</div>
+    </div>
+
+    <form id="form" onsubmit="handleSubmit(event)">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required autocomplete="username" />
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required autocomplete="current-password" />
+      <button type="submit" id="submit-btn">Login</button>
+    </form>
+    <div id="message"></div>
+  </div>
+
+  <script>
+    let currentTab = 'login';
+
+    function showTab(tab) {
+      currentTab = tab;
+      document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+      document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+      document.getElementById('submit-btn').textContent = tab === 'login' ? 'Login' : 'Register';
+      document.getElementById('message').textContent = '';
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const msgEl = document.getElementById('message');
+
+      const endpoint = currentTab === 'login' ? '/api/auth/login' : '/api/auth/register';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          if (currentTab === 'login') {
+            msgEl.className = 'success';
+            msgEl.textContent = 'Login successful! Welcome, ' + username + '.';
+          } else {
+            msgEl.className = 'success';
+            msgEl.textContent = 'Registration successful! You can now log in.';
+            showTab('login');
+          }
+        } else {
+          msgEl.className = 'error';
+          msgEl.textContent = data.error || 'Something went wrong.';
+        }
+      } catch {
+        msgEl.className = 'error';
+        msgEl.textContent = 'Network error. Please try again.';
+      }
+    }
+  </script>
+</body>
+</html>
