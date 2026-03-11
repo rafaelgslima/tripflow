@@ -46,7 +46,7 @@ export default function Home() {
               Travel planning made simple
             </p>
             <p className="mt-6 text-lg leading-8 text-gray-600">
-              Whether you're planning a weekend getaway or a month-long
+              Whether you&apos;re planning a weekend getaway or a month-long
               adventure, TripFlow gives you all the tools to organize and share
               your travel plans.
             </p>
@@ -136,7 +136,7 @@ export default function Home() {
                   <p className="flex-auto">
                     No complicated features or learning curve. Create a travel
                     plan, add your destination and dates, and start planning.
-                    It's that easy.
+                    It&apos;s that easy.
                   </p>
                 </dd>
               </div>
