@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 
 export function Header() {
   return (
@@ -7,26 +8,10 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-2">
-              <span
-                className="text-2xl font-bold text-primary-600"
-                style={{
-                  fontFamily: "Inter, system-ui, sans-serif",
-                  letterSpacing: "-0.03em",
-                }}
-              >
-                TripFlow
-              </span>
-              {/* Simple airplane icon using SVG */}
-              <svg
-                className="w-6 h-6 text-primary-600"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
-              </svg>
-            </Link>
+            <Logo
+              textClassName="text-2xl font-bold text-primary-600"
+              iconClassName="w-6 h-6 text-primary-600"
+            />
           </div>
 
           {/* Auth Buttons */}

@@ -102,6 +102,48 @@ Use a clear separation by app/service:
 
 **Rule:** avoid cross-importing between apps except via `packages/`.
 
+### 3.1 Frontend Folder Structure (apps/web/src/)
+
+Follow this strict folder organization for all frontend code:
+
+```
+src/
+├── components/          # Reusable UI components
+│   └── [ComponentName]/ # Each component in its own folder
+│       ├── index.tsx    # Component implementation
+│       ├── types.ts     # TypeScript types/interfaces
+│       └── index.test.tsx  # Component tests
+├── pages/              # Next.js pages (Pages Router)
+│   └── [page].tsx      # Page components
+├── hooks/              # Custom React hooks
+│   └── [hookName]/     # Each hook in its own folder
+│       ├── index.ts    # Hook implementation
+│       ├── types.ts    # TypeScript types/interfaces
+│       └── index.test.ts  # Hook tests
+├── utils/              # Utility functions
+│   └── [utilityName]/  # Each utility in its own folder
+│       ├── index.ts    # Utility implementation
+│       ├── types.ts    # TypeScript types/interfaces (if needed)
+│       └── index.test.ts  # Utility tests
+├── lib/                # Third-party library configurations
+│   └── api/            # API client setup
+├── features/           # Feature-based modules (optional)
+│   └── [featureName]/  # Each feature encapsulates related logic
+├── styles/             # Global styles
+└── types/              # Shared TypeScript types
+
+```
+
+**Required patterns:**
+
+- Every component must be in its own folder with `index.tsx`, `types.ts`, and `index.test.tsx`
+- Every custom hook must be in its own folder with `index.ts`, `types.ts`, and `index.test.ts`
+- Every utility must be in its own folder with `index.ts`, `types.ts` (if needed), and `index.test.ts`
+- Always export types from a separate `types.ts` file
+- Always colocate tests with implementation
+- Use named exports for components, hooks, and utilities
+- Import from folder path (e.g., `@/components/Button` not `@/components/Button/index`)
+
 ---
 
 ## 4) API Design Rules (Web + Mobile compatible)
@@ -270,13 +312,19 @@ Required workflow:
 ### 9.1 Frontend (Next.js + TS)
 
 - Prefer modern Next.js patterns:
-  - App Router (if used in this repo) and server-safe patterns
-  - keep API calls in a dedicated client module
+  - Pages Router (as currently used in this repo)
+  - Keep API calls in a dedicated client module (`lib/api/*`)
 - Use typed API clients (generated from OpenAPI if possible).
+- **Strict folder structure** (see section 3.1):
+  - Components in `components/[ComponentName]/` with index.tsx, types.ts, index.test.tsx
+  - Hooks in `hooks/[hookName]/` with index.ts, types.ts, index.test.ts
+  - Utils in `utils/[utilityName]/` with index.ts, types.ts, index.test.ts
 - Keep UI logic separated from data fetching:
   - `lib/api/*` for API calls
   - `components/*` for UI
-  - `features/*` for domain modules (recommended)
+  - `hooks/*` for custom hooks
+  - `utils/*` for utility functions
+  - `features/*` for domain modules (optional, when grouping related functionality)
 
 ### 9.2 Backend (FastAPI)
 
