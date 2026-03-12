@@ -139,10 +139,12 @@ src/
 - Every component must be in its own folder with `index.tsx`, `types.ts`, and `index.test.tsx`
 - Every custom hook must be in its own folder with `index.ts`, `types.ts`, and `index.test.ts`
 - Every utility must be in its own folder with `index.ts`, `types.ts` (if needed), and `index.test.ts`
-- Always export types from a separate `types.ts` file
+- **Always export types/interfaces from a separate `types.ts` file** - never define interfaces inline in component/hook files
 - Always colocate tests with implementation
 - Use named exports for components, hooks, and utilities
 - Import from folder path (e.g., `@/components/Button` not `@/components/Button/index`)
+- Import types using `import type { TypeName } from "./types"` for type-only imports
+- **Identify and extract duplicate code into reusable components** - whenever similar UI patterns or logic appear in multiple places, create a shared component with appropriate props to avoid duplication
 
 ---
 
