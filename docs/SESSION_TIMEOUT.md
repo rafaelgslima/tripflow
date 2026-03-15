@@ -9,18 +9,21 @@ TripFlow implements automatic session timeout after **20 minutes** with a **2-mi
 ## How It Works
 
 ### 1. **Supabase JWT Tokens**
+
 - Supabase issues JWT (JSON Web Tokens) for authentication
 - Tokens have an expiration time (`exp` claim) configured in Supabase Dashboard
 - Tokens are automatically refreshed by the Supabase client before expiration
 - If a user is inactive and tokens expire, they're logged out
 
 ### 2. **Client-Side Session Management**
+
 - The `useSessionTimeout` hook manages session duration
 - After 18 minutes, a warning modal appears
 - After 20 minutes total, the user is automatically logged out
 - User can extend the session by clicking "Extend Session" in the warning modal
 
 ### 3. **Token Refresh Strategy**
+
 - Supabase client automatically refreshes tokens (configured in `client.ts`)
 - Extending session (via warning modal) resets the timer and keeps the user logged in
 - Session timeout runs independently of user activity
@@ -38,28 +41,42 @@ TripFlow implements automatic session timeout after **20 minutes** with a **2-mi
 3. Set **JWT expiry limit** to match your desired session length
 
 **Recommended Settings:**
+
 ```
 JWT expiry limit: 1200 seconds (20 minutes)
 Refresh token expiry: 604800 seconds (7 days)
 ```
 
 **Why two different expiry times?**
+
 - **JWT expiry (20 min)**: Access token expires after inactivity
 - **Refresh token (7 days)**: Allows automatic token refresh if user returns within 7 days
 
 ### Frontend Configuration
 
 In `.env.local`:
+
 ```bash
-# Session timeout warning (should match JWT expiry from Supabase)
-NEXT_PUBLIC_SESSION_TIMEOUT_WARNING=1200
+# Session will expire after this duration (in seconds)
+# Default: 1200 seconds (20 minutes)
+NEXT_PUBLIC_SESSION_TIMEOUT_DURATION=1200
+
+# Warning duration before session expires (in seconds)
+# Default: 120 seconds (2 minutes)
+NEXT_PUBLIC_SESSION_TIMEOUT_WARNING=120
 ```
 
 In `apps/web/src/pages/home.tsx` (or any protected page):
+
 ```typescript
+const timeoutDuration =
+  Number(process.env.NEXT_PUBLIC_SESSION_TIMEOUT_DURATION) || 1200;
+const warningDuration =
+  Number(process.env.NEXT_PUBLIC_SESSION_TIMEOUT_WARNING) || 120;
+
 const { resetTimer } = useSessionTimeout({
-  timeoutDuration: 1200,    // 20 minutes total
-  warningDuration: 120,     // 2 minutes warning before timeout
+  timeoutDuration, // 20 minutes total
+  warningDuration, // 2 minutes warning before timeout
   onWarning: () => {
     // Show warning modal
   },
@@ -76,13 +93,13 @@ const { resetTimer } = useSessionTimeout({
 ### ✅ Implemented
 
 1. **Automatic Token Refresh**
-   - Tokens are refreshed before expiration if user is active
+   - Tokens are refreshed before expiration
    - Configured in `lib/supabase/client.ts`
 
-2. **Activity-Based Timeout**
-   - Monitors: clicks, keyboard, mouse, scroll, touch
-   - Resets timer on any activity
-   - Throttled to prevent excessive resets
+2. **Fixed Session Duration**
+   - Session expires after 20 minutes from login
+   - Timer runs independently of user activity
+   - Predictable timeout behavior
 
 3. **Graceful Warning**
    - 2-minute warning before logout
@@ -90,14 +107,14 @@ const { resetTimer } = useSessionTimeout({
    - Countdown timer shows remaining time
 
 4. **Automatic Logout**
-   - Session ends after inactivity
+   - Session ends after timeout
    - Tokens are revoked via `signOut()`
    - User redirected to login page
 
 5. **Auth State Synchronization**
    - Listens to Supabase auth events
-   - Resets timer on token refresh
    - Clears timers on logout
+   - Single timer instance per session
 
 ### 🔒 Security Benefits
 
@@ -142,7 +159,7 @@ export default function ProtectedPage() {
     onWarning: () => {
       setShowWarning(true);
       setRemainingSeconds(120);
-      
+
       // Optional: Countdown timer
       const interval = setInterval(() => {
         setRemainingSeconds((prev) => prev <= 1 ? 0 : prev - 1);
@@ -179,8 +196,8 @@ export default function ProtectedPage() {
 
 ```typescript
 useSessionTimeout({
-  timeoutDuration: 600,   // 10 minutes
-  warningDuration: 60,    // 1 minute warning
+  timeoutDuration: 600, // 10 minutes
+  warningDuration: 60, // 1 minute warning
 });
 ```
 
@@ -248,12 +265,14 @@ npm test -- src/components/SessionTimeoutWarning/index.test.tsx
 ### Issue: Tokens expire too quickly
 
 **Solution:** Check Supabase Dashboard JWT settings:
+
 - Ensure JWT expiry is set to desired duration (1200s for 20 min)
 - Verify `autoRefreshToken: true` in `client.ts`
 
 ### Issue: Warning doesn't appear
 
 **Solution:** Verify:
+
 - `onWarning` callback is provided
 - Warning component is rendered conditionally
 - State management is correct
@@ -261,6 +280,7 @@ npm test -- src/components/SessionTimeoutWarning/index.test.tsx
 ### Issue: User logged out while active
 
 **Solution:** Check:
+
 - Activity events are being captured
 - Throttling isn't too aggressive
 - Timer reset is working correctly
@@ -268,6 +288,7 @@ npm test -- src/components/SessionTimeoutWarning/index.test.tsx
 ### Issue: Session persists after timeout
 
 **Solution:** Ensure:
+
 - `supabase.auth.signOut()` is called on timeout
 - Browser localStorage is being cleared
 - No cached tokens remain

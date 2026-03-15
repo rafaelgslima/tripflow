@@ -9,7 +9,7 @@ describe("SessionTimeoutWarning", () => {
         remainingSeconds={120}
         onExtendSession={vi.fn()}
         onLogout={vi.fn()}
-      />
+      />,
     );
     expect(screen.getByText(/session expiring soon/i)).toBeInTheDocument();
   });
@@ -20,7 +20,7 @@ describe("SessionTimeoutWarning", () => {
         remainingSeconds={120}
         onExtendSession={vi.fn()}
         onLogout={vi.fn()}
-      />
+      />,
     );
     expect(screen.getByText(/2 minutes/i)).toBeInTheDocument();
   });
@@ -32,7 +32,7 @@ describe("SessionTimeoutWarning", () => {
         remainingSeconds={120}
         onExtendSession={onExtendSession}
         onLogout={vi.fn()}
-      />
+      />,
     );
     fireEvent.click(screen.getByRole("button", { name: /extend session/i }));
     expect(onExtendSession).toHaveBeenCalled();
@@ -45,7 +45,7 @@ describe("SessionTimeoutWarning", () => {
         remainingSeconds={120}
         onExtendSession={vi.fn()}
         onLogout={onLogout}
-      />
+      />,
     );
     fireEvent.click(screen.getByRole("button", { name: /logout now/i }));
     expect(onLogout).toHaveBeenCalled();
