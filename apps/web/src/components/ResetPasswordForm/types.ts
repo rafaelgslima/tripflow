@@ -1,2 +1,2 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface ResetPasswordFormProps {}
+// No props needed for this component currently
+export type ResetPasswordFormProps = Record<string, never>;
