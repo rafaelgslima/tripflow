@@ -29,15 +29,15 @@ export function useSessionTimeout({
 
   const handleTimeout = useCallback(async () => {
     clearTimers();
-    
+
     // Sign out the user
     await supabase.auth.signOut();
-    
+
     // Call custom timeout handler
     if (onTimeout) {
       onTimeout();
     }
-    
+
     // Redirect to login
     router.push(redirectPath);
   }, [clearTimers, onTimeout, router, redirectPath]);

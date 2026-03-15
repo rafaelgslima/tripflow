@@ -146,6 +146,62 @@ src/
 - Import types using `import type { TypeName } from "./types"` for type-only imports
 - **Identify and extract duplicate code into reusable components** - whenever similar UI patterns or logic appear in multiple places, create a shared component with appropriate props to avoid duplication
 
+### CRITICAL: Zero Tolerance for Code Duplication
+
+**This is NON-NEGOTIABLE and UNACCEPTABLE:**
+
+- **NEVER duplicate code** across components, pages, hooks, or utilities
+- **ALWAYS identify patterns** before implementing - if similar code exists, extract it first
+- **ALWAYS ask before copying** - "Should I extract this into a shared hook/component/utility?"
+- **DRY (Don't Repeat Yourself) is mandatory** - any code duplication will be rejected
+- **Proactively refactor** - if you see duplication while working, stop and extract it immediately
+- **Common logic belongs in:**
+  - **Hooks** (`hooks/`) for stateful logic, side effects, or business logic
+  - **Components** (`components/`) for reusable UI patterns
+  - **Utils** (`utils/`) for pure functions and helpers
+  - **Higher-order components** for cross-cutting concerns (auth, layout, etc.)
+
+**Examples of unacceptable duplication:**
+
+- Copying session timeout logic to multiple pages (should be in layout/header)
+- Copying form validation logic (should be in a hook)
+- Copying API calls (should be in a service/hook)
+- Copying UI patterns (should be a component)
+
+**Before writing any code, ask yourself:**
+
+1. Does similar code already exist?
+2. Will this code be needed elsewhere?
+3. Should this be extracted into a reusable piece?
+
+If the answer to any is "yes" or "maybe", **STOP and extract it first**.
+
+### CRITICAL: No Unnecessary Code
+
+**This is NON-NEGOTIABLE:**
+
+- **NEVER call hooks or functions unnecessarily** - only use what's actually needed
+- **Don't import unused dependencies** - keep imports clean and minimal
+- **Don't add logic "just in case"** - implement only what's required now
+- **Remove dead code immediately** - don't leave unused code lying around
+- **Question every line** - if you can't justify why it's there, remove it
+
+**Examples of unnecessary code:**
+
+- Calling `useRequireAuth()` when auth is already handled in a parent component
+- Importing libraries that aren't used in the component
+- Adding state variables that are never read or updated
+- Fetching data that's never displayed
+- Creating functions that are never called
+
+**Before adding any code, ask yourself:**
+
+1. Is this actually needed for the current functionality?
+2. Is this already being handled elsewhere?
+3. Will removing this break anything?
+
+If the answer to questions 1-2 is "no" or "yes", **DON'T add it**.
+
 ---
 
 ## 4) API Design Rules (Web + Mobile compatible)
