@@ -1,5 +1,21 @@
+import {
+  DndContext,
+  PointerSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useState } from "react";
-import type { DayColumnProps } from "./types";
+import { AddDayPlanForm } from "./AddDayPlanForm";
+import { SortableDayPlanItem } from "./SortableDayPlanItem";
+import type { DayColumnProps, ItineraryItem } from "./types";
 
 export function DayColumn({
   date,
@@ -8,6 +24,24 @@ export function DayColumn({
   isMobile = false,
 }: DayColumnProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [itineraryItems, setItineraryItems] = useState<ItineraryItem[]>([]);
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState("");
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        delay: 180,
+        tolerance: 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5,
+      },
+    }),
+  );
 
   const formatDate = (date: Date): { weekday: string; monthDay: string } => {
     const weekday = date.toLocaleDateString("en-US", { weekday: "short" });
@@ -19,10 +53,155 @@ export function DayColumn({
   };
 
   const handleAddPlan = () => {
-    // TODO: Implement add plan functionality
-    // This will be implemented in the next iteration
-    // Should open a modal/form to add a new itinerary item for this day
-    console.log(`Add plan for ${travelPlanId} on ${date.toISOString()}`);
+    setIsAdding(true);
+  };
+
+  const handleCancel = () => {
+    setIsAdding(false);
+    setValidationError("");
+  };
+
+  const handleConfirm = (description: string) => {
+    const trimmedDescription = description.trim();
+    if (!trimmedDescription) {
+      setValidationError("This field is required");
+      return; // Don't save empty items
+    }
+
+    // TODO: Replace with API call to backend
+    // POST /api/travel-plans/:travelPlanId/days/:date/items
+    // {
+    //   description: string
+    // }
+    // Backend should create the item in database and return the created item
+
+    // For now, simulate item creation locally
+    const newItem: ItineraryItem = {
+      id: `temp-${Date.now()}`, // TODO: Replace with ID from backend
+      description: trimmedDescription,
+      createdAt: new Date(),
+    };
+
+    setItineraryItems((prev) => [...prev, newItem]);
+    setIsAdding(false);
+    setValidationError("");
+  };
+
+  const handleEdit = (itemId: string) => {
+    setEditingItemId(itemId);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingItemId(null);
+    setValidationError("");
+  };
+
+  const handleUpdate = (itemId: string, newDescription: string) => {
+    const trimmedDescription = newDescription.trim();
+
+    if (!trimmedDescription) {
+      setValidationError("This field is required");
+      return; // Don't save empty updates
+    }
+
+    // Find the original item to compare
+    const originalItem = itineraryItems.find((item) => item.id === itemId);
+    if (originalItem && originalItem.description === trimmedDescription) {
+      // No changes made, just exit edit mode
+      setEditingItemId(null);
+      setValidationError("");
+      return;
+    }
+
+    // TODO: Replace with API call to backend
+    // PUT /api/travel-plans/:travelPlanId/days/:date/items/:itemId
+    // {
+    //   description: string
+    // }
+    // Backend should update the item in database and return the updated item
+
+    // For now, simulate item update locally
+    setItineraryItems((prev) =>
+      prev.map((item) =>
+        item.id === itemId
+          ? { ...item, description: trimmedDescription }
+          : item,
+      ),
+    );
+    setEditingItemId(null);
+    setValidationError("");
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    setItineraryItems((previousItems) => {
+      const oldIndex = previousItems.findIndex((item) => item.id === active.id);
+      const newIndex = previousItems.findIndex((item) => item.id === over.id);
+
+      if (oldIndex === -1 || newIndex === -1) {
+        return previousItems;
+      }
+
+      // TODO: Persist new order in backend when API is integrated
+      // PATCH /api/travel-plans/:travelPlanId/days/:date/items/reorder
+      // {
+      //   itemIdsInOrder: string[]
+      // }
+      return arrayMove(previousItems, oldIndex, newIndex);
+    });
+  };
+
+  const renderItineraryItems = () => {
+    if (itineraryItems.length === 0 && !isAdding) {
+      return (
+        <div className="text-xs text-gray-400 text-center py-2">
+          No plans yet
+        </div>
+      );
+    }
+
+    return (
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={itineraryItems.map((item) => item.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {itineraryItems.map((item) => {
+            if (editingItemId === item.id) {
+              return (
+                <AddDayPlanForm
+                  key={item.id}
+                  initialValue={item.description}
+                  onCancel={handleCancelEdit}
+                  onConfirm={(description: string) =>
+                    handleUpdate(item.id, description)
+                  }
+                  confirmLabel="Update"
+                  error={validationError}
+                />
+              );
+            }
+
+            return (
+              <SortableDayPlanItem
+                key={item.id}
+                item={item}
+                onEdit={handleEdit}
+              />
+            );
+          })}
+        </SortableContext>
+      </DndContext>
+    );
   };
 
   const { weekday, monthDay } = formatDate(date);
@@ -61,30 +240,36 @@ export function DayColumn({
 
         {isExpanded && (
           <div className="p-4 space-y-3">
-            {/* TODO: Render itinerary items here */}
-            <div className="text-sm text-gray-500 text-center py-4">
-              No plans yet for this day
-            </div>
+            {renderItineraryItems()}
+            {isAdding && (
+              <AddDayPlanForm
+                onCancel={handleCancel}
+                onConfirm={handleConfirm}
+                error={validationError}
+              />
+            )}
 
-            <button
-              onClick={handleAddPlan}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-primary-500 hover:text-primary-600 transition-colors"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {!isAdding && (
+              <button
+                onClick={handleAddPlan}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-primary-500 hover:text-primary-600 transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              Add Plan
-            </button>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                Add Plan
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -105,32 +290,38 @@ export function DayColumn({
 
       {/* Itinerary Items Container */}
       <div className="space-y-2 mb-4 min-h-[100px]">
-        {/* TODO: Render itinerary items here */}
-        <div className="text-xs text-gray-400 text-center py-2">
-          No plans yet
-        </div>
+        {renderItineraryItems()}
+        {isAdding && (
+          <AddDayPlanForm
+            onCancel={handleCancel}
+            onConfirm={handleConfirm}
+            error={validationError}
+          />
+        )}
       </div>
 
       {/* Add Plan Button */}
-      <button
-        onClick={handleAddPlan}
-        className="w-full flex items-center justify-center gap-2 px-3 py-2 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-primary-500 hover:text-primary-600 transition-colors text-sm"
-      >
-        <svg
-          className="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      {!isAdding && (
+        <button
+          onClick={handleAddPlan}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-primary-500 hover:text-primary-600 transition-colors text-sm"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 4v16m8-8H4"
-          />
-        </svg>
-        Add Plan
-      </button>
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Add Plan
+        </button>
+      )}
     </div>
   );
 }

@@ -4,3 +4,9 @@ export interface DayColumnProps {
   travelPlanId: string;
   isMobile?: boolean;
 }
+
+export interface ItineraryItem {
+  id: string;
+  description: string;
+  createdAt: Date;
+}
