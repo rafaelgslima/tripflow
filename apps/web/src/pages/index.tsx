@@ -1,10 +1,10 @@
-import { Header } from "@/components/Header";
+import { HeaderPreLogin } from "@/components/HeaderPreLogin";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <Header />
+      <HeaderPreLogin />
 
       {/* Hero Section */}
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
