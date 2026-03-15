@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 
-export function Header() {
+export function HeaderPreLogin() {
   return (
     <header className="border-b border-gray-200 bg-white">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

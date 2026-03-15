@@ -175,7 +175,9 @@ export function useLoginForm(): UseLoginFormReturn {
         }, 500);
       }
     } catch (error) {
-      console.error("Login error:", error);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Login error:", error);
+      }
       setErrors({
         general: "An error occurred during login. Please try again.",
       });
