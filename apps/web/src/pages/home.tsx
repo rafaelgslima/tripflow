@@ -1,13 +1,66 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabase";
 import { HeaderPostLogin } from "@/components/HeaderPostLogin";
+import { SessionTimeoutWarning } from "@/components/SessionTimeoutWarning";
+import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import type { User } from "@supabase/supabase-js";
 
 export default function HomePage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showWarning, setShowWarning] = useState(false);
+  const [remainingSeconds, setRemainingSeconds] = useState(120);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Session timeout configuration from environment variables
+  const timeoutDuration = Number(process.env.NEXT_PUBLIC_SESSION_TIMEOUT_DURATION) || 1200; // 20 minutes default
+  const warningDuration = Number(process.env.NEXT_PUBLIC_SESSION_TIMEOUT_WARNING) || 120; // 2 minutes default
+
+  const { resetTimer } = useSessionTimeout({
+    timeoutDuration,
+    warningDuration,
+    onWarning: () => {
+      setShowWarning(true);
+      setRemainingSeconds(warningDuration);
+      
+      // Clear any existing countdown
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+      }
+      
+      // Countdown timer
+      const interval = setInterval(() => {
+        setRemainingSeconds((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      countdownIntervalRef.current = interval;
+    },
+    onTimeout: () => {
+      // Cleanup countdown and hide modal before logout
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
+      }
+      setShowWarning(false);
+    },
+  });
+
+  // Cleanup countdown interval on unmount
+  useEffect(() => {
+    return () => {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     // Check if user is authenticated
@@ -43,6 +96,27 @@ export default function HomePage() {
     };
   }, [router]);
 
+  const handleExtendSession = () => {
+    // Clear countdown interval
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+    setShowWarning(false);
+    resetTimer();
+  };
+
+  const handleLogoutNow = async () => {
+    // Clear countdown interval
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+    setShowWarning(false);
+    await supabase.auth.signOut();
+    router.push("/");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50">
@@ -60,6 +134,15 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      {/* Session Timeout Warning */}
+      {showWarning && (
+        <SessionTimeoutWarning
+          remainingSeconds={remainingSeconds}
+          onExtendSession={handleExtendSession}
+          onLogout={handleLogoutNow}
+        />
+      )}
+
       {/* Header */}
       <HeaderPostLogin
         userName={user.user_metadata?.name}
