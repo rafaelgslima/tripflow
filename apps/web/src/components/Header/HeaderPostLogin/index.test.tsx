@@ -1,93 +1,90 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { HeaderPostLogin } from "./index";
 
-// Mock Next.js router
-const mockPush = vi.fn();
+const { mockPush, mockSignOut } = vi.hoisted(() => ({
+  mockPush: vi.fn(),
+  mockSignOut: vi.fn(),
+}));
+
 vi.mock("next/router", () => ({
   useRouter: vi.fn(() => ({
     push: mockPush,
   })),
 }));
 
-// Mock Supabase
-const mockGetSession = vi.fn();
-const mockOnAuthStateChange = vi.fn();
-const mockSignOut = vi.fn();
-
 vi.mock("@/lib/supabase", () => ({
   supabase: {
     auth: {
-      getSession: mockGetSession,
-      onAuthStateChange: mockOnAuthStateChange,
       signOut: mockSignOut,
     },
   },
 }));
 
-// Mock session timeout hook
-vi.mock("@/hooks/useSessionTimeout", () => ({
-  useSessionTimeout: vi.fn(() => ({
-    resetTimer: vi.fn(),
+vi.mock("@/hooks/useSessionTimeoutWarning", () => ({
+  useSessionTimeoutWarning: vi.fn(() => ({
+    showWarning: false,
+    remainingSeconds: 0,
+    handleExtendSession: vi.fn(),
+    handleLogoutNow: vi.fn(),
   })),
 }));
 
 describe("HeaderPostLogin", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetSession.mockResolvedValue({
-      data: {
-        session: {
-          user: {
-            email: "test@example.com",
-            user_metadata: { name: "Test User" },
-          },
-        },
-      },
-    });
-    mockOnAuthStateChange.mockReturnValue({
-      data: {
-        subscription: {
-          unsubscribe: vi.fn(),
-        },
-      },
-    });
   });
 
-  it("renders the welcome message when authenticated", async () => {
-    render(<HeaderPostLogin>{() => <div>Content</div>}</HeaderPostLogin>);
-    await waitFor(() => {
-      expect(screen.getByText("Welcome to TripFlow")).toBeInTheDocument();
-    });
+  it("renders the TripFlow logo", () => {
+    render(<HeaderPostLogin />);
+
+    expect(screen.getByRole("link", { name: /tripflow/i })).toBeInTheDocument();
   });
 
-  it("renders user name when available", async () => {
-    render(<HeaderPostLogin>{() => <div>Content</div>}</HeaderPostLogin>);
-    await waitFor(() => {
-      expect(screen.getByText(/Hi, Test User!/i)).toBeInTheDocument();
-    });
+  it("renders Home, Profile and Log out actions", () => {
+    render(<HeaderPostLogin />);
+
+    expect(screen.getByRole("link", { name: "Home" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Profile" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Log out" })).toBeInTheDocument();
   });
 
-  it("renders children with user data", async () => {
-    render(
-      <HeaderPostLogin>
-        {(user) => <div>Email: {user.email}</div>}
-      </HeaderPostLogin>,
-    );
-    await waitFor(() => {
-      expect(screen.getByText("Email: test@example.com")).toBeInTheDocument();
+  it("opens mobile menu when hamburger icon is clicked", () => {
+    render(<HeaderPostLogin />);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /open menu/i }));
+
+    const dialog = screen.getByRole("dialog", {
+      name: /mobile navigation menu/i,
     });
+    expect(dialog).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole("link", { name: "Home" }),
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole("link", { name: "Profile" }),
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole("button", { name: "Log out" }),
+    ).toBeInTheDocument();
   });
 
-  it("redirects to login when not authenticated", async () => {
-    mockGetSession.mockResolvedValue({
-      data: { session: null },
-    });
+  it("logs out and redirects to root", async () => {
+    mockSignOut.mockResolvedValue(undefined);
+    render(<HeaderPostLogin />);
 
-    render(<HeaderPostLogin>{() => <div>Content</div>}</HeaderPostLogin>);
+    fireEvent.click(screen.getByRole("button", { name: "Log out" }));
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/login");
+      expect(mockSignOut).toHaveBeenCalledTimes(1);
+      expect(mockPush).toHaveBeenCalledWith("/");
     });
   });
 });
