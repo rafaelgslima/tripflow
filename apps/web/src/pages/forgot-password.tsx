@@ -1,5 +1,5 @@
 import { AuthPageHeader } from "@/components/AuthPageHeader";
-import { ForgotPasswordForm } from "@/components/ForgotPasswordForm";
+import { ForgotPasswordForm } from "@/components/Form/ForgotPasswordForm";
 
 export default function ForgotPasswordPage() {
   return (

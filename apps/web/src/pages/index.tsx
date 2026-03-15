@@ -1,4 +1,4 @@
-import { HeaderPreLogin } from "@/components/HeaderPreLogin";
+import { HeaderPreLogin } from "@/components/Header/HeaderPreLogin";
 import Link from "next/link";
 
 export default function Home() {

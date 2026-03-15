@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useResetPasswordForm } from "@/hooks/useResetPasswordForm";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components/Loading/LoadingSpinner";
 import type { ResetPasswordFormProps } from "./types";
 
 export function ResetPasswordForm(_props: ResetPasswordFormProps) {

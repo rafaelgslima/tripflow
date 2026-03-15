@@ -1,4 +1,4 @@
-import { DayColumn } from "@/components/DayColumn";
+import { DayColumn } from "../DayColumn";
 import type { TravelPlansListProps } from "./types";
 
 export function TravelPlansList({ plans }: TravelPlansListProps) {

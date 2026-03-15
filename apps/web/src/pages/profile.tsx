@@ -1,4 +1,4 @@
-import { HeaderPostLogin } from "@/components/HeaderPostLogin";
+import { HeaderPostLogin } from "@/components/Header/HeaderPostLogin";
 import { Loading } from "@/components/Loading";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 
