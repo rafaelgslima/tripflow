@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AuthPageHeader } from "@/components/AuthPageHeader";
-import { LoginForm } from "@/components/LoginForm";
+import { LoginForm } from "@/components/Form/LoginForm";
 
 export default function LoginPage() {
   return (

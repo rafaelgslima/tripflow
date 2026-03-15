@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useLoginForm } from "@/hooks/useLoginForm";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components/Loading/LoadingSpinner";
 import type { LoginFormProps } from "./types";
 
 export function LoginForm(_props: LoginFormProps) {

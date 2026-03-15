@@ -1,5 +1,5 @@
 import { AuthPageHeader } from "@/components/AuthPageHeader";
-import { ResetPasswordForm } from "@/components/ResetPasswordForm";
+import { ResetPasswordForm } from "@/components/Form/ResetPasswordForm";
 
 export default function ResetPasswordPage() {
   return (

@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import { CreateTravelPlanModal } from "@/components/CreateTravelPlanModal";
-import { TravelPlansList } from "@/components/TravelPlansList";
+import { CreateTravelPlanModal } from "./CreateTravelPlanModal";
+import { TravelPlansList } from "./TravelPlansList";
 import type { TravelPlansProps, TravelPlan } from "./types";
 
 export function TravelPlans({}: TravelPlansProps = {}) {

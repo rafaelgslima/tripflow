@@ -1,4 +1,4 @@
-import { HeaderPostLogin } from "@/components/HeaderPostLogin";
+import { HeaderPostLogin } from "@/components/Header/HeaderPostLogin";
 import { TravelPlans } from "@/components/TravelPlans";
 
 export default function HomePage() {

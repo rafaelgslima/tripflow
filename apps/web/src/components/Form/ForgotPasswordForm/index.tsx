@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useForgotPasswordForm } from "@/hooks/useForgotPasswordForm";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components/Loading/LoadingSpinner";
 import type { ForgotPasswordFormProps } from "./types";
 
 export function ForgotPasswordForm(_props: ForgotPasswordFormProps) {
