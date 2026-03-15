@@ -377,6 +377,7 @@ Required workflow:
   - Components in `components/[ComponentName]/` with index.tsx, types.ts, index.test.tsx
   - Hooks in `hooks/[hookName]/` with index.ts, types.ts, index.test.ts
   - Utils in `utils/[utilityName]/` with index.ts, types.ts, index.test.ts
+- **All imports must be at the top of the file** - never place import statements in the middle or bottom of files
 - Keep UI logic separated from data fetching:
   - `lib/api/*` for API calls
   - `components/*` for UI
