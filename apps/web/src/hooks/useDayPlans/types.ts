@@ -29,4 +29,6 @@ export interface UseDayPlansReturn {
   deleteError: string | null;
   clearDeleteError: () => void;
   deleteDayPlan: (itemId: string) => Promise<void>;
+
+  reorderDayPlans: (itemIdsInOrder: string[]) => Promise<void>;
 }

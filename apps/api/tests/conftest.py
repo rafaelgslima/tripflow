@@ -19,6 +19,7 @@ from app.main import create_app
 from app.schemas.common import AuthenticatedUser
 from app.schemas.itinerary_items import (
     ItineraryItemCreateRequest,
+    ItineraryItemReorderRequest,
     ItineraryItemResponse,
     ItineraryItemUpdateRequest,
 )
@@ -75,6 +76,7 @@ class FakeItineraryItemsService:
             tuple[UUID, UUID, date, UUID, ItineraryItemUpdateRequest]
         ] = []
         self.delete_calls: list[tuple[UUID, UUID, date, UUID]] = []
+        self.reorder_calls: list[tuple[UUID, UUID, date, ItineraryItemReorderRequest]] = []
         self.items: list[ItineraryItemResponse] = [
             ItineraryItemResponse(
                 id=UUID("33333333-3333-3333-3333-333333333333"),
@@ -152,6 +154,16 @@ class FakeItineraryItemsService:
         item_id: UUID,
     ) -> None:
         self.delete_calls.append((user_id, travel_plan_id, day, item_id))
+
+    def reorder_itinerary_items(
+        self,
+        *,
+        user_id: UUID,
+        travel_plan_id: UUID,
+        day: date,
+        payload: ItineraryItemReorderRequest,
+    ) -> None:
+        self.reorder_calls.append((user_id, travel_plan_id, day, payload))
 
 
 @pytest.fixture
