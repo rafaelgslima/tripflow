@@ -34,6 +34,9 @@ export function DayColumn({
     createError,
     clearCreateError,
     createDayPlan,
+    updateError,
+    clearUpdateError,
+    updateDayPlan,
   } = useDayPlans({ travelPlanId, date });
   const [isAdding, setIsAdding] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
@@ -76,21 +79,24 @@ export function DayColumn({
     try {
       await createDayPlan(description);
       setIsAdding(false);
-    } catch {
-      // Error message is surfaced via createError
+    } catch (error) {
+      console.error("Create day plan failed:", error);
     }
   };
 
   const handleEdit = (itemId: string) => {
+    clearUpdateError();
+    setValidationError("");
     setEditingItemId(itemId);
   };
 
   const handleCancelEdit = () => {
     setEditingItemId(null);
     setValidationError("");
+    clearUpdateError();
   };
 
-  const handleUpdate = (itemId: string, newDescription: string) => {
+  const handleUpdate = async (itemId: string, newDescription: string) => {
     const trimmedDescription = newDescription.trim();
 
     if (!trimmedDescription) {
@@ -104,26 +110,17 @@ export function DayColumn({
       // No changes made, just exit edit mode
       setEditingItemId(null);
       setValidationError("");
+      clearUpdateError();
       return;
     }
 
-    // TODO: Replace with API call to backend
-    // PUT /api/travel-plans/:travelPlanId/days/:date/items/:itemId
-    // {
-    //   description: string
-    // }
-    // Backend should update the item in database and return the updated item
-
-    // For now, simulate item update locally
-    setItineraryItems((prev) =>
-      prev.map((item) =>
-        item.id === itemId
-          ? { ...item, description: trimmedDescription }
-          : item,
-      ),
-    );
-    setEditingItemId(null);
-    setValidationError("");
+    try {
+      await updateDayPlan(itemId, trimmedDescription);
+      setEditingItemId(null);
+      setValidationError("");
+    } catch (error) {
+      console.error("Update day plan failed:", error);
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -202,7 +199,8 @@ export function DayColumn({
                     handleUpdate(item.id, description)
                   }
                   confirmLabel="Update"
-                  error={validationError}
+                  error={validationError || updateError || undefined}
+                  onClearError={clearUpdateError}
                 />
               );
             }
@@ -266,6 +264,7 @@ export function DayColumn({
                 onCancel={handleCancel}
                 onConfirm={handleConfirm}
                 error={createError ?? undefined}
+                onClearError={clearCreateError}
               />
             )}
 
@@ -316,6 +315,7 @@ export function DayColumn({
             onCancel={handleCancel}
             onConfirm={handleConfirm}
             error={createError ?? undefined}
+            onClearError={clearCreateError}
           />
         )}
       </div>

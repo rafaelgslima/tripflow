@@ -4,7 +4,11 @@ from uuid import UUID
 from app.exceptions import NotFoundError
 from app.repositories.itinerary_items import ItineraryItemsRepository
 from app.repositories.travel_plans import TravelPlansRepository
-from app.schemas.itinerary_items import ItineraryItemCreateRequest, ItineraryItemResponse
+from app.schemas.itinerary_items import (
+    ItineraryItemCreateRequest,
+    ItineraryItemResponse,
+    ItineraryItemUpdateRequest,
+)
 
 
 class ItineraryItemsService:
@@ -60,3 +64,35 @@ class ItineraryItemsService:
             day=day,
         )
         return [ItineraryItemResponse.model_validate(item) for item in raw_items]
+
+    def update_itinerary_item(
+        self,
+        *,
+        user_id: UUID,
+        travel_plan_id: UUID,
+        day: date,
+        item_id: UUID,
+        payload: ItineraryItemUpdateRequest,
+    ) -> ItineraryItemResponse:
+        if not self._travel_plans_repository.user_can_access_travel_plan(
+            user_id=str(user_id),
+            travel_plan_id=str(travel_plan_id),
+        ):
+            raise NotFoundError("Travel plan not found.")
+
+        existing_item = self._repository.get_itinerary_item(item_id=str(item_id))
+        if not existing_item:
+            raise NotFoundError("Itinerary item not found.")
+
+        if str(existing_item.get("travel_plan_id")) != str(travel_plan_id):
+            raise NotFoundError("Itinerary item not found.")
+
+        if str(existing_item.get("date")) != day.isoformat():
+            raise NotFoundError("Itinerary item not found.")
+
+        updated_item = self._repository.update_itinerary_item_description(
+            item_id=str(item_id),
+            description=payload.description,
+        )
+
+        return ItineraryItemResponse.model_validate(updated_item)

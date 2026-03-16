@@ -1,5 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
-import { createDayPlan, fetchDayPlans } from "@/lib/api/dayPlans";
+import {
+  createDayPlan,
+  fetchDayPlans,
+  updateDayPlan,
+} from "@/lib/api/dayPlans";
 import { supabase } from "@/lib/supabase";
 import type { ItineraryItem } from "@/types/itinerary";
 import { toDateOnlyISOString } from "@/utils/toDateOnlyISOString";
@@ -17,13 +21,17 @@ function mapApiItineraryItemToUi(item: {
   };
 }
 
-export function useDayPlans({ travelPlanId, date }: UseDayPlansParams):
-  UseDayPlansReturn {
+export function useDayPlans({
+  travelPlanId,
+  date,
+}: UseDayPlansParams): UseDayPlansReturn {
   const [itineraryItems, setItineraryItems] = useState<ItineraryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null);
 
   const day = useMemo(() => toDateOnlyISOString(date), [date]);
 
@@ -41,7 +49,11 @@ export function useDayPlans({ travelPlanId, date }: UseDayPlansParams):
         return;
       }
 
-      const items = await fetchDayPlans(travelPlanId, day, session.access_token);
+      const items = await fetchDayPlans(
+        travelPlanId,
+        day,
+        session.access_token,
+      );
       setItineraryItems(items.map(mapApiItineraryItemToUi));
     } catch {
       setLoadError("Day plans couldn't be retrieved.");
@@ -76,10 +88,47 @@ export function useDayPlans({ travelPlanId, date }: UseDayPlansParams):
           mapApiItineraryItemToUi(created),
         ]);
       } catch (error) {
-        setCreateError("Unable to save day plan. Please try again.");
+        setCreateError("Unable to save day plan. Try again later.");
         throw error;
       } finally {
         setIsCreating(false);
+      }
+    },
+    [day, travelPlanId],
+  );
+
+  const updateDayPlanForDay = useCallback(
+    async (itemId: string, description: string) => {
+      setIsUpdating(true);
+      setUpdateError(null);
+
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session?.access_token) {
+          throw new Error("Session not found");
+        }
+
+        const updated = await updateDayPlan(
+          travelPlanId,
+          day,
+          itemId,
+          { description },
+          session.access_token,
+        );
+
+        setItineraryItems((previousItems) =>
+          previousItems.map((item) =>
+            item.id === itemId ? mapApiItineraryItemToUi(updated) : item,
+          ),
+        );
+      } catch (error) {
+        setUpdateError("Unable to update day plan. Try again later.");
+        throw error;
+      } finally {
+        setIsUpdating(false);
       }
     },
     [day, travelPlanId],
@@ -95,5 +144,9 @@ export function useDayPlans({ travelPlanId, date }: UseDayPlansParams):
     createError,
     clearCreateError: () => setCreateError(null),
     createDayPlan: createDayPlanForDay,
+    isUpdating,
+    updateError,
+    clearUpdateError: () => setUpdateError(null),
+    updateDayPlan: updateDayPlanForDay,
   };
 }

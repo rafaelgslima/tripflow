@@ -17,7 +17,11 @@ from app.dependencies import (
 )
 from app.main import create_app
 from app.schemas.common import AuthenticatedUser
-from app.schemas.itinerary_items import ItineraryItemCreateRequest, ItineraryItemResponse
+from app.schemas.itinerary_items import (
+    ItineraryItemCreateRequest,
+    ItineraryItemResponse,
+    ItineraryItemUpdateRequest,
+)
 from app.schemas.travel_plans import TravelPlanCreateRequest, TravelPlanResponse
 
 
@@ -67,6 +71,9 @@ class FakeItineraryItemsService:
     def __init__(self) -> None:
         self.create_calls: list[tuple[UUID, UUID, date, ItineraryItemCreateRequest]] = []
         self.list_calls: list[tuple[UUID, UUID, date]] = []
+        self.update_calls: list[
+            tuple[UUID, UUID, date, UUID, ItineraryItemUpdateRequest]
+        ] = []
         self.items: list[ItineraryItemResponse] = [
             ItineraryItemResponse(
                 id=UUID("33333333-3333-3333-3333-333333333333"),
@@ -113,6 +120,27 @@ class FakeItineraryItemsService:
             for item in self.items
             if item.travel_plan_id == travel_plan_id and item.date == day
         ]
+
+    def update_itinerary_item(
+        self,
+        *,
+        user_id: UUID,
+        travel_plan_id: UUID,
+        day: date,
+        item_id: UUID,
+        payload: ItineraryItemUpdateRequest,
+    ) -> ItineraryItemResponse:
+        self.update_calls.append((user_id, travel_plan_id, day, item_id, payload))
+        return ItineraryItemResponse(
+            id=item_id,
+            travel_plan_id=travel_plan_id,
+            date=day,
+            time=None,
+            description=payload.description.strip(),
+            created_by_user_id=user_id,
+            created_at=datetime(2026, 3, 16, 0, 0, 0, tzinfo=UTC),
+            updated_at=datetime(2026, 3, 16, 0, 0, 0, tzinfo=UTC),
+        )
 
 
 @pytest.fixture

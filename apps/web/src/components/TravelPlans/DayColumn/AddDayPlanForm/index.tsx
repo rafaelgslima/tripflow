@@ -7,6 +7,7 @@ export function AddDayPlanForm({
   onConfirm,
   confirmLabel = "Confirm",
   error,
+  onClearError,
 }: AddDayPlanFormProps) {
   const [description, setDescription] = useState(initialValue);
   const [localError, setLocalError] = useState("");
@@ -27,6 +28,9 @@ export function AddDayPlanForm({
   const handleCancel = () => {
     setDescription("");
     setLocalError("");
+    if (onClearError) {
+      onClearError();
+    }
     onCancel();
   };
 
@@ -34,6 +38,9 @@ export function AddDayPlanForm({
     setDescription(e.target.value);
     if (localError || error) {
       setLocalError("");
+      if (onClearError) {
+        onClearError();
+      }
     }
   };
 

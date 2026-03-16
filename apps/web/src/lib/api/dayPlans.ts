@@ -15,6 +15,10 @@ export interface CreateDayPlanRequest {
   description: string;
 }
 
+export interface UpdateDayPlanRequest {
+  description: string;
+}
+
 export async function fetchDayPlans(
   travelPlanId: string,
   day: string,
@@ -40,6 +44,26 @@ export async function createDayPlan(
 ): Promise<ItineraryItemApiResponse> {
   const response = await apiClient.post<ItineraryItemApiResponse>(
     `/v1/travel-plans/${travelPlanId}/days/${day}/items`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  return response.data;
+}
+
+export async function updateDayPlan(
+  travelPlanId: string,
+  day: string,
+  itemId: string,
+  payload: UpdateDayPlanRequest,
+  accessToken: string,
+): Promise<ItineraryItemApiResponse> {
+  const response = await apiClient.put<ItineraryItemApiResponse>(
+    `/v1/travel-plans/${travelPlanId}/days/${day}/items/${itemId}`,
     payload,
     {
       headers: {

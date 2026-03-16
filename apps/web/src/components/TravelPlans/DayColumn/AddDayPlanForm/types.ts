@@ -4,4 +4,5 @@ export interface AddDayPlanFormProps {
   onConfirm: (description: string) => void;
   confirmLabel?: string;
   error?: string;
+  onClearError?: () => void;
 }
