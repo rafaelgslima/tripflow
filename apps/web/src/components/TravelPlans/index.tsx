@@ -8,8 +8,14 @@ import type { TravelPlansProps } from "./types";
 export function TravelPlans({}: TravelPlansProps = {}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { travelPlans, isLoading, loadError, loadTravelPlans, createPlan, createError } =
-    useTravelPlans();
+  const {
+    travelPlans,
+    isLoading,
+    loadError,
+    loadTravelPlans,
+    createPlan,
+    createError,
+  } = useTravelPlans();
 
   useEffect(() => {
     void loadTravelPlans();

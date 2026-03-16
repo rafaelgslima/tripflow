@@ -1,3 +1,5 @@
+import type { ItineraryItem as SharedItineraryItem } from "@/types/itinerary";
+
 export interface DayColumnProps {
   date: Date;
   dayNumber: number;
@@ -5,8 +7,4 @@ export interface DayColumnProps {
   isMobile?: boolean;
 }
 
-export interface ItineraryItem {
-  id: string;
-  description: string;
-  createdAt: Date;
-}
+export type ItineraryItem = SharedItineraryItem;

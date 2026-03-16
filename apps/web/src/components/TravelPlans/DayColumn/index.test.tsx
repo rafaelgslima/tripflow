@@ -1,27 +1,65 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, expect, it, beforeEach, vi } from "vitest";
+import { supabase } from "@/lib/supabase";
+import { createDayPlan, fetchDayPlans } from "@/lib/api/dayPlans";
 import { DayColumn } from "./index";
+
+vi.mock("@/lib/supabase", () => ({
+  supabase: {
+    auth: {
+      getSession: vi.fn(),
+    },
+  },
+}));
+
+vi.mock("@/lib/api/dayPlans", () => ({
+  fetchDayPlans: vi.fn(),
+  createDayPlan: vi.fn(),
+}));
 
 describe("DayColumn", () => {
   const mockDate = new Date("2026-03-20");
+  const mockFetchDayPlans = vi.mocked(fetchDayPlans);
 
-  it("should render day column with date and day number", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (supabase.auth.getSession as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: {
+        session: {
+          access_token: "token",
+        },
+      },
+    });
+    mockFetchDayPlans.mockResolvedValue([]);
+  });
+
+  const waitForInitialLoad = async () => {
+    await waitFor(() => {
+      expect(mockFetchDayPlans).toHaveBeenCalled();
+    });
+  };
+
+  it("should render day column with date and day number", async () => {
     render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+
+    await waitForInitialLoad();
 
     expect(screen.getByText("Day 1")).toBeInTheDocument();
     expect(screen.getByText(/Fri/)).toBeInTheDocument();
     expect(screen.getByText(/Mar 20/)).toBeInTheDocument();
   });
 
-  it("should render add plan button", () => {
+  it("should render add plan button", async () => {
     render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+
+    await waitForInitialLoad();
 
     expect(
       screen.getByRole("button", { name: /add plan/i }),
     ).toBeInTheDocument();
   });
 
-  it("should render as accordion on mobile", () => {
+  it("should render as accordion on mobile", async () => {
     render(
       <DayColumn
         date={mockDate}
@@ -30,6 +68,8 @@ describe("DayColumn", () => {
         isMobile={true}
       />,
     );
+
+    await waitForInitialLoad();
 
     const accordionButton = screen.getByRole("button", {
       name: /day 1/i,
@@ -37,7 +77,7 @@ describe("DayColumn", () => {
     expect(accordionButton).toBeInTheDocument();
   });
 
-  it("should toggle accordion content on mobile", () => {
+  it("should toggle accordion content on mobile", async () => {
     render(
       <DayColumn
         date={mockDate}
@@ -46,6 +86,8 @@ describe("DayColumn", () => {
         isMobile={true}
       />,
     );
+
+    await waitForInitialLoad();
 
     const accordionButton = screen.getByRole("button", {
       name: /day 1/i,
@@ -64,8 +106,10 @@ describe("DayColumn", () => {
   });
 
   describe("Adding itinerary items", () => {
-    it("should show input and buttons when Add Plan is clicked", () => {
+    it("should show input and buttons when Add Plan is clicked", async () => {
       render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+
+      await waitForInitialLoad();
 
       const addButton = screen.getByRole("button", { name: /add plan/i });
       fireEvent.click(addButton);
@@ -87,8 +131,10 @@ describe("DayColumn", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("should cancel adding a plan and return to initial state", () => {
+    it("should cancel adding a plan and return to initial state", async () => {
       render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+
+      await waitForInitialLoad();
 
       const addButton = screen.getByRole("button", { name: /add plan/i });
       fireEvent.click(addButton);
@@ -115,8 +161,21 @@ describe("DayColumn", () => {
       ).toBeInTheDocument();
     });
 
-    it("should save a new itinerary item when confirmed", () => {
+    it("should save a new itinerary item when confirmed", async () => {
+      (createDayPlan as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: "item-1",
+        travel_plan_id: "plan-1",
+        date: "2026-03-20",
+        time: null,
+        description: "Visit Museum",
+        created_by_user_id: "user-1",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+
       render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+
+      await waitForInitialLoad();
 
       const addButton = screen.getByRole("button", { name: /add plan/i });
       fireEvent.click(addButton);
@@ -128,7 +187,9 @@ describe("DayColumn", () => {
       fireEvent.click(confirmButton);
 
       // Should display the saved item
-      expect(screen.getByText("Visit Museum")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("Visit Museum")).toBeInTheDocument();
+      });
       // Should hide the input form
       expect(
         screen.queryByPlaceholderText(/what's the plan\?/i),
@@ -139,8 +200,10 @@ describe("DayColumn", () => {
       ).toBeInTheDocument();
     });
 
-    it("should not save an empty itinerary item", () => {
+    it("should not save an empty itinerary item", async () => {
       render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+
+      await waitForInitialLoad();
 
       const addButton = screen.getByRole("button", { name: /add plan/i });
       fireEvent.click(addButton);
@@ -154,8 +217,32 @@ describe("DayColumn", () => {
       ).toBeInTheDocument();
     });
 
-    it("should allow adding multiple itinerary items", () => {
+    it("should allow adding multiple itinerary items", async () => {
+      (createDayPlan as unknown as ReturnType<typeof vi.fn>)
+        .mockResolvedValueOnce({
+          id: "item-1",
+          travel_plan_id: "plan-1",
+          date: "2026-03-20",
+          time: null,
+          description: "Visit Museum",
+          created_by_user_id: "user-1",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .mockResolvedValueOnce({
+          id: "item-2",
+          travel_plan_id: "plan-1",
+          date: "2026-03-20",
+          time: null,
+          description: "Lunch at Restaurant",
+          created_by_user_id: "user-1",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+
       render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+
+      await waitForInitialLoad();
 
       // Add first item
       const addButton = screen.getByRole("button", { name: /add plan/i });
@@ -166,6 +253,10 @@ describe("DayColumn", () => {
 
       const confirmButton = screen.getByRole("button", { name: /confirm/i });
       fireEvent.click(confirmButton);
+
+      await waitFor(() => {
+        expect(screen.getByText("Visit Museum")).toBeInTheDocument();
+      });
 
       // Add second item
       const addButton2 = screen.getByRole("button", { name: /add plan/i });
@@ -178,18 +269,37 @@ describe("DayColumn", () => {
       fireEvent.click(confirmButton2);
 
       // Should display both items
-      expect(screen.getByText("Visit Museum")).toBeInTheDocument();
-      expect(screen.getByText("Lunch at Restaurant")).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText("Visit Museum")).toBeInTheDocument();
+        expect(screen.getByText("Lunch at Restaurant")).toBeInTheDocument();
+      });
     });
 
-    it("should display No plans yet when no items exist and not adding", () => {
+    it("should display No plans yet when no items exist and not adding", async () => {
       render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
 
-      expect(screen.getByText(/no plans yet/i)).toBeInTheDocument();
+      await waitForInitialLoad();
+
+      await waitFor(() => {
+        expect(screen.getByText(/no plans yet/i)).toBeInTheDocument();
+      });
     });
 
-    it("should hide No plans yet when items exist", () => {
+    it("should hide No plans yet when items exist", async () => {
+      (createDayPlan as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: "item-1",
+        travel_plan_id: "plan-1",
+        date: "2026-03-20",
+        time: null,
+        description: "Visit Museum",
+        created_by_user_id: "user-1",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+
       render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+
+      await waitForInitialLoad();
 
       // Add an item
       const addButton = screen.getByRole("button", { name: /add plan/i });
@@ -201,12 +311,29 @@ describe("DayColumn", () => {
       const confirmButton = screen.getByRole("button", { name: /confirm/i });
       fireEvent.click(confirmButton);
 
+      await waitFor(() => {
+        expect(screen.getByText("Visit Museum")).toBeInTheDocument();
+      });
+
       // Should not show "No plans yet"
       expect(screen.queryByText(/no plans yet/i)).not.toBeInTheDocument();
     });
 
-    it("should render saved item card for click and long-press interactions", () => {
+    it("should render saved item card for click and long-press interactions", async () => {
+      (createDayPlan as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: "item-1",
+        travel_plan_id: "plan-1",
+        date: "2026-03-20",
+        time: null,
+        description: "Visit Museum",
+        created_by_user_id: "user-1",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+
       render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+
+      await waitForInitialLoad();
 
       const addButton = screen.getByRole("button", { name: /add plan/i });
       fireEvent.click(addButton);
@@ -217,7 +344,9 @@ describe("DayColumn", () => {
       const confirmButton = screen.getByRole("button", { name: /confirm/i });
       fireEvent.click(confirmButton);
 
-      expect(screen.getByLabelText(/plan visit museum/i)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByLabelText(/plan visit museum/i)).toBeInTheDocument();
+      });
     });
   });
 });

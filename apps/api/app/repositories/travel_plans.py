@@ -47,3 +47,63 @@ class TravelPlansRepository:
         )
 
         return response.data or []
+
+    def user_can_access_travel_plan(
+        self,
+        *,
+        user_id: str,
+        travel_plan_id: str,
+    ) -> bool:
+        owner_response = (
+            self._supabase_client.table("travel_plan")
+            .select("id")
+            .eq("id", travel_plan_id)
+            .eq("owner_user_id", user_id)
+            .limit(1)
+            .execute()
+        )
+
+        if owner_response.data:
+            return True
+
+        share_response = (
+            self._supabase_client.table("travel_plan_share")
+            .select("id")
+            .eq("travel_plan_id", travel_plan_id)
+            .eq("invited_user_id", user_id)
+            .eq("status", "accepted")
+            .limit(1)
+            .execute()
+        )
+
+        return bool(share_response.data)
+
+    def user_can_access_travel_plan(
+        self,
+        *,
+        user_id: str,
+        travel_plan_id: str,
+    ) -> bool:
+        owner_match = (
+            self._supabase_client.table("travel_plan")
+            .select("id")
+            .eq("id", travel_plan_id)
+            .eq("owner_user_id", user_id)
+            .limit(1)
+            .execute()
+        )
+
+        if owner_match.data:
+            return True
+
+        collaborator_match = (
+            self._supabase_client.table("travel_plan_share")
+            .select("id")
+            .eq("travel_plan_id", travel_plan_id)
+            .eq("invited_user_id", user_id)
+            .eq("status", "accepted")
+            .limit(1)
+            .execute()
+        )
+
+        return bool(collaborator_match.data)

@@ -12,7 +12,8 @@ import {
   arrayMove,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDayPlans } from "@/hooks/useDayPlans";
 import { AddDayPlanForm } from "./AddDayPlanForm";
 import { SortableDayPlanItem } from "./SortableDayPlanItem";
 import type { DayColumnProps, ItineraryItem } from "./types";
@@ -24,7 +25,16 @@ export function DayColumn({
   isMobile = false,
 }: DayColumnProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [itineraryItems, setItineraryItems] = useState<ItineraryItem[]>([]);
+  const {
+    itineraryItems,
+    setItineraryItems,
+    isLoading,
+    loadError,
+    loadDayPlans,
+    createError,
+    clearCreateError,
+    createDayPlan,
+  } = useDayPlans({ travelPlanId, date });
   const [isAdding, setIsAdding] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [validationError, setValidationError] = useState("");
@@ -53,6 +63,7 @@ export function DayColumn({
   };
 
   const handleAddPlan = () => {
+    clearCreateError();
     setIsAdding(true);
   };
 
@@ -61,30 +72,13 @@ export function DayColumn({
     setValidationError("");
   };
 
-  const handleConfirm = (description: string) => {
-    const trimmedDescription = description.trim();
-    if (!trimmedDescription) {
-      setValidationError("This field is required");
-      return; // Don't save empty items
+  const handleConfirm = async (description: string) => {
+    try {
+      await createDayPlan(description);
+      setIsAdding(false);
+    } catch {
+      // Error message is surfaced via createError
     }
-
-    // TODO: Replace with API call to backend
-    // POST /api/travel-plans/:travelPlanId/days/:date/items
-    // {
-    //   description: string
-    // }
-    // Backend should create the item in database and return the created item
-
-    // For now, simulate item creation locally
-    const newItem: ItineraryItem = {
-      id: `temp-${Date.now()}`, // TODO: Replace with ID from backend
-      description: trimmedDescription,
-      createdAt: new Date(),
-    };
-
-    setItineraryItems((prev) => [...prev, newItem]);
-    setIsAdding(false);
-    setValidationError("");
   };
 
   const handleEdit = (itemId: string) => {
@@ -157,6 +151,28 @@ export function DayColumn({
   };
 
   const renderItineraryItems = () => {
+    if (isLoading && itineraryItems.length === 0 && !isAdding) {
+      return (
+        <div
+          className="text-xs text-gray-400 text-center py-2"
+          data-testid="day-plans-loading"
+        >
+          Loading plans...
+        </div>
+      );
+    }
+
+    if (loadError && itineraryItems.length === 0 && !isAdding) {
+      return (
+        <div
+          className="text-xs text-gray-400 text-center py-2"
+          data-testid="day-plans-load-error"
+        >
+          {loadError}
+        </div>
+      );
+    }
+
     if (itineraryItems.length === 0 && !isAdding) {
       return (
         <div className="text-xs text-gray-400 text-center py-2">
@@ -206,6 +222,10 @@ export function DayColumn({
 
   const { weekday, monthDay } = formatDate(date);
 
+  useEffect(() => {
+    void loadDayPlans();
+  }, [loadDayPlans]);
+
   // Mobile Accordion View
   if (isMobile) {
     return (
@@ -245,7 +265,7 @@ export function DayColumn({
               <AddDayPlanForm
                 onCancel={handleCancel}
                 onConfirm={handleConfirm}
-                error={validationError}
+                error={createError ?? undefined}
               />
             )}
 
@@ -295,7 +315,7 @@ export function DayColumn({
           <AddDayPlanForm
             onCancel={handleCancel}
             onConfirm={handleConfirm}
-            error={validationError}
+            error={createError ?? undefined}
           />
         )}
       </div>
