@@ -91,6 +91,7 @@ venv/
 env/
 ENV/
 .venv/
+.venv-py312/
 .python-version
 
 # Distribution / packaging

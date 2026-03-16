@@ -1,36 +1,26 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useTravelPlans } from "@/hooks/useTravelPlans";
+import { LoadingSpinner } from "@/components/Loading/LoadingSpinner";
 import { CreateTravelPlanModal } from "./CreateTravelPlanModal";
 import { TravelPlansList } from "./TravelPlansList";
-import type { TravelPlansProps, TravelPlan } from "./types";
+import type { TravelPlansProps } from "./types";
 
 export function TravelPlans({}: TravelPlansProps = {}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [travelPlans, setTravelPlans] = useState<TravelPlan[]>([]);
+
+  const { travelPlans, isLoading, loadError, loadTravelPlans, createPlan, createError } =
+    useTravelPlans();
+
+  useEffect(() => {
+    void loadTravelPlans();
+  }, [loadTravelPlans]);
 
   const handleCreatePlan = useCallback(
-    (destination: string, startDate: Date, endDate: Date) => {
-      // TODO: Replace with API call to backend
-      // POST /api/travel-plans
-      // {
-      //   destination: string,
-      //   startDate: ISO string,
-      //   endDate: ISO string
-      // }
-      // Backend should create the travel plan in database and return the created plan
-
-      // For now, simulate plan creation locally
-      const newPlan: TravelPlan = {
-        id: `temp-${Date.now()}`, // TODO: Replace with ID from backend
-        destination,
-        startDate,
-        endDate,
-        createdAt: new Date(),
-      };
-
-      setTravelPlans((prev) => [...prev, newPlan]);
+    async (destination: string, startDate: Date, endDate: Date) => {
+      await createPlan(destination, startDate, endDate);
       setIsModalOpen(false);
     },
-    [],
+    [createPlan],
   );
 
   const handleCloseModal = useCallback(() => {
@@ -69,7 +59,34 @@ export function TravelPlans({}: TravelPlansProps = {}) {
       </div>
 
       {/* Travel Plans List */}
-      {travelPlans.length > 0 && <TravelPlansList plans={travelPlans} />}
+      {createError && (
+        <div className="rounded-md border border-red-200 bg-red-50 p-4 text-red-700">
+          {createError}
+        </div>
+      )}
+
+      {isLoading && (
+        <div
+          className="flex items-center justify-center py-8"
+          data-testid="travel-plans-loading"
+        >
+          <LoadingSpinner size="lg" className="text-primary-600" />
+          <p className="ml-3 text-gray-600">Loading travel plans...</p>
+        </div>
+      )}
+
+      {!isLoading && loadError && (
+        <div
+          className="rounded-md border border-red-200 bg-red-50 p-4 text-red-700"
+          data-testid="travel-plans-load-error"
+        >
+          {loadError}
+        </div>
+      )}
+
+      {!isLoading && !loadError && travelPlans.length > 0 && (
+        <TravelPlansList plans={travelPlans} />
+      )}
 
       {/* Create Plan Modal */}
       <CreateTravelPlanModal
