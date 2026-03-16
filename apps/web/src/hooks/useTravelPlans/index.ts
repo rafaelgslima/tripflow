@@ -2,11 +2,8 @@ import { useCallback, useState } from "react";
 import { createTravelPlan, fetchTravelPlans } from "@/lib/api/travelPlans";
 import { supabase } from "@/lib/supabase";
 import type { TravelPlan } from "@/components/TravelPlans/types";
+import { toDateOnlyISOString } from "@/utils/toDateOnlyISOString";
 import type { UseTravelPlansReturn } from "./types";
-
-function toDateOnlyISOString(date: Date): string {
-  return date.toISOString().split("T")[0];
-}
 
 function mapApiTravelPlanToUi(travelPlan: {
   id: string;

@@ -21,8 +21,10 @@ from supabase import Client, create_client
 
 from app.config import Settings, get_settings
 from app.exceptions import UnauthorizedError
+from app.repositories.itinerary_items import ItineraryItemsRepository
 from app.repositories.travel_plans import TravelPlansRepository
 from app.schemas.common import AuthenticatedUser
+from app.services.itinerary_items import ItineraryItemsService
 from app.services.travel_plans import TravelPlansService
 
 SUPPORTED_ALGORITHMS = {"HS256", "RS256", "ES256"}
@@ -136,3 +138,25 @@ def get_travel_plans_service(
     ],
 ) -> TravelPlansService:
     return TravelPlansService(repository=repository)
+
+
+def get_itinerary_items_repository(
+    supabase_client: Annotated[Client, Depends(get_supabase_admin_client)],
+) -> ItineraryItemsRepository:
+    return ItineraryItemsRepository(supabase_client=supabase_client)
+
+
+def get_itinerary_items_service(
+    repository: Annotated[
+        ItineraryItemsRepository,
+        Depends(get_itinerary_items_repository),
+    ],
+    travel_plans_repository: Annotated[
+        TravelPlansRepository,
+        Depends(get_travel_plans_repository),
+    ],
+) -> ItineraryItemsService:
+    return ItineraryItemsService(
+        repository=repository,
+        travel_plans_repository=travel_plans_repository,
+    )

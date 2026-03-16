@@ -150,6 +150,8 @@ describe("useTravelPlans", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(result.current.loadError).toBe("Travel plans couldn't be retrieved.");
+    expect(result.current.loadError).toBe(
+      "Travel plans couldn't be retrieved.",
+    );
   });
 });
