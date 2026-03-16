@@ -74,6 +74,7 @@ class FakeItineraryItemsService:
         self.update_calls: list[
             tuple[UUID, UUID, date, UUID, ItineraryItemUpdateRequest]
         ] = []
+        self.delete_calls: list[tuple[UUID, UUID, date, UUID]] = []
         self.items: list[ItineraryItemResponse] = [
             ItineraryItemResponse(
                 id=UUID("33333333-3333-3333-3333-333333333333"),
@@ -141,6 +142,16 @@ class FakeItineraryItemsService:
             created_at=datetime(2026, 3, 16, 0, 0, 0, tzinfo=UTC),
             updated_at=datetime(2026, 3, 16, 0, 0, 0, tzinfo=UTC),
         )
+
+    def delete_itinerary_item(
+        self,
+        *,
+        user_id: UUID,
+        travel_plan_id: UUID,
+        day: date,
+        item_id: UUID,
+    ) -> None:
+        self.delete_calls.append((user_id, travel_plan_id, day, item_id))
 
 
 @pytest.fixture

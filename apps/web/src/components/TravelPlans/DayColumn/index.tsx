@@ -37,6 +37,9 @@ export function DayColumn({
     updateError,
     clearUpdateError,
     updateDayPlan,
+    deleteError,
+    clearDeleteError,
+    deleteDayPlan,
   } = useDayPlans({ travelPlanId, date });
   const [isAdding, setIsAdding] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
@@ -86,6 +89,7 @@ export function DayColumn({
 
   const handleEdit = (itemId: string) => {
     clearUpdateError();
+    clearDeleteError();
     setValidationError("");
     setEditingItemId(itemId);
   };
@@ -94,6 +98,19 @@ export function DayColumn({
     setEditingItemId(null);
     setValidationError("");
     clearUpdateError();
+    clearDeleteError();
+  };
+
+  const handleDelete = async (itemId: string) => {
+    try {
+      await deleteDayPlan(itemId);
+      setEditingItemId(null);
+      setValidationError("");
+      clearUpdateError();
+      clearDeleteError();
+    } catch (error) {
+      console.error("Delete day plan failed:", error);
+    }
   };
 
   const handleUpdate = async (itemId: string, newDescription: string) => {
@@ -198,9 +215,16 @@ export function DayColumn({
                   onConfirm={(description: string) =>
                     handleUpdate(item.id, description)
                   }
+                  onDelete={() => void handleDelete(item.id)}
+                  deleteLabel="Delete"
                   confirmLabel="Update"
-                  error={validationError || updateError || undefined}
-                  onClearError={clearUpdateError}
+                  error={
+                    validationError || updateError || deleteError || undefined
+                  }
+                  onClearError={() => {
+                    clearUpdateError();
+                    clearDeleteError();
+                  }}
                 />
               );
             }

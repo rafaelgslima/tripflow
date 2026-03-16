@@ -3,6 +3,7 @@ import { describe, expect, it, beforeEach, vi } from "vitest";
 import { supabase } from "@/lib/supabase";
 import {
   createDayPlan,
+  deleteDayPlan,
   fetchDayPlans,
   updateDayPlan,
 } from "@/lib/api/dayPlans";
@@ -20,6 +21,7 @@ vi.mock("@/lib/api/dayPlans", () => ({
   fetchDayPlans: vi.fn(),
   createDayPlan: vi.fn(),
   updateDayPlan: vi.fn(),
+  deleteDayPlan: vi.fn(),
 }));
 
 describe("DayColumn", () => {
@@ -410,6 +412,49 @@ describe("DayColumn", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Brunch")).toBeInTheDocument();
+    });
+  });
+
+  it("deletes an itinerary item when Delete is clicked", async () => {
+    mockFetchDayPlans.mockResolvedValue([
+      {
+        id: "item-1",
+        travel_plan_id: "plan-1",
+        date: "2026-03-20",
+        time: null,
+        description: "Breakfast",
+        created_by_user_id: "user-1",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ]);
+
+    (deleteDayPlan as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+
+    render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Breakfast")).toBeInTheDocument();
+    });
+
+    const item = screen.getByLabelText("Plan Breakfast");
+    fireEvent.pointerDown(item);
+    fireEvent.pointerUp(item);
+
+    const deleteButton = await screen.findByRole("button", { name: /delete/i });
+    fireEvent.click(deleteButton);
+
+    await waitFor(() => {
+      expect(deleteDayPlan).toHaveBeenCalledWith(
+        "plan-1",
+        "2026-03-20",
+        "item-1",
+        "token",
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText("Breakfast")).not.toBeInTheDocument();
     });
   });
 });

@@ -2,7 +2,7 @@ from datetime import date
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Response, status
 
 from app.dependencies import get_authenticated_user, get_itinerary_items_service
 from app.schemas.common import AuthenticatedUser, ErrorEnvelope
@@ -91,3 +91,28 @@ def update_itinerary_item(
         item_id=item_id,
         payload=payload,
     )
+
+
+@router.delete(
+    "/{travel_plan_id}/days/{day}/items/{item_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        401: {"model": ErrorEnvelope, "description": "Authentication required"},
+        404: {"model": ErrorEnvelope, "description": "Not found"},
+        500: {"model": ErrorEnvelope, "description": "Internal server error"},
+    },
+)
+def delete_itinerary_item(
+    travel_plan_id: UUID,
+    day: date,
+    item_id: UUID,
+    current_user: Annotated[AuthenticatedUser, Depends(get_authenticated_user)],
+    service: Annotated[ItineraryItemsService, Depends(get_itinerary_items_service)],
+) -> Response:
+    service.delete_itinerary_item(
+        user_id=current_user.user_id,
+        travel_plan_id=travel_plan_id,
+        day=day,
+        item_id=item_id,
+    )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

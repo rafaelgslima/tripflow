@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useDayPlans } from "./index";
 import {
   createDayPlan,
+  deleteDayPlan,
   fetchDayPlans,
   updateDayPlan,
 } from "@/lib/api/dayPlans";
@@ -12,6 +13,7 @@ vi.mock("@/lib/api/dayPlans", () => ({
   fetchDayPlans: vi.fn(),
   createDayPlan: vi.fn(),
   updateDayPlan: vi.fn(),
+  deleteDayPlan: vi.fn(),
 }));
 
 vi.mock("@/lib/supabase", () => ({
@@ -26,6 +28,7 @@ describe("useDayPlans", () => {
   const mockFetchDayPlans = vi.mocked(fetchDayPlans);
   const mockCreateDayPlan = vi.mocked(createDayPlan);
   const mockUpdateDayPlan = vi.mocked(updateDayPlan);
+  const mockDeleteDayPlan = vi.mocked(deleteDayPlan);
   const mockGetSession = vi.mocked(supabase.auth.getSession);
 
   const travelPlanId = "plan-1";
@@ -196,5 +199,46 @@ describe("useDayPlans", () => {
       id: "item-1",
       description: "Brunch",
     });
+  });
+
+  it("deletes a day plan and removes it from local state", async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: "token-del" } },
+      error: null,
+    } as never);
+
+    mockFetchDayPlans.mockResolvedValue([
+      {
+        id: "item-1",
+        travel_plan_id: travelPlanId,
+        date: "2026-03-20",
+        time: null,
+        description: "Breakfast",
+        created_by_user_id: "user-1",
+        created_at: "2026-03-16T00:00:00.000Z",
+        updated_at: "2026-03-16T00:00:00.000Z",
+      },
+    ]);
+
+    mockDeleteDayPlan.mockResolvedValue(undefined);
+
+    const { result } = renderHook(() => useDayPlans({ travelPlanId, date }));
+
+    await act(async () => {
+      await result.current.loadDayPlans();
+    });
+
+    await act(async () => {
+      await result.current.deleteDayPlan("item-1");
+    });
+
+    expect(mockDeleteDayPlan).toHaveBeenCalledWith(
+      travelPlanId,
+      "2026-03-20",
+      "item-1",
+      "token-del",
+    );
+
+    expect(result.current.itineraryItems).toHaveLength(0);
   });
 });

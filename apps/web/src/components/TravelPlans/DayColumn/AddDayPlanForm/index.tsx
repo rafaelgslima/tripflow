@@ -8,6 +8,8 @@ export function AddDayPlanForm({
   confirmLabel = "Confirm",
   error,
   onClearError,
+  onDelete,
+  deleteLabel = "Delete",
 }: AddDayPlanFormProps) {
   const [description, setDescription] = useState(initialValue);
   const [localError, setLocalError] = useState("");
@@ -64,6 +66,16 @@ export function AddDayPlanForm({
         >
           Cancel
         </button>
+
+        {onDelete && (
+          <button
+            onClick={onDelete}
+            className="flex-1 px-3 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors text-sm"
+          >
+            {deleteLabel}
+          </button>
+        )}
+
         <button
           onClick={handleConfirm}
           className="flex-1 px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm"
