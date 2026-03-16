@@ -429,7 +429,9 @@ describe("DayColumn", () => {
       },
     ]);
 
-    (deleteDayPlan as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+    (deleteDayPlan as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
+      undefined,
+    );
 
     render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
 

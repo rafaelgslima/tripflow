@@ -104,3 +104,23 @@ def test_delete_itinerary_item_returns_204(
     assert response.content in (b"", None)
 
     assert len(fake_itinerary_service.delete_calls) == 1
+
+
+def test_reorder_itinerary_items_returns_204(
+    test_client,
+    fake_itinerary_service,
+):
+    travel_plan_id = "22222222-2222-2222-2222-222222222222"
+    day = date(2026, 6, 1).isoformat()
+
+    response = test_client.patch(
+        f"/v1/travel-plans/{travel_plan_id}/days/{day}/items/reorder",
+        json={
+            "item_ids_in_order": [
+                "33333333-3333-3333-3333-333333333333",
+            ]
+        },
+    )
+
+    assert response.status_code == 204
+    assert len(fake_itinerary_service.reorder_calls) == 1

@@ -1,6 +1,7 @@
 from .common import AuthenticatedUser, ErrorEnvelope
 from .itinerary_items import (
     ItineraryItemCreateRequest,
+    ItineraryItemReorderRequest,
     ItineraryItemResponse,
     ItineraryItemUpdateRequest,
 )
@@ -10,6 +11,7 @@ __all__ = [
     "AuthenticatedUser",
     "ErrorEnvelope",
     "ItineraryItemCreateRequest",
+    "ItineraryItemReorderRequest",
     "ItineraryItemResponse",
     "ItineraryItemUpdateRequest",
     "TravelPlanCreateRequest",

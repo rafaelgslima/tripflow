@@ -8,6 +8,7 @@ from app.dependencies import get_authenticated_user, get_itinerary_items_service
 from app.schemas.common import AuthenticatedUser, ErrorEnvelope
 from app.schemas.itinerary_items import (
     ItineraryItemCreateRequest,
+    ItineraryItemReorderRequest,
     ItineraryItemResponse,
     ItineraryItemUpdateRequest,
 )
@@ -114,5 +115,31 @@ def delete_itinerary_item(
         travel_plan_id=travel_plan_id,
         day=day,
         item_id=item_id,
+    )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.patch(
+    "/{travel_plan_id}/days/{day}/items/reorder",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        401: {"model": ErrorEnvelope, "description": "Authentication required"},
+        404: {"model": ErrorEnvelope, "description": "Not found"},
+        422: {"model": ErrorEnvelope, "description": "Validation error"},
+        500: {"model": ErrorEnvelope, "description": "Internal server error"},
+    },
+)
+def reorder_itinerary_items(
+    travel_plan_id: UUID,
+    day: date,
+    payload: ItineraryItemReorderRequest,
+    current_user: Annotated[AuthenticatedUser, Depends(get_authenticated_user)],
+    service: Annotated[ItineraryItemsService, Depends(get_itinerary_items_service)],
+) -> Response:
+    service.reorder_itinerary_items(
+        user_id=current_user.user_id,
+        travel_plan_id=travel_plan_id,
+        day=day,
+        payload=payload,
     )
     return Response(status_code=status.HTTP_204_NO_CONTENT)

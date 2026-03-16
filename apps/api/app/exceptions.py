@@ -51,3 +51,11 @@ class ValidationError(TripFlowError):
     status_code = HTTPStatus.UNPROCESSABLE_ENTITY
     error_code = "validation_error"
     message = "The request data failed domain validation."
+
+
+class SchemaOutOfDateError(TripFlowError):
+    """Raised when the database schema is missing required migrations."""
+
+    status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+    error_code = "schema_out_of_date"
+    message = "Database schema is out of date."

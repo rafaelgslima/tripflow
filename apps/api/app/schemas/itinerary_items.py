@@ -43,3 +43,16 @@ class ItineraryItemResponse(BaseModel):
     created_by_user_id: UUID
     created_at: datetime
     updated_at: datetime
+
+
+class ItineraryItemReorderRequest(BaseModel):
+    """Request body for reordering itinerary items within a day."""
+
+    item_ids_in_order: list[UUID] = Field(min_length=1, max_length=500)
+
+    @field_validator("item_ids_in_order")
+    @classmethod
+    def validate_unique_ids(cls, value: list[UUID]) -> list[UUID]:
+        if len(set(value)) != len(value):
+            raise ValueError("Item IDs must be unique.")
+        return value

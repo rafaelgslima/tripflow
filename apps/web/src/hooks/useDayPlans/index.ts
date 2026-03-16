@@ -3,6 +3,7 @@ import {
   createDayPlan,
   deleteDayPlan,
   fetchDayPlans,
+  reorderDayPlans,
   updateDayPlan,
 } from "@/lib/api/dayPlans";
 import { supabase } from "@/lib/supabase";
@@ -166,6 +167,26 @@ export function useDayPlans({
     [day, travelPlanId],
   );
 
+  const reorderDayPlansForDay = useCallback(
+    async (itemIdsInOrder: string[]) => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        throw new Error("Session not found");
+      }
+
+      await reorderDayPlans(
+        travelPlanId,
+        day,
+        { itemIdsInOrder },
+        session.access_token,
+      );
+    },
+    [day, travelPlanId],
+  );
+
   return {
     itineraryItems,
     setItineraryItems: (updater) => setItineraryItems(updater),
@@ -184,5 +205,6 @@ export function useDayPlans({
     deleteError,
     clearDeleteError: () => setDeleteError(null),
     deleteDayPlan: deleteDayPlanForDay,
+    reorderDayPlans: reorderDayPlansForDay,
   };
 }

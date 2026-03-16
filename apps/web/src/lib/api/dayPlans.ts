@@ -19,6 +19,10 @@ export interface UpdateDayPlanRequest {
   description: string;
 }
 
+export interface ReorderDayPlansRequest {
+  itemIdsInOrder: string[];
+}
+
 export async function fetchDayPlans(
   travelPlanId: string,
   day: string,
@@ -81,7 +85,27 @@ export async function deleteDayPlan(
   itemId: string,
   accessToken: string,
 ): Promise<void> {
-  await apiClient.delete(`/v1/travel-plans/${travelPlanId}/days/${day}/items/${itemId}`,
+  await apiClient.delete(
+    `/v1/travel-plans/${travelPlanId}/days/${day}/items/${itemId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+}
+
+export async function reorderDayPlans(
+  travelPlanId: string,
+  day: string,
+  payload: ReorderDayPlansRequest,
+  accessToken: string,
+): Promise<void> {
+  await apiClient.patch(
+    `/v1/travel-plans/${travelPlanId}/days/${day}/items/reorder`,
+    {
+      item_ids_in_order: payload.itemIdsInOrder,
+    },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

@@ -5,6 +5,7 @@ import {
   createDayPlan,
   deleteDayPlan,
   fetchDayPlans,
+  reorderDayPlans,
   updateDayPlan,
 } from "@/lib/api/dayPlans";
 import { supabase } from "@/lib/supabase";
@@ -14,6 +15,7 @@ vi.mock("@/lib/api/dayPlans", () => ({
   createDayPlan: vi.fn(),
   updateDayPlan: vi.fn(),
   deleteDayPlan: vi.fn(),
+  reorderDayPlans: vi.fn(),
 }));
 
 vi.mock("@/lib/supabase", () => ({
@@ -29,6 +31,7 @@ describe("useDayPlans", () => {
   const mockCreateDayPlan = vi.mocked(createDayPlan);
   const mockUpdateDayPlan = vi.mocked(updateDayPlan);
   const mockDeleteDayPlan = vi.mocked(deleteDayPlan);
+  const mockReorderDayPlans = vi.mocked(reorderDayPlans);
   const mockGetSession = vi.mocked(supabase.auth.getSession);
 
   const travelPlanId = "plan-1";
@@ -240,5 +243,27 @@ describe("useDayPlans", () => {
     );
 
     expect(result.current.itineraryItems).toHaveLength(0);
+  });
+
+  it("reorders day plans by calling the API", async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: "token-reorder" } },
+      error: null,
+    } as never);
+
+    mockReorderDayPlans.mockResolvedValue(undefined);
+
+    const { result } = renderHook(() => useDayPlans({ travelPlanId, date }));
+
+    await act(async () => {
+      await result.current.reorderDayPlans(["item-2", "item-1"]);
+    });
+
+    expect(mockReorderDayPlans).toHaveBeenCalledWith(
+      travelPlanId,
+      "2026-03-20",
+      { itemIdsInOrder: ["item-2", "item-1"] },
+      "token-reorder",
+    );
   });
 });

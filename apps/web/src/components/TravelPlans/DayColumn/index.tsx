@@ -40,6 +40,7 @@ export function DayColumn({
     deleteError,
     clearDeleteError,
     deleteDayPlan,
+    reorderDayPlans,
   } = useDayPlans({ travelPlanId, date });
   const [isAdding, setIsAdding] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
@@ -155,12 +156,9 @@ export function DayColumn({
         return previousItems;
       }
 
-      // TODO: Persist new order in backend when API is integrated
-      // PATCH /api/travel-plans/:travelPlanId/days/:date/items/reorder
-      // {
-      //   itemIdsInOrder: string[]
-      // }
-      return arrayMove(previousItems, oldIndex, newIndex);
+      const nextItems = arrayMove(previousItems, oldIndex, newIndex);
+      void reorderDayPlans(nextItems.map((item) => item.id));
+      return nextItems;
     });
   };
 
