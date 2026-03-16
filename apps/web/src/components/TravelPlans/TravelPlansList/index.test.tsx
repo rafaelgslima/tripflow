@@ -1,6 +1,11 @@
 import { render, screen } from "@testing-library/react";
+import { vi } from "vitest";
 import { TravelPlansList } from "./index";
 import type { TravelPlan } from "@/components/TravelPlans/types";
+
+vi.mock("../DayColumn", () => ({
+  DayColumn: () => <div data-testid="day-column" />,
+}));
 
 describe("TravelPlansList", () => {
   const mockPlans: TravelPlan[] = [
@@ -41,5 +46,14 @@ describe("TravelPlansList", () => {
       .getByText("Paris")
       .closest("div")?.parentElement;
     expect(parisSection).toBeInTheDocument();
+  });
+
+  it("should render share button for each plan", () => {
+    render(<TravelPlansList plans={mockPlans} />);
+
+    const buttons = screen.getAllByRole("button", {
+      name: /share this plan with a friend/i,
+    });
+    expect(buttons).toHaveLength(2);
   });
 });
