@@ -52,3 +52,35 @@ class ItineraryItemsRepository:
         )
 
         return response.data or []
+
+    def get_itinerary_item(self, *, item_id: str) -> dict[str, Any] | None:
+        response = (
+            self._supabase_client.table("itinerary_item")
+            .select("*")
+            .eq("id", item_id)
+            .limit(1)
+            .execute()
+        )
+
+        if not response.data:
+            return None
+
+        return response.data[0]
+
+    def update_itinerary_item_description(
+        self,
+        *,
+        item_id: str,
+        description: str,
+    ) -> dict[str, Any]:
+        response = (
+            self._supabase_client.table("itinerary_item")
+            .update({"description": description})
+            .eq("id", item_id)
+            .execute()
+        )
+
+        if not response.data:
+            raise RuntimeError("Supabase returned empty response for itinerary update.")
+
+        return response.data[0]

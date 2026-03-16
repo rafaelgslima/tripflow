@@ -18,6 +18,20 @@ class ItineraryItemCreateRequest(BaseModel):
         return normalized_value
 
 
+class ItineraryItemUpdateRequest(BaseModel):
+    """Request body for updating an itinerary item."""
+
+    description: str = Field(min_length=1, max_length=2000)
+
+    @field_validator("description")
+    @classmethod
+    def validate_description(cls, value: str) -> str:
+        normalized_value = value.strip()
+        if not normalized_value:
+            raise ValueError("Description cannot be empty.")
+        return normalized_value
+
+
 class ItineraryItemResponse(BaseModel):
     """Itinerary item response payload."""
 

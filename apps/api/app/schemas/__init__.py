@@ -1,5 +1,9 @@
 from .common import AuthenticatedUser, ErrorEnvelope
-from .itinerary_items import ItineraryItemCreateRequest, ItineraryItemResponse
+from .itinerary_items import (
+    ItineraryItemCreateRequest,
+    ItineraryItemResponse,
+    ItineraryItemUpdateRequest,
+)
 from .travel_plans import TravelPlanCreateRequest, TravelPlanResponse
 
 __all__ = [
@@ -7,6 +11,7 @@ __all__ = [
     "ErrorEnvelope",
     "ItineraryItemCreateRequest",
     "ItineraryItemResponse",
+    "ItineraryItemUpdateRequest",
     "TravelPlanCreateRequest",
     "TravelPlanResponse",
 ]

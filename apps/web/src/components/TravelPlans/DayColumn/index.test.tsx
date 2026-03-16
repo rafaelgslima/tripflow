@@ -1,7 +1,11 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, expect, it, beforeEach, vi } from "vitest";
 import { supabase } from "@/lib/supabase";
-import { createDayPlan, fetchDayPlans } from "@/lib/api/dayPlans";
+import {
+  createDayPlan,
+  fetchDayPlans,
+  updateDayPlan,
+} from "@/lib/api/dayPlans";
 import { DayColumn } from "./index";
 
 vi.mock("@/lib/supabase", () => ({
@@ -15,6 +19,7 @@ vi.mock("@/lib/supabase", () => ({
 vi.mock("@/lib/api/dayPlans", () => ({
   fetchDayPlans: vi.fn(),
   createDayPlan: vi.fn(),
+  updateDayPlan: vi.fn(),
 }));
 
 describe("DayColumn", () => {
@@ -23,7 +28,9 @@ describe("DayColumn", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (supabase.auth.getSession as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (
+      supabase.auth.getSession as unknown as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
       data: {
         session: {
           access_token: "token",
@@ -347,6 +354,62 @@ describe("DayColumn", () => {
       await waitFor(() => {
         expect(screen.getByLabelText(/plan visit museum/i)).toBeInTheDocument();
       });
+    });
+  });
+
+  it("updates an itinerary item when edited", async () => {
+    mockFetchDayPlans.mockResolvedValue([
+      {
+        id: "item-1",
+        travel_plan_id: "plan-1",
+        date: "2026-03-20",
+        time: null,
+        description: "Breakfast",
+        created_by_user_id: "user-1",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ]);
+
+    (updateDayPlan as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "item-1",
+      travel_plan_id: "plan-1",
+      date: "2026-03-20",
+      time: null,
+      description: "Brunch",
+      created_by_user_id: "user-1",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Breakfast")).toBeInTheDocument();
+    });
+
+    const item = screen.getByLabelText("Plan Breakfast");
+    fireEvent.pointerDown(item);
+    fireEvent.pointerUp(item);
+
+    const input = await screen.findByPlaceholderText(/what's the plan\?/i);
+    fireEvent.change(input, { target: { value: "Brunch" } });
+
+    const updateButton = screen.getByRole("button", { name: /update/i });
+    fireEvent.click(updateButton);
+
+    await waitFor(() => {
+      expect(updateDayPlan).toHaveBeenCalledWith(
+        "plan-1",
+        "2026-03-20",
+        "item-1",
+        { description: "Brunch" },
+        "token",
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Brunch")).toBeInTheDocument();
     });
   });
 });

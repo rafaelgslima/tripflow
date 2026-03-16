@@ -19,4 +19,9 @@ export interface UseDayPlansReturn {
   createError: string | null;
   clearCreateError: () => void;
   createDayPlan: (description: string) => Promise<void>;
+
+  isUpdating: boolean;
+  updateError: string | null;
+  clearUpdateError: () => void;
+  updateDayPlan: (itemId: string, description: string) => Promise<void>;
 }
