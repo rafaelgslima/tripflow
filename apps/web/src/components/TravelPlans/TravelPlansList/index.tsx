@@ -1,4 +1,5 @@
 import { DayColumn } from "../DayColumn";
+import { ShareTravelPlanButton } from "../ShareTravelPlanButton";
 import type { TravelPlansListProps } from "./types";
 
 export function TravelPlansList({ plans }: TravelPlansListProps) {
@@ -36,9 +37,12 @@ export function TravelPlansList({ plans }: TravelPlansListProps) {
           <div key={plan.id} className="bg-white rounded-lg shadow-lg p-6">
             {/* Plan Header */}
             <div className="mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">
-                {plan.destination}
-              </h3>
+              <div className="flex items-start justify-between gap-4">
+                <h3 className="text-2xl font-bold text-gray-900">
+                  {plan.destination}
+                </h3>
+                <ShareTravelPlanButton travelPlanId={plan.id} />
+              </div>
               <p className="text-sm text-gray-600 mt-1">
                 {formatDateRange(plan.startDate, plan.endDate)} • {days.length}{" "}
                 {days.length === 1 ? "day" : "days"}
