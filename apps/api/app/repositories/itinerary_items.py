@@ -84,3 +84,6 @@ class ItineraryItemsRepository:
             raise RuntimeError("Supabase returned empty response for itinerary update.")
 
         return response.data[0]
+
+    def delete_itinerary_item(self, *, item_id: str) -> None:
+        self._supabase_client.table("itinerary_item").delete().eq("id", item_id).execute()

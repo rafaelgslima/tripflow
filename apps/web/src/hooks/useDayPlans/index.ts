@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import {
   createDayPlan,
+  deleteDayPlan,
   fetchDayPlans,
   updateDayPlan,
 } from "@/lib/api/dayPlans";
@@ -32,6 +33,8 @@ export function useDayPlans({
   const [createError, setCreateError] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const day = useMemo(() => toDateOnlyISOString(date), [date]);
 
@@ -134,6 +137,35 @@ export function useDayPlans({
     [day, travelPlanId],
   );
 
+  const deleteDayPlanForDay = useCallback(
+    async (itemId: string) => {
+      setIsDeleting(true);
+      setDeleteError(null);
+
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session?.access_token) {
+          throw new Error("Session not found");
+        }
+
+        await deleteDayPlan(travelPlanId, day, itemId, session.access_token);
+
+        setItineraryItems((previousItems) =>
+          previousItems.filter((item) => item.id !== itemId),
+        );
+      } catch (error) {
+        setDeleteError("Unable to delete day plan. Try again later.");
+        throw error;
+      } finally {
+        setIsDeleting(false);
+      }
+    },
+    [day, travelPlanId],
+  );
+
   return {
     itineraryItems,
     setItineraryItems: (updater) => setItineraryItems(updater),
@@ -148,5 +180,9 @@ export function useDayPlans({
     updateError,
     clearUpdateError: () => setUpdateError(null),
     updateDayPlan: updateDayPlanForDay,
+    isDeleting,
+    deleteError,
+    clearDeleteError: () => setDeleteError(null),
+    deleteDayPlan: deleteDayPlanForDay,
   };
 }

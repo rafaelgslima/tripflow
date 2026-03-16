@@ -96,3 +96,29 @@ class ItineraryItemsService:
         )
 
         return ItineraryItemResponse.model_validate(updated_item)
+
+    def delete_itinerary_item(
+        self,
+        *,
+        user_id: UUID,
+        travel_plan_id: UUID,
+        day: date,
+        item_id: UUID,
+    ) -> None:
+        if not self._travel_plans_repository.user_can_access_travel_plan(
+            user_id=str(user_id),
+            travel_plan_id=str(travel_plan_id),
+        ):
+            raise NotFoundError("Travel plan not found.")
+
+        existing_item = self._repository.get_itinerary_item(item_id=str(item_id))
+        if not existing_item:
+            raise NotFoundError("Itinerary item not found.")
+
+        if str(existing_item.get("travel_plan_id")) != str(travel_plan_id):
+            raise NotFoundError("Itinerary item not found.")
+
+        if str(existing_item.get("date")) != day.isoformat():
+            raise NotFoundError("Itinerary item not found.")
+
+        self._repository.delete_itinerary_item(item_id=str(item_id))

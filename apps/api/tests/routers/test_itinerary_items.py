@@ -86,3 +86,21 @@ def test_update_itinerary_item_rejects_empty_description(test_client):
     )
 
     assert response.status_code == 422
+
+
+def test_delete_itinerary_item_returns_204(
+    test_client,
+    fake_itinerary_service,
+):
+    travel_plan_id = "22222222-2222-2222-2222-222222222222"
+    day = date(2026, 6, 1).isoformat()
+    item_id = "33333333-3333-3333-3333-333333333333"
+
+    response = test_client.delete(
+        f"/v1/travel-plans/{travel_plan_id}/days/{day}/items/{item_id}",
+    )
+
+    assert response.status_code == 204
+    assert response.content in (b"", None)
+
+    assert len(fake_itinerary_service.delete_calls) == 1

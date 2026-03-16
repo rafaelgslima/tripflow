@@ -74,3 +74,18 @@ export async function updateDayPlan(
 
   return response.data;
 }
+
+export async function deleteDayPlan(
+  travelPlanId: string,
+  day: string,
+  itemId: string,
+  accessToken: string,
+): Promise<void> {
+  await apiClient.delete(`/v1/travel-plans/${travelPlanId}/days/${day}/items/${itemId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+}
