@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useLoginForm } from "@/hooks/useLoginForm";
 import { LoadingSpinner } from "@/components/Loading/LoadingSpinner";
 import type { LoginFormProps } from "./types";
 
 export function LoginForm(_props: LoginFormProps) {
+  const router = useRouter();
   const {
     values,
     errors,
@@ -14,6 +16,13 @@ export function LoginForm(_props: LoginFormProps) {
     handleBlur,
     handleSubmit,
   } = useLoginForm();
+
+  const nextRaw = router.query.next;
+  const nextUrl =
+    typeof nextRaw === "string" && nextRaw.trim() ? nextRaw.trim() : null;
+  const signupHref = nextUrl
+    ? `/signup?next=${encodeURIComponent(nextUrl)}`
+    : "/signup";
 
   return (
     <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -149,7 +158,7 @@ export function LoginForm(_props: LoginFormProps) {
         <p className="text-sm text-gray-600">
           Don&apos;t have an account?{" "}
           <Link
-            href="/signup"
+            href={signupHref}
             className="font-medium text-primary-600 hover:text-primary-700 underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 rounded"
           >
             Sign up

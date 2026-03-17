@@ -22,8 +22,8 @@ class TravelPlansService:
         )
         return TravelPlanResponse.model_validate(travel_plan_data)
 
-    def list_travel_plans(self, *, owner_user_id: UUID) -> list[TravelPlanResponse]:
-        raw_travel_plans = self._repository.list_travel_plans(
-            owner_user_id=str(owner_user_id)
+    def list_travel_plans(self, *, user_id: UUID) -> list[TravelPlanResponse]:
+        raw_travel_plans = self._repository.list_travel_plans_for_user(
+            user_id=str(user_id)
         )
         return [TravelPlanResponse.model_validate(plan) for plan in raw_travel_plans]

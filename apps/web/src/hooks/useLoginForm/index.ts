@@ -169,9 +169,13 @@ export function useLoginForm(): UseLoginFormReturn {
       if (data.user && data.session) {
         // Login successful
         setIsSuccess(true);
-        // Redirect to home page after a short delay
+        const nextRaw = router.query.next;
+        const nextUrl =
+          typeof nextRaw === "string" && nextRaw.trim() ? nextRaw.trim() : null;
+
+        // Redirect after a short delay
         setTimeout(() => {
-          router.push("/home");
+          router.push(nextUrl ?? "/home");
         }, 500);
       }
     } catch (error) {

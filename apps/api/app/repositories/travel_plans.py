@@ -48,35 +48,46 @@ class TravelPlansRepository:
 
         return response.data or []
 
-    def user_can_access_travel_plan(
-        self,
-        *,
-        user_id: str,
-        travel_plan_id: str,
-    ) -> bool:
-        owner_response = (
+    def list_travel_plans_for_user(self, *, user_id: str) -> list[dict[str, Any]]:
+        owned_response = (
             self._supabase_client.table("travel_plan")
-            .select("id")
-            .eq("id", travel_plan_id)
+            .select("*")
             .eq("owner_user_id", user_id)
-            .limit(1)
+            .order("start_date", desc=False)
             .execute()
         )
-
-        if owner_response.data:
-            return True
+        owned_plans: list[dict[str, Any]] = owned_response.data or []
 
         share_response = (
             self._supabase_client.table("travel_plan_share")
-            .select("id")
-            .eq("travel_plan_id", travel_plan_id)
+            .select("travel_plan_id")
             .eq("invited_user_id", user_id)
             .eq("status", "accepted")
-            .limit(1)
             .execute()
         )
+        shared_ids = [row.get("travel_plan_id") for row in (share_response.data or [])]
+        shared_ids = [plan_id for plan_id in shared_ids if plan_id]
 
-        return bool(share_response.data)
+        shared_plans: list[dict[str, Any]] = []
+        if shared_ids:
+            shared_response = (
+                self._supabase_client.table("travel_plan")
+                .select("*")
+                .in_("id", shared_ids)
+                .order("start_date", desc=False)
+                .execute()
+            )
+            shared_plans = shared_response.data or []
+
+        merged_by_id: dict[str, dict[str, Any]] = {}
+        for plan in shared_plans + owned_plans:
+            plan_id = plan.get("id")
+            if plan_id:
+                merged_by_id[str(plan_id)] = plan
+
+        merged = list(merged_by_id.values())
+        merged.sort(key=lambda plan: str(plan.get("start_date", "")))
+        return merged
 
     def user_can_access_travel_plan(
         self,

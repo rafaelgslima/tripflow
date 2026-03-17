@@ -4,11 +4,12 @@ import { useLoginForm } from "./index";
 
 // Mock Next.js router
 const mockPush = vi.fn();
+const mockRouterQuery: Record<string, string | string[] | undefined> = {};
 vi.mock("next/router", () => ({
   useRouter: () => ({
     push: mockPush,
     pathname: "/login",
-    query: {},
+    query: mockRouterQuery,
     asPath: "/login",
   }),
 }));
@@ -28,6 +29,10 @@ describe("useLoginForm", () => {
   let localStorageMock: { [key: string]: string } = {};
 
   beforeEach(() => {
+    Object.keys(mockRouterQuery).forEach((key) => {
+      delete mockRouterQuery[key];
+    });
+
     // Mock localStorage
     localStorageMock = {};
 
@@ -421,6 +426,48 @@ describe("useLoginForm", () => {
 
       expect(result.current.isSuccess).toBe(true);
       expect(result.current.errors.general).toBeUndefined();
+    });
+  });
+
+  describe("invite accept redirect", () => {
+    it("redirects to next url after successful login", async () => {
+      mockRouterQuery.next = "/share/accept?token=abc";
+
+      vi.mocked(supabase.auth.signInWithPassword).mockResolvedValue({
+        data: {
+          user: { id: "user-1" },
+          session: { access_token: "token-123" },
+        },
+        error: null,
+      } as never);
+
+      vi.useFakeTimers();
+      const { result } = renderHook(() => useLoginForm());
+
+      act(() => {
+        result.current.handleChange("email")({
+          target: { value: "user@example.com" },
+        } as React.ChangeEvent<HTMLInputElement>);
+      });
+
+      act(() => {
+        result.current.handleChange("password")({
+          target: { value: "password" },
+        } as React.ChangeEvent<HTMLInputElement>);
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit({
+          preventDefault: vi.fn(),
+        } as unknown as React.FormEvent);
+      });
+
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
+
+      expect(mockPush).toHaveBeenCalledWith("/share/accept?token=abc");
+      vi.useRealTimers();
     });
   });
 });

@@ -16,6 +16,25 @@ export interface TravelPlanApiResponse {
   updated_at: string;
 }
 
+export interface CreateTravelPlanShareInviteRequest {
+  invited_email: string;
+}
+
+export interface TravelPlanShareInviteApiResponse {
+  travel_plan_id: string;
+  invited_email: string;
+  status: string;
+}
+
+export interface AcceptTravelPlanShareInviteRequest {
+  token: string;
+}
+
+export interface AcceptTravelPlanShareInviteApiResponse {
+  travel_plan_id: string;
+  status: string;
+}
+
 export async function createTravelPlan(
   payload: CreateTravelPlanRequest,
   accessToken: string,
@@ -38,6 +57,41 @@ export async function fetchTravelPlans(
 ): Promise<TravelPlanApiResponse[]> {
   const response = await apiClient.get<TravelPlanApiResponse[]>(
     "/v1/travel-plans",
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  return response.data;
+}
+
+export async function createTravelPlanShareInvite(
+  travelPlanId: string,
+  payload: CreateTravelPlanShareInviteRequest,
+  accessToken: string,
+): Promise<TravelPlanShareInviteApiResponse> {
+  const response = await apiClient.post<TravelPlanShareInviteApiResponse>(
+    `/v1/travel-plans/${travelPlanId}/shares`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  return response.data;
+}
+
+export async function acceptTravelPlanShareInvite(
+  payload: AcceptTravelPlanShareInviteRequest,
+  accessToken: string,
+): Promise<AcceptTravelPlanShareInviteApiResponse> {
+  const response = await apiClient.post<AcceptTravelPlanShareInviteApiResponse>(
+    "/v1/travel-plan-shares/accept",
+    payload,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
