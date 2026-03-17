@@ -1,4 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
+import { createTravelPlanShareInvite } from "@/lib/api/travelPlans";
+import { getSupabaseAccessToken } from "@/utils/getSupabaseAccessToken";
 import { validateEmail } from "@/utils/validation";
 import { ShareTravelPlanModal } from "../ShareTravelPlanModal";
 import type { ShareTravelPlanButtonProps } from "./types";
@@ -38,7 +40,7 @@ export function ShareTravelPlanButton({
     setResult("idle");
   }, []);
 
-  const handleConfirm = useCallback(() => {
+  const handleConfirm = useCallback(async () => {
     setResult("idle");
 
     const emailError = validateEmail(friendEmail);
@@ -47,17 +49,22 @@ export function ShareTravelPlanButton({
       return;
     }
 
-    // TODO: Replace this mocked behavior with a backend call.
-    // Expected integration (example): POST /v1/travel-plans/{travelPlanId}/share { email }
-    // Then show the success/error message depending on the API response.
-    void travelPlanId;
+    try {
+      const accessToken = await getSupabaseAccessToken();
+      if (!accessToken) {
+        setResult("error");
+        return;
+      }
 
-    if (friendEmail.trim().toLowerCase().includes("fail")) {
+      await createTravelPlanShareInvite(
+        travelPlanId,
+        { invited_email: friendEmail },
+        accessToken,
+      );
+      setResult("success");
+    } catch (error) {
       setResult("error");
-      return;
     }
-
-    setResult("success");
   }, [friendEmail, travelPlanId]);
 
   const isConfirmDisabled = result === "success";

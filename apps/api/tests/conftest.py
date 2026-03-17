@@ -13,6 +13,7 @@ os.environ.setdefault("SUPABASE_JWT_SECRET", "jwt-secret")
 from app.dependencies import (
     get_authenticated_user,
     get_itinerary_items_service,
+    get_travel_plan_shares_service,
     get_travel_plans_service,
 )
 from app.main import create_app
@@ -24,6 +25,40 @@ from app.schemas.itinerary_items import (
     ItineraryItemUpdateRequest,
 )
 from app.schemas.travel_plans import TravelPlanCreateRequest, TravelPlanResponse
+
+
+class FakeTravelPlanSharesService:
+    def __init__(self) -> None:
+        self.create_calls: list[tuple[UUID, UUID, str]] = []
+        self.accept_calls: list[tuple[UUID, str]] = []
+
+    def create_share_invite(
+        self,
+        *,
+        user_id: UUID,
+        travel_plan_id: UUID,
+        invited_email: str,
+        invited_by_email: str | None = None,
+    ) -> dict[str, str]:
+        self.create_calls.append((user_id, travel_plan_id, invited_email))
+        return {
+            "travel_plan_id": str(travel_plan_id),
+            "invited_email": invited_email,
+            "status": "pending",
+        }
+
+    def accept_share_invite(
+        self,
+        *,
+        user_id: UUID,
+        user_email: str | None = None,
+        token: str,
+    ) -> dict[str, str]:
+        self.accept_calls.append((user_id, token))
+        return {
+            "travel_plan_id": "22222222-2222-2222-2222-222222222222",
+            "status": "accepted",
+        }
 
 
 class FakeTravelPlansService:
@@ -62,9 +97,9 @@ class FakeTravelPlansService:
     def list_travel_plans(
         self,
         *,
-        owner_user_id: UUID,
+        user_id: UUID,
     ) -> list[TravelPlanResponse]:
-        self.list_calls.append(owner_user_id)
+        self.list_calls.append(user_id)
         return self.travel_plans
 
 
@@ -177,9 +212,15 @@ def fake_itinerary_service() -> FakeItineraryItemsService:
 
 
 @pytest.fixture
+def fake_travel_plan_shares_service() -> FakeTravelPlanSharesService:
+    return FakeTravelPlanSharesService()
+
+
+@pytest.fixture
 def test_client(
     fake_service: FakeTravelPlansService,
     fake_itinerary_service: FakeItineraryItemsService,
+    fake_travel_plan_shares_service: FakeTravelPlanSharesService,
 ) -> TestClient:
     app = create_app()
 
@@ -195,9 +236,15 @@ def test_client(
     def override_itinerary_service() -> FakeItineraryItemsService:
         return fake_itinerary_service
 
+    def override_travel_plan_shares_service() -> FakeTravelPlanSharesService:
+        return fake_travel_plan_shares_service
+
     app.dependency_overrides[get_authenticated_user] = override_user
     app.dependency_overrides[get_travel_plans_service] = override_service
     app.dependency_overrides[get_itinerary_items_service] = override_itinerary_service
+    app.dependency_overrides[get_travel_plan_shares_service] = (
+        override_travel_plan_shares_service
+    )
 
     with TestClient(app) as client:
         yield client

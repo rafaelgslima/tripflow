@@ -1,6 +1,34 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { LoginForm } from "./index";
+
+vi.mock("next/router", () => ({
+  useRouter: () => ({
+    query: {},
+  }),
+}));
+
+vi.mock("@/hooks/useLoginForm", () => ({
+  useLoginForm: () => ({
+    values: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+    errors: {},
+    touched: {
+      email: false,
+      password: false,
+    },
+    isSubmitting: false,
+    isSuccess: false,
+    handleChange: () => vi.fn(),
+    handleBlur: () => vi.fn(),
+    handleSubmit: vi.fn((e: { preventDefault: () => void }) =>
+      e.preventDefault(),
+    ),
+  }),
+}));
 
 describe("LoginForm", () => {
   it("renders email input field", () => {

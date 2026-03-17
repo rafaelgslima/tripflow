@@ -3,6 +3,12 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SignupForm } from "./index";
 
+vi.mock("next/router", () => ({
+  useRouter: () => ({
+    query: {},
+  }),
+}));
+
 // Mock the useSignupForm hook
 vi.mock("@/hooks/useSignupForm", () => ({
   useSignupForm: () => ({

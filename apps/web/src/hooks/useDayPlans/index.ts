@@ -6,8 +6,8 @@ import {
   reorderDayPlans,
   updateDayPlan,
 } from "@/lib/api/dayPlans";
-import { supabase } from "@/lib/supabase";
 import type { ItineraryItem } from "@/types/itinerary";
+import { getSupabaseAccessToken } from "@/utils/getSupabaseAccessToken";
 import { toDateOnlyISOString } from "@/utils/toDateOnlyISOString";
 import type { UseDayPlansParams, UseDayPlansReturn } from "./types";
 
@@ -44,20 +44,14 @@ export function useDayPlans({
     setLoadError(null);
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const accessToken = await getSupabaseAccessToken();
 
-      if (!session?.access_token) {
+      if (!accessToken) {
         setItineraryItems([]);
         return;
       }
 
-      const items = await fetchDayPlans(
-        travelPlanId,
-        day,
-        session.access_token,
-      );
+      const items = await fetchDayPlans(travelPlanId, day, accessToken);
       setItineraryItems(items.map(mapApiItineraryItemToUi));
     } catch {
       setLoadError("Day plans couldn't be retrieved.");
@@ -72,11 +66,9 @@ export function useDayPlans({
       setCreateError(null);
 
       try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+        const accessToken = await getSupabaseAccessToken();
 
-        if (!session?.access_token) {
+        if (!accessToken) {
           throw new Error("Session not found");
         }
 
@@ -84,7 +76,7 @@ export function useDayPlans({
           travelPlanId,
           day,
           { description },
-          session.access_token,
+          accessToken,
         );
 
         setItineraryItems((previousItems) => [
@@ -107,11 +99,9 @@ export function useDayPlans({
       setUpdateError(null);
 
       try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+        const accessToken = await getSupabaseAccessToken();
 
-        if (!session?.access_token) {
+        if (!accessToken) {
           throw new Error("Session not found");
         }
 
@@ -120,7 +110,7 @@ export function useDayPlans({
           day,
           itemId,
           { description },
-          session.access_token,
+          accessToken,
         );
 
         setItineraryItems((previousItems) =>
@@ -144,15 +134,13 @@ export function useDayPlans({
       setDeleteError(null);
 
       try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+        const accessToken = await getSupabaseAccessToken();
 
-        if (!session?.access_token) {
+        if (!accessToken) {
           throw new Error("Session not found");
         }
 
-        await deleteDayPlan(travelPlanId, day, itemId, session.access_token);
+        await deleteDayPlan(travelPlanId, day, itemId, accessToken);
 
         setItineraryItems((previousItems) =>
           previousItems.filter((item) => item.id !== itemId),
@@ -169,20 +157,13 @@ export function useDayPlans({
 
   const reorderDayPlansForDay = useCallback(
     async (itemIdsInOrder: string[]) => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const accessToken = await getSupabaseAccessToken();
 
-      if (!session?.access_token) {
+      if (!accessToken) {
         throw new Error("Session not found");
       }
 
-      await reorderDayPlans(
-        travelPlanId,
-        day,
-        { itemIdsInOrder },
-        session.access_token,
-      );
+      await reorderDayPlans(travelPlanId, day, { itemIdsInOrder }, accessToken);
     },
     [day, travelPlanId],
   );

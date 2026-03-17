@@ -22,9 +22,12 @@ from supabase import Client, create_client
 from app.config import Settings, get_settings
 from app.exceptions import UnauthorizedError
 from app.repositories.itinerary_items import ItineraryItemsRepository
+from app.repositories.travel_plan_shares import TravelPlanSharesRepository
 from app.repositories.travel_plans import TravelPlansRepository
 from app.schemas.common import AuthenticatedUser
+from app.services.email import EmailService
 from app.services.itinerary_items import ItineraryItemsService
+from app.services.travel_plan_shares import TravelPlanSharesService
 from app.services.travel_plans import TravelPlansService
 
 SUPPORTED_ALGORITHMS = {"HS256", "RS256", "ES256"}
@@ -159,4 +162,34 @@ def get_itinerary_items_service(
     return ItineraryItemsService(
         repository=repository,
         travel_plans_repository=travel_plans_repository,
+    )
+
+
+def get_travel_plan_shares_repository(
+    supabase_client: Annotated[Client, Depends(get_supabase_admin_client)],
+) -> TravelPlanSharesRepository:
+    return TravelPlanSharesRepository(supabase_client=supabase_client)
+
+
+def get_email_service() -> EmailService:
+    return EmailService()
+
+
+def get_travel_plan_shares_service(
+    repository: Annotated[
+        TravelPlanSharesRepository,
+        Depends(get_travel_plan_shares_repository),
+    ],
+    travel_plans_repository: Annotated[
+        TravelPlansRepository,
+        Depends(get_travel_plans_repository),
+    ],
+    settings: Annotated[Settings, Depends(get_settings)],
+    email_service: Annotated[EmailService, Depends(get_email_service)],
+) -> TravelPlanSharesService:
+    return TravelPlanSharesService(
+        repository=repository,
+        travel_plans_repository=travel_plans_repository,
+        settings=settings,
+        email_service=email_service,
     )

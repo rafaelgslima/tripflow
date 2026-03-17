@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { useSignupForm } from "@/hooks/useSignupForm";
 import type { SignupFormProps } from "./types";
 
 export function SignupForm({ onSuccess }: SignupFormProps) {
+  const router = useRouter();
   const {
     values,
     errors,
@@ -16,6 +18,13 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
   } = useSignupForm();
 
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+
+  const nextRaw = router.query.next;
+  const nextUrl =
+    typeof nextRaw === "string" && nextRaw.trim() ? nextRaw.trim() : null;
+  const signInHref = nextUrl
+    ? `/login?next=${encodeURIComponent(nextUrl)}`
+    : "/login";
 
   // Password requirement checks
   const passwordRequirements = {
@@ -556,7 +565,7 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
         <p className="text-sm text-gray-600">
           Already have an account?{" "}
           <Link
-            href="/login"
+            href={signInHref}
             className="font-medium text-primary-600 hover:text-primary-700 underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 rounded"
           >
             Sign in

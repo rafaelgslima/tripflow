@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { createTravelPlan, fetchTravelPlans } from "@/lib/api/travelPlans";
-import { supabase } from "@/lib/supabase";
 import type { TravelPlan } from "@/components/TravelPlans/types";
+import { getSupabaseAccessToken } from "@/utils/getSupabaseAccessToken";
 import { toDateOnlyISOString } from "@/utils/toDateOnlyISOString";
 import type { UseTravelPlansReturn } from "./types";
 
@@ -33,16 +33,14 @@ export function useTravelPlans(): UseTravelPlansReturn {
     setLoadError(null);
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const accessToken = await getSupabaseAccessToken();
 
-      if (!session?.access_token) {
+      if (!accessToken) {
         setTravelPlans([]);
         return;
       }
 
-      const plans = await fetchTravelPlans(session.access_token);
+      const plans = await fetchTravelPlans(accessToken);
       setTravelPlans(plans.map(mapApiTravelPlanToUi));
     } catch {
       setLoadError("Travel plans couldn't be retrieved.");
@@ -57,11 +55,9 @@ export function useTravelPlans(): UseTravelPlansReturn {
       setCreateError(null);
 
       try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+        const accessToken = await getSupabaseAccessToken();
 
-        if (!session?.access_token) {
+        if (!accessToken) {
           throw new Error("Session not found");
         }
 
@@ -71,7 +67,7 @@ export function useTravelPlans(): UseTravelPlansReturn {
             start_date: toDateOnlyISOString(startDate),
             end_date: toDateOnlyISOString(endDate),
           },
-          session.access_token,
+          accessToken,
         );
 
         setTravelPlans((previousTravelPlans) => [

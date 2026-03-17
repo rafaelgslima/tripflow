@@ -1,8 +1,25 @@
-import { describe, it, expect } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { createTravelPlanShareInvite } from "@/lib/api/travelPlans";
+import { getSupabaseAccessToken } from "@/utils/getSupabaseAccessToken";
 import { ShareTravelPlanButton } from "./index";
 
+vi.mock("@/lib/api/travelPlans", () => ({
+  createTravelPlanShareInvite: vi.fn(),
+}));
+
+vi.mock("@/utils/getSupabaseAccessToken", () => ({
+  getSupabaseAccessToken: vi.fn(),
+}));
+
 describe("ShareTravelPlanButton", () => {
+  const mockGetToken = vi.mocked(getSupabaseAccessToken);
+  const mockCreateShare = vi.mocked(createTravelPlanShareInvite);
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("renders the share button", () => {
     render(<ShareTravelPlanButton travelPlanId="plan-1" />);
 
@@ -90,7 +107,14 @@ describe("ShareTravelPlanButton", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows a success message after confirming", () => {
+  it("shows a success message after confirming", async () => {
+    mockGetToken.mockResolvedValue("token-123");
+    mockCreateShare.mockResolvedValue({
+      travel_plan_id: "plan-1",
+      invited_email: "friend@example.com",
+      status: "pending",
+    } as never);
+
     render(<ShareTravelPlanButton travelPlanId="plan-1" />);
 
     fireEvent.click(
@@ -103,16 +127,28 @@ describe("ShareTravelPlanButton", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /confirm/i }));
 
-    expect(
-      screen.getByText(
-        /the plan was shared with the friend and now the friend should confirm it via email to be able to see the plan in their account/i,
-      ),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /the plan was shared with the friend and now the friend should confirm it via email to be able to see the plan in their account/i,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    expect(mockCreateShare).toHaveBeenCalledWith(
+      "plan-1",
+      { invited_email: "friend@example.com" },
+      "token-123",
+    );
 
     expect(screen.getByRole("button", { name: /confirm/i })).toBeDisabled();
   });
 
-  it("shows an error message after confirming when mocked send fails", () => {
+  it("shows an error message after confirming when send fails", async () => {
+    mockGetToken.mockResolvedValue("token-123");
+    mockCreateShare.mockRejectedValue(new Error("network"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
     render(<ShareTravelPlanButton travelPlanId="plan-1" />);
 
     fireEvent.click(
@@ -125,10 +161,38 @@ describe("ShareTravelPlanButton", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /confirm/i }));
 
-    expect(
-      screen.getByText(
-        /there was an error sending the invitation\. try again later\./i,
-      ),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /there was an error sending the invitation\. try again later\./i,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  it("shows an error message when there is no session", async () => {
+    mockGetToken.mockResolvedValue(null);
+
+    render(<ShareTravelPlanButton travelPlanId="plan-1" />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /share this plan with a friend/i }),
+    );
+
+    fireEvent.change(screen.getByLabelText(/friend email/i), {
+      target: { value: "friend@example.com" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /confirm/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /there was an error sending the invitation\. try again later\./i,
+        ),
+      ).toBeInTheDocument();
+    });
   });
 });

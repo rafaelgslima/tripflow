@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import get_settings
 from app.exceptions import TripFlowError
-from app.routers import itinerary_items_router, travel_plans_router
+from app.routers import itinerary_items_router, travel_plan_shares_router, travel_plans_router
 from app.schemas.common import ErrorEnvelope
 
 
@@ -48,6 +48,7 @@ def create_app() -> FastAPI:
         return {"status": "ok"}
 
     app.include_router(travel_plans_router)
+    app.include_router(travel_plan_shares_router)
     app.include_router(itinerary_items_router)
 
     return app
