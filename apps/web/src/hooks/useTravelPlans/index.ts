@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { createTravelPlan, fetchTravelPlans } from "@/lib/api/travelPlans";
+import { createTravelPlan, deleteTravelPlan, fetchTravelPlans } from "@/lib/api/travelPlans";
 import type { TravelPlan } from "@/components/TravelPlans/types";
 import { getSupabaseAccessToken } from "@/utils/getSupabaseAccessToken";
 import { toDateOnlyISOString } from "@/utils/toDateOnlyISOString";
@@ -84,6 +84,20 @@ export function useTravelPlans(): UseTravelPlansReturn {
     [],
   );
 
+  const deletePlan = useCallback(async (travelPlanId: string) => {
+    const accessToken = await getSupabaseAccessToken();
+
+    if (!accessToken) {
+      throw new Error("Session not found");
+    }
+
+    await deleteTravelPlan(travelPlanId, accessToken);
+
+    setTravelPlans((previousTravelPlans) =>
+      previousTravelPlans.filter((plan) => plan.id !== travelPlanId),
+    );
+  }, []);
+
   return {
     travelPlans,
     isLoading,
@@ -92,5 +106,6 @@ export function useTravelPlans(): UseTravelPlansReturn {
     isCreating,
     createError,
     createPlan,
+    deletePlan,
   };
 }

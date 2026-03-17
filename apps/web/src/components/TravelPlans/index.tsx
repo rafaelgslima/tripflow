@@ -15,6 +15,7 @@ export function TravelPlans({}: TravelPlansProps = {}) {
     loadTravelPlans,
     createPlan,
     createError,
+    deletePlan,
   } = useTravelPlans();
 
   useEffect(() => {
@@ -91,7 +92,7 @@ export function TravelPlans({}: TravelPlansProps = {}) {
       )}
 
       {!isLoading && !loadError && travelPlans.length > 0 && (
-        <TravelPlansList plans={travelPlans} />
+        <TravelPlansList plans={travelPlans} onDeletePlan={deletePlan} />
       )}
 
       {/* Create Plan Modal */}

@@ -85,6 +85,17 @@ export async function createTravelPlanShareInvite(
   return response.data;
 }
 
+export async function deleteTravelPlan(
+  travelPlanId: string,
+  accessToken: string,
+): Promise<void> {
+  await apiClient.delete(`/v1/travel-plans/${travelPlanId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+}
+
 export async function acceptTravelPlanShareInvite(
   payload: AcceptTravelPlanShareInviteRequest,
   accessToken: string,

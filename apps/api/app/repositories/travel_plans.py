@@ -118,3 +118,27 @@ class TravelPlansRepository:
         )
 
         return bool(collaborator_match.data)
+
+    def user_is_owner(self, *, user_id: str, travel_plan_id: str) -> bool:
+        """Return True if user_id is the owner of the travel plan."""
+        response = (
+            self._supabase_client.table("travel_plan")
+            .select("id")
+            .eq("id", travel_plan_id)
+            .eq("owner_user_id", user_id)
+            .limit(1)
+            .execute()
+        )
+        return bool(response.data)
+
+    def delete_travel_plan(self, *, travel_plan_id: str) -> None:
+        """Hard-delete a travel plan and all its data (cascades via FK constraints)."""
+        self._supabase_client.table("travel_plan").delete().eq(
+            "id", travel_plan_id
+        ).execute()
+
+    def remove_share_for_user(self, *, user_id: str, travel_plan_id: str) -> None:
+        """Remove the accepted share record so the plan disappears from a collaborator's account."""
+        self._supabase_client.table("travel_plan_share").delete().eq(
+            "travel_plan_id", travel_plan_id
+        ).eq("invited_user_id", user_id).eq("status", "accepted").execute()
