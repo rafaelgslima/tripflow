@@ -12,4 +12,5 @@ export interface UseTravelPlansReturn {
     startDate: Date,
     endDate: Date,
   ) => Promise<void>;
+  deletePlan: (travelPlanId: string) => Promise<void>;
 }

@@ -58,3 +58,61 @@ def test_list_travel_plans_for_user_includes_owned_and_shared_plans():
     assert client.table.call_args_list[0].args[0] == "travel_plan"
     assert client.table.call_args_list[1].args[0] == "travel_plan_share"
     assert client.table.call_args_list[2].args[0] == "travel_plan"
+
+
+def test_user_is_owner_returns_true_for_owner():
+    query = _make_query_mock(data=[{"id": "plan-1"}])
+    client = MagicMock()
+    client.table.return_value = query
+
+    repository = TravelPlansRepository(client)
+    result = repository.user_is_owner(user_id="user-1", travel_plan_id="plan-1")
+
+    assert result is True
+
+
+def test_user_is_owner_returns_false_for_non_owner():
+    query = _make_query_mock(data=[])
+    client = MagicMock()
+    client.table.return_value = query
+
+    repository = TravelPlansRepository(client)
+    result = repository.user_is_owner(user_id="user-2", travel_plan_id="plan-1")
+
+    assert result is False
+
+
+def test_delete_travel_plan_calls_supabase_delete():
+    delete_mock = MagicMock()
+    delete_mock.eq.return_value = MagicMock(execute=MagicMock(return_value=MagicMock()))
+    table_mock = MagicMock()
+    table_mock.delete.return_value = delete_mock
+
+    client = MagicMock()
+    client.table.return_value = table_mock
+
+    repository = TravelPlansRepository(client)
+    repository.delete_travel_plan(travel_plan_id="plan-1")
+
+    client.table.assert_called_once_with("travel_plan")
+    table_mock.delete.assert_called_once()
+    delete_mock.eq.assert_called_once_with("id", "plan-1")
+
+
+def test_remove_share_for_user_calls_supabase_delete():
+    eq_chain = MagicMock()
+    eq_chain.eq.return_value = eq_chain
+    eq_chain.execute.return_value = MagicMock()
+    delete_mock = MagicMock()
+    delete_mock.eq.return_value = eq_chain
+    table_mock = MagicMock()
+    table_mock.delete.return_value = delete_mock
+
+    client = MagicMock()
+    client.table.return_value = table_mock
+
+    repository = TravelPlansRepository(client)
+    repository.remove_share_for_user(user_id="user-2", travel_plan_id="plan-1")
+
+    client.table.assert_called_once_with("travel_plan_share")
+    table_mock.delete.assert_called_once()

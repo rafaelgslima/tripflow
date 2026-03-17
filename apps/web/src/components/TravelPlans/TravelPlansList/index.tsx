@@ -1,8 +1,9 @@
 import { DayColumn } from "../DayColumn";
+import { DeleteTravelPlanButton } from "../DeleteTravelPlanButton";
 import { ShareTravelPlanButton } from "../ShareTravelPlanButton";
 import type { TravelPlansListProps } from "./types";
 
-export function TravelPlansList({ plans }: TravelPlansListProps) {
+export function TravelPlansList({ plans, onDeletePlan }: TravelPlansListProps) {
   const getDaysArray = (startDate: Date, endDate: Date): Date[] => {
     const days: Date[] = [];
     const currentDate = new Date(startDate);
@@ -41,7 +42,13 @@ export function TravelPlansList({ plans }: TravelPlansListProps) {
                 <h3 className="text-2xl font-bold text-gray-900">
                   {plan.destination}
                 </h3>
-                <ShareTravelPlanButton travelPlanId={plan.id} />
+                <div className="flex items-center gap-2">
+                  <ShareTravelPlanButton travelPlanId={plan.id} />
+                  <DeleteTravelPlanButton
+                    travelPlanId={plan.id}
+                    onDelete={onDeletePlan}
+                  />
+                </div>
               </div>
               <p className="text-sm text-gray-600 mt-1">
                 {formatDateRange(plan.startDate, plan.endDate)} • {days.length}{" "}

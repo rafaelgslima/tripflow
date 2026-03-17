@@ -84,3 +84,23 @@ def create_travel_plan_share(
         invited_by_email=current_user.email,
     )
     return TravelPlanShareCreateResponse.model_validate(result)
+
+
+@router.delete(
+    "/{travel_plan_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        401: {"model": ErrorEnvelope, "description": "Authentication required"},
+        404: {"model": ErrorEnvelope, "description": "Travel plan not found"},
+        500: {"model": ErrorEnvelope, "description": "Internal server error"},
+    },
+)
+def delete_travel_plan(
+    travel_plan_id: str,
+    current_user: Annotated[AuthenticatedUser, Depends(get_authenticated_user)],
+    service: Annotated[TravelPlansService, Depends(get_travel_plans_service)],
+) -> None:
+    service.delete_travel_plan(
+        user_id=current_user.user_id,
+        travel_plan_id=UUID(travel_plan_id),
+    )

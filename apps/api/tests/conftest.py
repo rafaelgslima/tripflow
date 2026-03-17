@@ -65,6 +65,7 @@ class FakeTravelPlansService:
     def __init__(self) -> None:
         self.calls: list[tuple[UUID, TravelPlanCreateRequest]] = []
         self.list_calls: list[UUID] = []
+        self.delete_calls: list[tuple[UUID, UUID]] = []
         self.travel_plans = [
             TravelPlanResponse(
                 id=UUID("22222222-2222-2222-2222-222222222222"),
@@ -101,6 +102,9 @@ class FakeTravelPlansService:
     ) -> list[TravelPlanResponse]:
         self.list_calls.append(user_id)
         return self.travel_plans
+
+    def delete_travel_plan(self, *, user_id: UUID, travel_plan_id: UUID) -> None:
+        self.delete_calls.append((user_id, travel_plan_id))
 
 
 class FakeItineraryItemsService:
