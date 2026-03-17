@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import AcceptShareInvitePage from "./accept";
+import AcceptShareInvitePage from "@/pages/share/accept";
 import { acceptTravelPlanShareInvite } from "@/lib/api/travelPlans";
 import { supabase } from "@/lib/supabase";
 
