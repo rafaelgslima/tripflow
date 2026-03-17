@@ -1,0 +1,11 @@
+{
+  "name": "tripflow",
+  "private": true,
+  "scripts": {
+    "build": "pnpm --filter @tripflow/web build",
+    "dev": "pnpm --filter @tripflow/web dev"
+  },
+  "devDependencies": {
+    "next": "^15.1.6"
+  }
+}
