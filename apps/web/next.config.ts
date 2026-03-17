@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       vitest: false,
+      "@testing-library/react": false,
+      "@testing-library/jest-dom": false,
     };
     return config;
   },
