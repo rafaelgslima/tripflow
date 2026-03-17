@@ -1,6 +1,15 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  webpack: (config: any) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      vitest: false,
+    };
+    return config;
+  },
 };
 
 export default nextConfig;
