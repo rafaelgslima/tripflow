@@ -28,20 +28,26 @@ describe("TravelPlansList", () => {
   ];
 
   it("should render list of travel plans", () => {
-    render(<TravelPlansList plans={mockPlans} onDeletePlan={mockOnDeletePlan} />);
+    render(
+      <TravelPlansList plans={mockPlans} onDeletePlan={mockOnDeletePlan} />,
+    );
 
     expect(screen.getByText("Paris")).toBeInTheDocument();
     expect(screen.getByText("Tokyo")).toBeInTheDocument();
   });
 
   it("should render plan with correct date format", () => {
-    render(<TravelPlansList plans={mockPlans} onDeletePlan={mockOnDeletePlan} />);
+    render(
+      <TravelPlansList plans={mockPlans} onDeletePlan={mockOnDeletePlan} />,
+    );
 
     expect(screen.getByText(/Mar 20 - Mar 23, 2026/)).toBeInTheDocument();
   });
 
   it("should render day columns for each plan", () => {
-    render(<TravelPlansList plans={mockPlans} onDeletePlan={mockOnDeletePlan} />);
+    render(
+      <TravelPlansList plans={mockPlans} onDeletePlan={mockOnDeletePlan} />,
+    );
 
     // Paris has 4 days (20, 21, 22, 23)
     const parisSection = screen
@@ -51,7 +57,9 @@ describe("TravelPlansList", () => {
   });
 
   it("should render share button for each plan", () => {
-    render(<TravelPlansList plans={mockPlans} onDeletePlan={mockOnDeletePlan} />);
+    render(
+      <TravelPlansList plans={mockPlans} onDeletePlan={mockOnDeletePlan} />,
+    );
 
     const buttons = screen.getAllByRole("button", {
       name: /share this plan with a friend/i,

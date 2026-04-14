@@ -40,7 +40,7 @@ export async function createTravelPlan(
   accessToken: string,
 ): Promise<TravelPlanApiResponse> {
   const response = await apiClient.post<TravelPlanApiResponse>(
-    "/v1/travel-plans",
+    "/travel-plans",
     payload,
     {
       headers: {
@@ -56,7 +56,7 @@ export async function fetchTravelPlans(
   accessToken: string,
 ): Promise<TravelPlanApiResponse[]> {
   const response = await apiClient.get<TravelPlanApiResponse[]>(
-    "/v1/travel-plans",
+    "/travel-plans",
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -73,7 +73,7 @@ export async function createTravelPlanShareInvite(
   accessToken: string,
 ): Promise<TravelPlanShareInviteApiResponse> {
   const response = await apiClient.post<TravelPlanShareInviteApiResponse>(
-    `/v1/travel-plans/${travelPlanId}/shares`,
+    `/travel-plans/${travelPlanId}/shares`,
     payload,
     {
       headers: {
@@ -89,7 +89,7 @@ export async function deleteTravelPlan(
   travelPlanId: string,
   accessToken: string,
 ): Promise<void> {
-  await apiClient.delete(`/v1/travel-plans/${travelPlanId}`, {
+  await apiClient.delete(`/travel-plans/${travelPlanId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

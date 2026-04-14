@@ -29,7 +29,7 @@ export async function fetchDayPlans(
   accessToken: string,
 ): Promise<ItineraryItemApiResponse[]> {
   const response = await apiClient.get<ItineraryItemApiResponse[]>(
-    `/v1/travel-plans/${travelPlanId}/days/${day}/items`,
+    `/travel-plans/${travelPlanId}/days/${day}/items`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -47,7 +47,7 @@ export async function createDayPlan(
   accessToken: string,
 ): Promise<ItineraryItemApiResponse> {
   const response = await apiClient.post<ItineraryItemApiResponse>(
-    `/v1/travel-plans/${travelPlanId}/days/${day}/items`,
+    `/travel-plans/${travelPlanId}/days/${day}/items`,
     payload,
     {
       headers: {
@@ -67,7 +67,7 @@ export async function updateDayPlan(
   accessToken: string,
 ): Promise<ItineraryItemApiResponse> {
   const response = await apiClient.put<ItineraryItemApiResponse>(
-    `/v1/travel-plans/${travelPlanId}/days/${day}/items/${itemId}`,
+    `/travel-plans/${travelPlanId}/days/${day}/items/${itemId}`,
     payload,
     {
       headers: {
@@ -86,7 +86,7 @@ export async function deleteDayPlan(
   accessToken: string,
 ): Promise<void> {
   await apiClient.delete(
-    `/v1/travel-plans/${travelPlanId}/days/${day}/items/${itemId}`,
+    `/travel-plans/${travelPlanId}/days/${day}/items/${itemId}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -102,7 +102,7 @@ export async function reorderDayPlans(
   accessToken: string,
 ): Promise<void> {
   await apiClient.patch(
-    `/v1/travel-plans/${travelPlanId}/days/${day}/items/reorder`,
+    `/travel-plans/${travelPlanId}/days/${day}/items/reorder`,
     {
       item_ids_in_order: payload.itemIdsInOrder,
     },
