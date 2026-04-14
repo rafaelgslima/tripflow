@@ -37,8 +37,12 @@ describe("DeleteTravelPlanModal", () => {
   it("renders the Cancel and Delete buttons", () => {
     render(<DeleteTravelPlanModal {...defaultProps} />);
 
-    expect(screen.getByRole("button", { name: /^cancel$/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^delete$/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /^cancel$/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /^delete$/i }),
+    ).toBeInTheDocument();
   });
 
   it("renders the close icon button", () => {
@@ -71,9 +75,7 @@ describe("DeleteTravelPlanModal", () => {
     const onClose = vi.fn();
     render(<DeleteTravelPlanModal {...defaultProps} onClose={onClose} />);
 
-    fireEvent.click(
-      screen.getByTestId("delete-travel-plan-backdrop"),
-    );
+    fireEvent.click(screen.getByTestId("delete-travel-plan-backdrop"));
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });

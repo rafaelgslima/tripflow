@@ -1,5 +1,9 @@
 import { useCallback, useState } from "react";
-import { createTravelPlan, deleteTravelPlan, fetchTravelPlans } from "@/lib/api/travelPlans";
+import {
+  createTravelPlan,
+  deleteTravelPlan,
+  fetchTravelPlans,
+} from "@/lib/api/travelPlans";
 import type { TravelPlan } from "@/components/TravelPlans/types";
 import { getSupabaseAccessToken } from "@/utils/getSupabaseAccessToken";
 import { toDateOnlyISOString } from "@/utils/toDateOnlyISOString";

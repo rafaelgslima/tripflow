@@ -6,7 +6,9 @@ describe("DeleteTravelPlanButton", () => {
   const mockOnDelete = vi.fn().mockResolvedValue(undefined);
 
   it("renders the delete icon button", () => {
-    render(<DeleteTravelPlanButton travelPlanId="plan-1" onDelete={mockOnDelete} />);
+    render(
+      <DeleteTravelPlanButton travelPlanId="plan-1" onDelete={mockOnDelete} />,
+    );
 
     expect(
       screen.getByRole("button", { name: /delete this travel plan/i }),
@@ -14,7 +16,9 @@ describe("DeleteTravelPlanButton", () => {
   });
 
   it("does not show the modal initially", () => {
-    render(<DeleteTravelPlanButton travelPlanId="plan-1" onDelete={mockOnDelete} />);
+    render(
+      <DeleteTravelPlanButton travelPlanId="plan-1" onDelete={mockOnDelete} />,
+    );
 
     expect(
       screen.queryByRole("dialog", { name: /delete travel plan/i }),
@@ -22,7 +26,9 @@ describe("DeleteTravelPlanButton", () => {
   });
 
   it("opens the modal when the delete button is clicked", () => {
-    render(<DeleteTravelPlanButton travelPlanId="plan-1" onDelete={mockOnDelete} />);
+    render(
+      <DeleteTravelPlanButton travelPlanId="plan-1" onDelete={mockOnDelete} />,
+    );
 
     fireEvent.click(
       screen.getByRole("button", { name: /delete this travel plan/i }),
@@ -34,7 +40,9 @@ describe("DeleteTravelPlanButton", () => {
   });
 
   it("closes the modal when Cancel is clicked", () => {
-    render(<DeleteTravelPlanButton travelPlanId="plan-1" onDelete={mockOnDelete} />);
+    render(
+      <DeleteTravelPlanButton travelPlanId="plan-1" onDelete={mockOnDelete} />,
+    );
 
     fireEvent.click(
       screen.getByRole("button", { name: /delete this travel plan/i }),
@@ -47,7 +55,9 @@ describe("DeleteTravelPlanButton", () => {
   });
 
   it("closes the modal when the close icon is clicked", () => {
-    render(<DeleteTravelPlanButton travelPlanId="plan-1" onDelete={mockOnDelete} />);
+    render(
+      <DeleteTravelPlanButton travelPlanId="plan-1" onDelete={mockOnDelete} />,
+    );
 
     fireEvent.click(
       screen.getByRole("button", { name: /delete this travel plan/i }),
@@ -61,7 +71,9 @@ describe("DeleteTravelPlanButton", () => {
 
   it("calls onDelete with the travelPlanId and closes the modal when Delete is confirmed", async () => {
     const onDelete = vi.fn().mockResolvedValue(undefined);
-    render(<DeleteTravelPlanButton travelPlanId="plan-1" onDelete={onDelete} />);
+    render(
+      <DeleteTravelPlanButton travelPlanId="plan-1" onDelete={onDelete} />,
+    );
 
     fireEvent.click(
       screen.getByRole("button", { name: /delete this travel plan/i }),
