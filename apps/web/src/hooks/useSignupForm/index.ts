@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
 import {
   validateEmail,
   validatePassword,
@@ -161,26 +160,21 @@ export function useSignupForm(
     setIsSubmitting(true);
 
     try {
-      // Sign up with Supabase Auth
-      const { data, error } = await supabase.auth.signUp({
-        email: values.email,
-        password: values.password,
-        options: {
-          data: {
-            name: values.name,
-          },
-        },
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+          name: values.name,
+        }),
       });
 
-      if (error) {
-        setErrors((prev) => ({ ...prev, general: error.message }));
-        return;
-      }
-
-      if (!data.user) {
+      if (!response.ok) {
+        const errorData = await response.json() as { message?: string };
         setErrors((prev) => ({
           ...prev,
-          general: "Failed to create account. Please try again.",
+          general: errorData.message ?? "Failed to create account. Please try again.",
         }));
         return;
       }
