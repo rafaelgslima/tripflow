@@ -15,6 +15,7 @@ import {
 import { useEffect, useState } from "react";
 import { useDayPlans } from "@/hooks/useDayPlans";
 import { AddDayPlanForm } from "./AddDayPlanForm";
+import { InlineEditActivity } from "./InlineEditActivity";
 import { SortableDayPlanItem } from "./SortableDayPlanItem";
 import type { DayColumnProps } from "./types";
 
@@ -44,7 +45,6 @@ export function DayColumn({
   } = useDayPlans({ travelPlanId, date });
   const [isAdding, setIsAdding] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
-  const [validationError, setValidationError] = useState("");
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -76,7 +76,6 @@ export function DayColumn({
 
   const handleCancel = () => {
     setIsAdding(false);
-    setValidationError("");
   };
 
   const handleConfirm = async (description: string) => {
@@ -91,13 +90,11 @@ export function DayColumn({
   const handleEdit = (itemId: string) => {
     clearUpdateError();
     clearDeleteError();
-    setValidationError("");
     setEditingItemId(itemId);
   };
 
   const handleCancelEdit = () => {
     setEditingItemId(null);
-    setValidationError("");
     clearUpdateError();
     clearDeleteError();
   };
@@ -106,7 +103,6 @@ export function DayColumn({
     try {
       await deleteDayPlan(itemId);
       setEditingItemId(null);
-      setValidationError("");
       clearUpdateError();
       clearDeleteError();
     } catch (error) {
@@ -115,25 +111,15 @@ export function DayColumn({
   };
 
   const handleUpdate = async (itemId: string, newDescription: string) => {
-    const trimmedDescription = newDescription.trim();
-
-    if (!trimmedDescription) {
-      setValidationError("This field is required");
-      return;
-    }
-
     const originalItem = itineraryItems.find((item) => item.id === itemId);
-    if (originalItem && originalItem.description === trimmedDescription) {
+    if (originalItem && originalItem.description === newDescription) {
       setEditingItemId(null);
-      setValidationError("");
       clearUpdateError();
       return;
     }
-
     try {
-      await updateDayPlan(itemId, trimmedDescription);
+      await updateDayPlan(itemId, newDescription);
       setEditingItemId(null);
-      setValidationError("");
     } catch (error) {
       console.error("Update day plan failed:", error);
     }
@@ -202,29 +188,19 @@ export function DayColumn({
           strategy={verticalListSortingStrategy}
         >
           {itineraryItems.map((item) => {
-            if (editingItemId === item.id) {
+            if (item.id === editingItemId) {
               return (
-                <AddDayPlanForm
+                <InlineEditActivity
                   key={item.id}
                   initialValue={item.description}
+                  error={updateError || deleteError || undefined}
+                  onSave={(desc) => { void handleUpdate(item.id, desc); }}
                   onCancel={handleCancelEdit}
-                  onConfirm={(description: string) =>
-                    handleUpdate(item.id, description)
-                  }
-                  onDelete={() => void handleDelete(item.id)}
-                  deleteLabel="Delete"
-                  confirmLabel="Update"
-                  error={
-                    validationError || updateError || deleteError || undefined
-                  }
-                  onClearError={() => {
-                    clearUpdateError();
-                    clearDeleteError();
-                  }}
+                  onDelete={() => { void handleDelete(item.id); }}
+                  onClearError={() => { clearUpdateError(); clearDeleteError(); }}
                 />
               );
             }
-
             return (
               <SortableDayPlanItem
                 key={item.id}
@@ -290,7 +266,7 @@ export function DayColumn({
               />
             )}
 
-            {!isAdding && (
+            {!isAdding && !editingItemId && (
               <button
                 type="button"
                 onClick={handleAddPlan}
@@ -338,7 +314,7 @@ export function DayColumn({
       </div>
 
       {/* Add Plan Button */}
-      {!isAdding && (
+      {!isAdding && !editingItemId && (
         <button
           type="button"
           onClick={handleAddPlan}
