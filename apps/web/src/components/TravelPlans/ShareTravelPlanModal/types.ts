@@ -11,6 +11,7 @@ export interface ShareTravelPlanModalProps {
   friendEmailError: string | null;
   message: ShareTravelPlanModalMessage | null;
   isConfirmDisabled: boolean;
+  isSending: boolean;
   onClose: () => void;
   onConfirm: () => void;
   onFriendEmailChange: (email: string) => void;
