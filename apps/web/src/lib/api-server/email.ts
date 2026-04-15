@@ -1,11 +1,4 @@
-// TODO: Replace SendGrid with Resend once a custom domain is verified.
-//   Steps to migrate:
-//   1. Verify your domain at https://resend.com/domains
-//   2. Remove SENDGRID_API_KEY; add RESEND_API_KEY instead
-//   3. Replace the fetch call below with Resend's API (https://resend.com/docs/api-reference/emails/send-email)
-//   4. Update EMAIL_FROM to noreply@yourdomain.com
-
-const SENDGRID_API_URL = "https://api.sendgrid.com/v3/mail/send";
+import nodemailer from "nodemailer";
 
 function buildHtml(invitedByEmail: string | null, acceptUrl: string): string {
   const inviter = invitedByEmail ?? "Someone";
@@ -18,8 +11,8 @@ function buildHtml(invitedByEmail: string | null, acceptUrl: string): string {
       <table width="560" cellpadding="0" cellspacing="0"
              style="background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.1);overflow:hidden;">
         <tr>
-          <td style="background:#4f46e5;padding:24px 32px;">
-            <span style="color:#fff;font-size:22px;font-weight:700;letter-spacing:-.5px;">TripFlow</span>
+          <td style="background:#E8A23A;padding:24px 32px;">
+            <span style="color:#0E0B09;font-size:22px;font-weight:700;letter-spacing:-.5px;">TripFlow</span>
           </td>
         </tr>
         <tr>
@@ -30,7 +23,7 @@ function buildHtml(invitedByEmail: string | null, acceptUrl: string): string {
               Click the button below to accept the invitation and start collaborating.
             </p>
             <a href="${acceptUrl}"
-               style="display:inline-block;padding:12px 28px;background:#4f46e5;color:#fff;
+               style="display:inline-block;padding:12px 28px;background:#E8A23A;color:#0E0B09;
                       font-size:15px;font-weight:600;text-decoration:none;border-radius:6px;">
               Accept invitation
             </a>
@@ -40,7 +33,7 @@ function buildHtml(invitedByEmail: string | null, acceptUrl: string): string {
             <hr style="margin:24px 0;border:none;border-top:1px solid #e5e7eb;">
             <p style="margin:0;font-size:12px;color:#9ca3af;">
               If the button doesn't work, copy and paste this URL into your browser:<br>
-              <a href="${acceptUrl}" style="color:#4f46e5;word-break:break-all;">${acceptUrl}</a>
+              <a href="${acceptUrl}" style="color:#E8A23A;word-break:break-all;">${acceptUrl}</a>
             </p>
           </td>
         </tr>
@@ -70,40 +63,33 @@ export async function sendTravelPlanInvite({
   invitedByEmail: string | null;
   acceptUrl: string;
 }): Promise<void> {
-  const apiKey = process.env.SENDGRID_API_KEY;
-  const fromEmail = process.env.EMAIL_FROM;
+  const gmailUser = process.env.GMAIL_USER;
+  const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
 
-  if (!apiKey || !fromEmail) {
+  if (!gmailUser || !gmailAppPassword) {
     console.info(
-      `[email] SendGrid not configured (SENDGRID_API_KEY or EMAIL_FROM missing) — skipping send. to=${toEmail} accept_url=${acceptUrl}`,
+      `[email] Gmail not configured (GMAIL_USER or GMAIL_APP_PASSWORD missing) — skipping send. to=${toEmail} accept_url=${acceptUrl}`,
     );
     return;
   }
 
-  const inviter = invitedByEmail ?? "Someone";
-
-  const response = await fetch(SENDGRID_API_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: gmailUser,
+      pass: gmailAppPassword,
     },
-    body: JSON.stringify({
-      personalizations: [{ to: [{ email: toEmail }] }],
-      from: { email: fromEmail },
-      subject: `${inviter} invited you to a TripFlow travel plan`,
-      content: [
-        { type: "text/plain", value: buildPlain(invitedByEmail, acceptUrl) },
-        { type: "text/html", value: buildHtml(invitedByEmail, acceptUrl) },
-      ],
-    }),
   });
 
-  if (!response.ok) {
-    const body = await response.text();
-    console.error(`[email] SendGrid error status=${response.status} body=${body}`);
-    throw new Error(`Failed to send invite email (SendGrid ${response.status}).`);
-  }
+  const inviter = invitedByEmail ?? "Someone";
 
-  console.info(`[email] Invite sent via SendGrid to=${toEmail}`);
+  await transporter.sendMail({
+    from: `"TripFlow" <${gmailUser}>`,
+    to: toEmail,
+    subject: `${inviter} invited you to a TripFlow travel plan`,
+    text: buildPlain(invitedByEmail, acceptUrl),
+    html: buildHtml(invitedByEmail, acceptUrl),
+  });
+
+  console.info(`[email] Invite sent via Gmail SMTP to=${toEmail}`);
 }

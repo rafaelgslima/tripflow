@@ -76,8 +76,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse): Promise<vo
 
   if (upsertError || !share) throw new InternalError("Failed to create share invite.");
 
-  const webBaseUrl = process.env.WEB_BASE_URL ?? "http://localhost:3000";
-  const acceptUrl = `${webBaseUrl.replace(/\/$/, "")}/share/accept?token=${token}`;
+  const appBaseUrl = process.env.APP_BASE_URL ?? "http://localhost:3000";
+  const acceptUrl = `${appBaseUrl.replace(/\/$/, "")}/share/accept?token=${token}`;
 
   try {
     await sendTravelPlanInvite({
