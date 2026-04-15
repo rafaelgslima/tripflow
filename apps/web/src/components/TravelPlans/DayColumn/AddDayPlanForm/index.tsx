@@ -47,38 +47,43 @@ export function AddDayPlanForm({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-2">
       <input
         type="text"
         value={description}
         onChange={handleChange}
         placeholder="What's the plan?"
-        className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm text-gray-900 bg-white ${
-          displayError ? "border-red-500 focus:ring-red-500" : "border-gray-300"
-        }`}
+        className={`tf-input${displayError ? " tf-input--error" : ""}`}
         autoFocus
       />
-      {displayError && <p className="text-xs text-red-600">{displayError}</p>}
-      <div className="flex gap-2">
+      {displayError && (
+        <p className="text-xs text-red-300 m-0">
+          {displayError}
+        </p>
+      )}
+      <div className="flex gap-1.5">
         <button
+          type="button"
           onClick={handleCancel}
-          className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+          className="tf-btn-ghost flex-1 py-[7px] px-2.5 text-xs"
         >
           Cancel
         </button>
 
         {onDelete && (
           <button
+            type="button"
             onClick={onDelete}
-            className="flex-1 px-3 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors text-sm"
+            className="tf-btn-danger flex-1 py-[7px] px-2.5 text-xs"
           >
             {deleteLabel}
           </button>
         )}
 
         <button
+          type="button"
           onClick={handleConfirm}
-          className="flex-1 px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm"
+          className="tf-btn-primary flex-1 py-[7px] px-2.5 text-xs"
         >
           {confirmLabel}
         </button>

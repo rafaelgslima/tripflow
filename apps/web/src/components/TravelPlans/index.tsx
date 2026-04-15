@@ -35,59 +35,55 @@ export function TravelPlans({}: TravelPlansProps = {}) {
   }, []);
 
   return (
-    <div className="space-y-8">
-      {/* Header Section */}
-      <div className="text-center space-y-4">
-        <h2 className="text-4xl font-bold text-gray-900">
-          Plan Your Dream Adventures
-        </h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Create and organize your travel itineraries in one place
-        </p>
+    <div className="flex flex-col gap-8">
+      {/* Header */}
+      <div className="flex items-end justify-between flex-wrap gap-4">
+        <div>
+          <h2
+            className="font-cormorant font-light tracking-[-0.025em] text-tf-text leading-[1.1] mb-1.5"
+            style={{ fontSize: "clamp(36px, 4vw, 52px)" }}
+          >
+            My trips
+          </h2>
+          <p className="text-sm text-tf-muted font-outfit">
+            Your travel itineraries, all in one place
+          </p>
+        </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors shadow-lg hover:shadow-xl"
+          className="inline-flex items-center gap-2 py-[11px] px-[22px] bg-tf-amber text-[#0E0B09] border-none rounded-[10px] text-sm font-semibold font-outfit cursor-pointer tracking-[-0.01em] shadow-[0_4px_16px_rgba(232,162,58,0.25)]"
         >
-          <svg
-            className="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Create New Trip Plan
+          New trip
         </button>
       </div>
 
-      {/* Travel Plans List */}
-      {createError && (
-        <div className="rounded-md border border-red-200 bg-red-50 p-4 text-red-700">
-          {createError}
-        </div>
-      )}
+      {createError && <div className="tf-alert-error">{createError}</div>}
 
       {isLoading && (
-        <div
-          className="flex items-center justify-center py-8"
-          data-testid="travel-plans-loading"
-        >
-          <LoadingSpinner size="lg" className="text-primary-600" />
-          <p className="ml-3 text-gray-600">Loading travel plans...</p>
+        <div className="flex items-center gap-3 py-8" data-testid="travel-plans-loading">
+          <LoadingSpinner size="lg" className="text-amber-400" />
+          <p className="text-sm text-tf-muted font-outfit">Loading your trips…</p>
         </div>
       )}
 
       {!isLoading && loadError && (
-        <div
-          className="rounded-md border border-red-200 bg-red-50 p-4 text-red-700"
-          data-testid="travel-plans-load-error"
-        >
-          {loadError}
+        <div className="tf-alert-error" data-testid="travel-plans-load-error">{loadError}</div>
+      )}
+
+      {!isLoading && !loadError && travelPlans.length === 0 && (
+        <div className="py-[64px] px-6 text-center border border-dashed border-tf-border rounded-[20px]">
+          <p className="text-[15px] text-tf-muted font-outfit mb-5">
+            You don&apos;t have any trips yet.
+          </p>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="py-2.5 px-[22px] bg-tf-amber text-[#0E0B09] border-none rounded-[10px] text-sm font-semibold font-outfit cursor-pointer"
+          >
+            Plan your first trip
+          </button>
         </div>
       )}
 
@@ -95,7 +91,6 @@ export function TravelPlans({}: TravelPlansProps = {}) {
         <TravelPlansList plans={travelPlans} onDeletePlan={deletePlan} />
       )}
 
-      {/* Create Plan Modal */}
       <CreateTravelPlanModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

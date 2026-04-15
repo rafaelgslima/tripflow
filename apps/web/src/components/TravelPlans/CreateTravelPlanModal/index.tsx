@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { validateTravelPlanForm } from "@/utils/validation";
 import type { CreateTravelPlanModalProps } from "./types";
 
@@ -68,137 +68,115 @@ export function CreateTravelPlanModal({
 
   return (
     <div className="fixed inset-0 z-50">
-      {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        className="fixed inset-0 bg-[rgba(10,8,5,0.85)] backdrop-blur-sm"
         onClick={handleClose}
       />
 
-      {/* Modal Container */}
       <div className="fixed inset-0 overflow-y-auto">
         <div className="flex min-h-full items-center justify-center p-4">
-          <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-6 z-50">
+          <div className="relative bg-tf-card border border-tf-border rounded-[20px] p-8 max-w-[460px] w-full z-50">
             {/* Header */}
-            <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-gray-900">
-                Create New Trip Plan
-              </h3>
+            <div className="flex items-start justify-between gap-4 mb-7">
+              <div>
+                <h3 className="font-cormorant text-[32px] font-normal text-tf-text tracking-[-0.02em] leading-[1.1] mb-1">
+                  Plan a new trip
+                </h3>
+                <p className="text-[13px] text-tf-muted font-outfit">
+                  Where are you headed?
+                </p>
+              </div>
               <button
+                type="button"
                 onClick={handleClose}
-                className="text-gray-400 hover:text-gray-500 transition-colors"
+                className="bg-transparent border-none cursor-pointer text-tf-muted p-1 shrink-0 mt-1"
                 aria-label="Close modal"
               >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
             {/* Form */}
-            <div className="space-y-4">
+            <div className="flex flex-col gap-[18px] mb-7">
               {/* Destination */}
               <div>
-                <label
-                  htmlFor="destination"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Destination City
+                <label htmlFor="destination" className="tf-label">
+                  Destination city
                 </label>
                 <input
                   type="text"
                   id="destination"
                   value={destination}
                   onChange={handleDestinationChange}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 bg-white ${
-                    errors.destination ? "border-red-500" : "border-gray-300"
-                  }`}
-                  placeholder="e.g., Paris, Tokyo, New York"
+                  className={`tf-input${errors.destination ? " tf-input--error" : ""}`}
+                  placeholder="Paris, Tokyo, New York…"
                 />
                 {errors.destination && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="text-[13px] text-red-300 mt-1.5 font-outfit">
                     {errors.destination}
                   </p>
                 )}
               </div>
 
-              {/* Start Date */}
-              <div>
-                <label
-                  htmlFor="startDate"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Start Date
-                </label>
-                <input
-                  type="date"
-                  id="startDate"
-                  value={startDate}
-                  onChange={handleStartDateChange}
-                  min={new Date().toISOString().split("T")[0]}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 bg-white ${
-                    errors.startDate ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {errors.startDate && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.startDate}
-                  </p>
-                )}
-              </div>
+              {/* Dates row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="startDate" className="tf-label">
+                    Start date
+                  </label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    value={startDate}
+                    onChange={handleStartDateChange}
+                    min={new Date().toISOString().split("T")[0]}
+                    className={`tf-input${errors.startDate ? " tf-input--error" : ""}`}
+                  />
+                  {errors.startDate && (
+                    <p className="text-[13px] text-red-300 mt-1.5 font-outfit">
+                      {errors.startDate}
+                    </p>
+                  )}
+                </div>
 
-              {/* End Date */}
-              <div>
-                <label
-                  htmlFor="endDate"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  End Date
-                </label>
-                <input
-                  type="date"
-                  id="endDate"
-                  value={endDate}
-                  onChange={handleEndDateChange}
-                  min={startDate || new Date().toISOString().split("T")[0]}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 bg-white ${
-                    errors.endDate ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {errors.endDate && (
-                  <p className="mt-1 text-sm text-red-600">{errors.endDate}</p>
-                )}
+                <div>
+                  <label htmlFor="endDate" className="tf-label">
+                    End date
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    value={endDate}
+                    onChange={handleEndDateChange}
+                    min={startDate || new Date().toISOString().split("T")[0]}
+                    className={`tf-input${errors.endDate ? " tf-input--error" : ""}`}
+                  />
+                  {errors.endDate && (
+                    <p className="text-[13px] text-red-300 mt-1.5 font-outfit">
+                      {errors.endDate}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3 pt-4">
+            <div className="flex gap-[10px]">
               <button
+                type="button"
                 onClick={handleClose}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+                className="tf-btn-ghost flex-1"
               >
                 Cancel
               </button>
               <button
-                onClick={handleReset}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
-              >
-                Reset
-              </button>
-              <button
+                type="button"
                 onClick={handleConfirm}
-                className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+                className="tf-btn-primary flex-1"
               >
-                Confirm
+                Create trip
               </button>
             </div>
           </div>

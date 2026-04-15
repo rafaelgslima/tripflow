@@ -1,177 +1,461 @@
-import { HeaderPreLogin } from "@/components/Header/HeaderPreLogin";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
-export default function Home() {
+/* ── Icons ────────────────────────────────────────────────────────────── */
+function PlaneIcon() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <HeaderPreLogin />
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+    </svg>
+  );
+}
 
-      {/* Hero Section */}
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="py-20 sm:py-24 lg:py-32">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-              Plan Your Perfect Trip
-              <span className="block text-primary-600">Together</span>
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
-              TripFlow makes collaborative travel planning effortless. Create
-              detailed itineraries, share with friends and family, and
-              coordinate every moment of your journey in one place.
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Link
-                href="/signup"
-                className="rounded-md bg-primary-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors"
-              >
-                Get started for free
-              </Link>
-              <Link
-                href="#features"
-                className="text-base font-semibold leading-6 text-gray-900 hover:text-primary-600 transition-colors"
-              >
-                Learn more <span aria-hidden="true">→</span>
-              </Link>
+function CalendarIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+  );
+}
+
+function UsersIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+function EditIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+    </svg>
+  );
+}
+
+/* ── App mockup ───────────────────────────────────────────────────────── */
+interface MockItemProps {
+  time: string;
+  text: string;
+  active?: boolean;
+}
+
+function MockItem({ time, text, active }: MockItemProps) {
+  return (
+    <div
+      className={`flex items-center gap-[10px] py-[7px] px-2.5 rounded-lg transition-colors duration-150 border ${active ? "bg-tf-amber-soft border-tf-border-amber" : "bg-transparent border-transparent"}`}
+    >
+      <span className="text-[11px] font-semibold text-tf-amber font-outfit tracking-[0.02em] w-[36px] shrink-0">
+        {time}
+      </span>
+      <span className={`text-xs font-outfit ${active ? "text-tf-text" : "text-tf-muted"}`}>
+        {text}
+      </span>
+    </div>
+  );
+}
+
+function AppMockup() {
+  return (
+    <div className="mockup-wrap relative py-5 pb-10">
+      {/* Ambient glow behind card */}
+      <div
+        aria-hidden="true"
+        className="absolute pointer-events-none z-0"
+        style={{
+          top: "20%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "380px",
+          height: "380px",
+          background: "radial-gradient(ellipse at center, rgba(232,162,58,0.18) 0%, transparent 65%)",
+        }}
+      />
+
+      {/* Main itinerary card */}
+      <div
+        className="animate-float relative z-[1] bg-tf-card rounded-[20px] p-6 max-w-[340px] ml-auto"
+        style={{
+          border: "1px solid rgba(255,255,255,0.09)",
+          boxShadow: "0 0 0 1px rgba(255,255,255,0.04), 0 24px 64px rgba(0,0,0,0.55), 0 8px 16px rgba(0,0,0,0.3)",
+        }}
+      >
+        {/* Card header */}
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <div className="text-[15px] font-semibold text-tf-text font-outfit tracking-[-0.01em]">
+              Paris Trip
+            </div>
+            <div className="text-xs text-tf-muted mt-[2px] font-outfit">
+              Mar 15 – Mar 22 · 2026
             </div>
           </div>
-        </div>
-
-        {/* Features Section */}
-        <div id="features" className="py-16 sm:py-20">
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-primary-600">
-              Everything you need
-            </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Travel planning made simple
-            </p>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              Whether you&apos;re planning a weekend getaway or a month-long
-              adventure, TripFlow gives you all the tools to organize and share
-              your travel plans.
-            </p>
-          </div>
-
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
-              {/* Feature 1 */}
-              <div className="flex flex-col">
-                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600">
-                    <svg
-                      className="h-6 w-6 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
-                      />
-                    </svg>
-                  </div>
-                  Day-by-day itineraries
-                </dt>
-                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
-                  <p className="flex-auto">
-                    Organize your trip with detailed daily schedules. Add
-                    activities, meals, and sights with specific times to keep
-                    everyone on track.
-                  </p>
-                </dd>
-              </div>
-
-              {/* Feature 2 */}
-              <div className="flex flex-col">
-                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600">
-                    <svg
-                      className="h-6 w-6 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"
-                      />
-                    </svg>
-                  </div>
-                  Real-time collaboration
-                </dt>
-                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
-                  <p className="flex-auto">
-                    Share your travel plans with friends and family. Everyone
-                    can add ideas, edit the itinerary, and stay in sync
-                    throughout the planning process.
-                  </p>
-                </dd>
-              </div>
-
-              {/* Feature 3 */}
-              <div className="flex flex-col">
-                <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600">
-                    <svg
-                      className="h-6 w-6 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                      />
-                    </svg>
-                  </div>
-                  Simple and intuitive
-                </dt>
-                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
-                  <p className="flex-auto">
-                    No complicated features or learning curve. Create a travel
-                    plan, add your destination and dates, and start planning.
-                    It&apos;s that easy.
-                  </p>
-                </dd>
-              </div>
-            </dl>
+          {/* Collaborator avatars */}
+          <div className="flex ml-2">
+            {["#F59E0B", "#60A5FA", "#34D399"].map((color, i) => (
+              <div
+                key={i}
+                className="w-[28px] h-[28px] rounded-full shrink-0"
+                style={{
+                  background: color,
+                  marginLeft: i > 0 ? "-8px" : "0",
+                  border: "2px solid var(--tf-bg-card)",
+                }}
+              />
+            ))}
           </div>
         </div>
 
-        {/* CTA Section */}
-        <div className="py-16 sm:py-20">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Ready to start planning?
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              Join TripFlow today and make your next trip the best one yet.
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Link
-                href="/signup"
-                className="rounded-md bg-primary-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors"
+        {/* Day 1 */}
+        <div className="mb-4">
+          <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-tf-amber font-outfit mb-2 pl-[10px]">
+            Day 1 — Mar 15
+          </div>
+          <MockItem time="09:00" text="Eiffel Tower visit" />
+          <MockItem time="12:30" text="Lunch at Le Marais" />
+          <MockItem time="15:00" text="Louvre Museum" active />
+        </div>
+
+        {/* Divider */}
+        <div className="h-px bg-tf-border my-4" />
+
+        {/* Day 2 */}
+        <div className="mb-4">
+          <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-tf-amber font-outfit mb-2 pl-[10px]">
+            Day 2 — Mar 16
+          </div>
+          <MockItem time="10:00" text="Montmartre walk" />
+          <MockItem time="14:00" text="Seine River cruise" />
+        </div>
+
+        {/* Add button */}
+        <button
+          className="w-full py-[9px] rounded-[10px] text-tf-muted text-xs font-medium font-outfit cursor-default tracking-[0.01em]"
+          style={{
+            background: "rgba(255,255,255,0.03)",
+            border: "1px dashed rgba(255,255,255,0.1)",
+          }}
+        >
+          + Add activity
+        </button>
+      </div>
+
+      {/* Floating collaboration notice */}
+      <div
+        className="animate-float-sub absolute bottom-[10px] left-0 z-[2] bg-tf-bg-3 border border-tf-border-amber rounded-xl py-2.5 px-3.5 shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex items-center gap-[10px] min-w-[220px]"
+      >
+        <div
+          className="w-[8px] h-[8px] rounded-full bg-green-400 shrink-0"
+          style={{ boxShadow: "0 0 8px rgba(74,222,128,0.5)" }}
+        />
+        <div>
+          <div className="text-xs text-tf-text font-outfit font-medium">
+            Sofia joined the trip
+          </div>
+          <div className="text-[11px] text-tf-muted font-outfit">
+            2 minutes ago
+          </div>
+        </div>
+      </div>
+
+      {/* Floating date badge */}
+      <div
+        className="absolute top-[8px] right-0 z-[2] bg-tf-amber rounded-[10px] py-2 px-3.5 shadow-[0_4px_16px_rgba(232,162,58,0.35)] flex flex-col items-center"
+      >
+        <div className="text-[10px] font-bold tracking-[0.08em] uppercase font-outfit" style={{ color: "rgba(13,11,10,0.65)" }}>
+          Mar
+        </div>
+        <div className="text-[24px] font-bold leading-none text-[#0E0B09] font-outfit">
+          15
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Feature card ─────────────────────────────────────────────────────── */
+interface FeatureCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  featured?: boolean;
+}
+
+function FeatureCard({ icon, title, description, featured }: FeatureCardProps) {
+  return (
+    <div
+      className={`${featured ? "bg-tf-bg-3 border-tf-border-amber" : "bg-tf-bg-2 border-tf-border"} border rounded-[16px] p-7 transition-colors duration-200`}
+    >
+      <div
+        className={`inline-flex items-center justify-center w-[44px] h-[44px] rounded-xl mb-5 border ${featured ? "bg-tf-amber-soft text-tf-amber border-tf-border-amber" : "bg-[rgba(255,255,255,0.05)] text-tf-muted border-tf-border"}`}
+      >
+        {icon}
+      </div>
+      <h3 className="text-[16px] font-semibold text-tf-text mb-[10px] font-outfit tracking-[-0.01em]">
+        {title}
+      </h3>
+      <p className="text-sm font-outfit text-tf-muted" style={{ lineHeight: 1.65 }}>
+        {description}
+      </p>
+    </div>
+  );
+}
+
+/* ── Page ─────────────────────────────────────────────────────────────── */
+export default function Home() {
+  const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        void router.replace("/home");
+      } else {
+        setIsChecking(false);
+      }
+    });
+  }, [router]);
+
+  if (isChecking) {
+    return <div className="min-h-screen bg-tf-bg" />;
+  }
+
+  return (
+    <div className="min-h-screen overflow-x-hidden bg-tf-bg text-tf-text">
+      {/* Film grain */}
+      <div className="grain" aria-hidden="true" />
+
+      {/* Ambient glow — top center */}
+      <div
+        aria-hidden="true"
+        className="fixed pointer-events-none z-0"
+        style={{
+          top: 0,
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "900px",
+          height: "500px",
+          background: "radial-gradient(ellipse at 50% 0%, rgba(232,162,58,0.07) 0%, transparent 60%)",
+        }}
+      />
+
+      {/* ── Nav ─────────────────────────────────────────────────────────── */}
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-tf-border backdrop-blur-[16px] bg-[rgba(14,11,9,0.75)]">
+        <nav className="max-w-[1200px] mx-auto px-6 h-[62px] flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-[9px] no-underline"
+          >
+            <span className="text-tf-amber">
+              <PlaneIcon />
+            </span>
+            <span className="text-[17px] font-semibold text-tf-text font-outfit tracking-[-0.025em]">
+              TripFlow
+            </span>
+          </Link>
+
+          <div className="flex items-center gap-1.5">
+            <Link
+              href="/login"
+              className="py-2 px-4 text-sm font-medium text-tf-muted no-underline font-outfit rounded-lg transition-colors duration-150"
+            >
+              Log in
+            </Link>
+            <Link
+              href="/signup"
+              className="py-[9px] px-5 text-sm font-semibold text-[#0E0B09] bg-tf-amber no-underline rounded-[9px] font-outfit tracking-[-0.01em] transition-opacity duration-150"
+            >
+              Sign up free
+            </Link>
+          </div>
+        </nav>
+      </header>
+
+      {/* ── Hero ────────────────────────────────────────────────────────── */}
+      <main className="relative z-[1]">
+        <section>
+          <div className="max-w-[1200px] mx-auto hero-grid">
+            {/* Left: copy */}
+            <div>
+              {/* Eyebrow pill */}
+              <div
+                className="animate-slide-up inline-flex items-center gap-2 py-1.5 px-[14px] rounded-full border border-tf-border-amber bg-tf-amber-soft text-xs font-semibold text-tf-amber font-outfit tracking-[0.04em] uppercase mb-7"
               >
-                Get started
-              </Link>
+                <span aria-hidden="true">✦</span>
+                Collaborative travel planning
+              </div>
+
+              {/* Headline */}
+              <h1
+                className="animate-slide-up font-cormorant font-light leading-[1.04] tracking-[-0.025em] text-tf-text mb-6"
+                style={{ fontSize: "clamp(52px, 6.5vw, 86px)", animationDelay: "0.08s" }}
+              >
+                Plan trips
+                <br />
+                that feel like
+                <br />
+                <em className="text-tf-amber italic">
+                  adventures.
+                </em>
+              </h1>
+
+              {/* Subtext */}
+              <p
+                className="animate-slide-up text-[17px] text-tf-muted max-w-[440px] mb-10 font-outfit"
+                style={{ lineHeight: 1.7, animationDelay: "0.18s" }}
+              >
+                Create day-by-day itineraries, invite your travel crew, and
+                coordinate every detail together — from anywhere.
+              </p>
+
+              {/* CTA row */}
+              <div
+                className="animate-slide-up flex items-center gap-[14px] flex-wrap"
+                style={{ animationDelay: "0.28s" }}
+              >
+                <Link
+                  href="/signup"
+                  className="py-[13px] px-[28px] text-[15px] font-semibold text-[#0E0B09] bg-tf-amber no-underline rounded-[10px] font-outfit tracking-[-0.01em] shadow-[0_4px_24px_rgba(232,162,58,0.3)] inline-block"
+                >
+                  Start for free
+                </Link>
+                <Link
+                  href="#features"
+                  className="py-[13px] px-6 text-[15px] font-medium text-tf-muted no-underline rounded-[10px] border border-tf-border font-outfit inline-block"
+                >
+                  See how it works →
+                </Link>
+              </div>
+
+              {/* Social proof */}
+              <div
+                className="animate-slide-up flex items-center gap-3 mt-[44px]"
+                style={{ animationDelay: "0.38s" }}
+              >
+                <div className="flex items-center">
+                  {["#F59E0B", "#60A5FA", "#34D399", "#F472B6"].map(
+                    (color, i) => (
+                      <div
+                        key={i}
+                        className="w-[28px] h-[28px] rounded-full shrink-0"
+                        style={{
+                          background: color,
+                          marginLeft: i > 0 ? "-8px" : "0",
+                          border: "2px solid var(--tf-bg)",
+                        }}
+                      />
+                    )
+                  )}
+                </div>
+                <span className="text-[13px] text-tf-muted font-outfit">
+                  Join{" "}
+                  <strong className="text-tf-text font-semibold">
+                    2,400+
+                  </strong>{" "}
+                  travelers planning their next adventure
+                </span>
+              </div>
+            </div>
+
+            {/* Right: App mockup */}
+            <AppMockup />
+          </div>
+        </section>
+
+        {/* ── Features ──────────────────────────────────────────────────── */}
+        <section
+          id="features"
+          className="border-t border-tf-border py-[80px]"
+        >
+          <div className="max-w-[1200px] mx-auto px-6">
+            {/* Section label */}
+            <div className="text-center mb-[56px]">
+              <div className="text-[11px] font-bold tracking-[0.14em] uppercase text-tf-amber font-outfit mb-4">
+                Everything you need
+              </div>
+              <h2
+                className="font-cormorant font-light leading-[1.1] tracking-[-0.025em] text-tf-text"
+                style={{ fontSize: "clamp(36px, 4vw, 54px)" }}
+              >
+                Built for the way
+                <br />
+                <em className="text-tf-amber">
+                  you actually travel.
+                </em>
+              </h2>
+            </div>
+
+            {/* Cards */}
+            <div className="features-grid">
+              <FeatureCard
+                icon={<CalendarIcon />}
+                title="Day-by-day itineraries"
+                description="Organize every trip with detailed daily schedules. Add activities, meals, and sights with specific times to keep everyone on track."
+              />
+              <FeatureCard
+                icon={<UsersIcon />}
+                title="Invite your crew"
+                description="Share plans with friends and family in seconds. Send an email invite and they're in — collaborating on the itinerary instantly."
+                featured
+              />
+              <FeatureCard
+                icon={<EditIcon />}
+                title="Edit together, anytime"
+                description="Every collaborator can add ideas, rearrange activities, and keep the itinerary in sync — whether you're in the same room or across the world."
+              />
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* ── CTA ───────────────────────────────────────────────────────── */}
+        <section className="py-[80px] pb-[100px]">
+          <div className="max-w-[640px] mx-auto px-6 text-center">
+            {/* Decorative line */}
+            <div
+              className="w-px h-[64px] mx-auto mb-10"
+              style={{ background: "linear-gradient(to bottom, transparent, var(--tf-border-amber))" }}
+            />
+            <h2
+              className="font-cormorant font-light leading-[1.05] tracking-[-0.025em] text-tf-text mb-[18px]"
+              style={{ fontSize: "clamp(40px, 5vw, 66px)" }}
+            >
+              Ready for your next
+              <br />
+              <em className="text-tf-amber">adventure?</em>
+            </h2>
+            <p
+              className="text-[16px] text-tf-muted mb-9 font-outfit"
+              style={{ lineHeight: 1.65 }}
+            >
+              Create your first trip in under a minute.
+              <br />
+              Free, forever.
+            </p>
+            <Link
+              href="/signup"
+              className="py-[15px] px-10 text-[15px] font-semibold text-[#0E0B09] bg-tf-amber no-underline rounded-[10px] font-outfit tracking-[-0.01em] shadow-[0_4px_32px_rgba(232,162,58,0.28)] inline-block"
+            >
+              Create your first trip →
+            </Link>
+          </div>
+        </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <p className="text-center text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} TripFlow. All rights reserved.
-          </p>
-        </div>
+      {/* ── Footer ──────────────────────────────────────────────────────── */}
+      <footer className="border-t border-tf-border py-7 px-6 text-center">
+        <p className="text-[13px] text-tf-muted font-outfit">
+          © {new Date().getFullYear()} TripFlow. All rights reserved.
+        </p>
       </footer>
     </div>
   );

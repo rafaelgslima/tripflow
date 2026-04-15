@@ -4,13 +4,19 @@ import type { AuthPageHeaderProps } from "./types";
 
 export function AuthPageHeader({ title, subtitle }: AuthPageHeaderProps) {
   return (
-    <div className="text-center">
-      <div className="relative mb-2">
+    <div className="text-center mb-8">
+      <div className="relative mb-7">
         <BackButton />
-        <Logo />
+        <div className="inline-flex justify-center">
+          <Logo />
+        </div>
       </div>
-      <h2 className="text-3xl font-bold text-gray-900">{title}</h2>
-      <p className="mt-2 text-sm text-gray-600">{subtitle}</p>
+      <h2 className="font-cormorant text-[36px] font-light leading-[1.1] tracking-[-0.02em] text-tf-text mb-2">
+        {title}
+      </h2>
+      <p className="text-sm text-tf-muted font-outfit leading-[1.5]">
+        {subtitle}
+      </p>
     </div>
   );
 }

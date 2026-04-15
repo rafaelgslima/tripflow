@@ -15,52 +15,34 @@ export function SessionTimeoutWarning({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <div className="flex items-start mb-4">
-          <div className="flex-shrink-0">
-            <svg
-              className="h-6 w-6 text-yellow-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-              />
+    <div className="fixed inset-0 bg-[rgba(0,0,0,0.75)] backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+      <div className="bg-tf-card border border-tf-border-amber rounded-[20px] p-7 max-w-[420px] w-full shadow-[0_24px_64px_rgba(0,0,0,0.5)]">
+        <div className="flex items-start gap-[14px] mb-5">
+          <div className="w-[36px] h-[36px] rounded-[10px] bg-tf-amber-soft border border-tf-border-amber flex items-center justify-center shrink-0 text-tf-amber">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
             </svg>
           </div>
-          <div className="ml-3 flex-1">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Session Expiring Soon
+          <div>
+            <h3 className="text-[16px] font-semibold text-tf-text font-outfit mb-1.5">
+              Session expiring soon
             </h3>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="text-[13px] text-tf-muted font-outfit leading-relaxed">
               Your session will expire in{" "}
-              <span className="font-semibold text-yellow-600">
+              <span className="font-semibold text-tf-amber">
                 {Math.ceil(remainingSeconds / 60)} minute
                 {Math.ceil(remainingSeconds / 60) !== 1 ? "s" : ""}
               </span>
-              . Would you like to extend your session?
+              . Would you like to extend it?
             </p>
           </div>
         </div>
-
-        <div className="flex space-x-3 mt-6">
-          <button
-            onClick={handleExtend}
-            disabled={isExtending}
-            className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isExtending ? "Extending..." : "Extend Session"}
+        <div className="flex gap-[10px]">
+          <button onClick={handleExtend} disabled={isExtending} className="tf-btn-primary flex-1">
+            {isExtending ? "Extending…" : "Extend session"}
           </button>
-          <button
-            onClick={onLogout}
-            className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
-          >
-            Logout Now
+          <button onClick={onLogout} className="tf-btn-ghost flex-1">
+            Log out
           </button>
         </div>
       </div>

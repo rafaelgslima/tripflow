@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 import { useDayPlans } from "@/hooks/useDayPlans";
 import { AddDayPlanForm } from "./AddDayPlanForm";
 import { SortableDayPlanItem } from "./SortableDayPlanItem";
-import type { DayColumnProps, ItineraryItem } from "./types";
+import type { DayColumnProps } from "./types";
 
 export function DayColumn({
   date,
@@ -119,13 +119,11 @@ export function DayColumn({
 
     if (!trimmedDescription) {
       setValidationError("This field is required");
-      return; // Don't save empty updates
+      return;
     }
 
-    // Find the original item to compare
     const originalItem = itineraryItems.find((item) => item.id === itemId);
     if (originalItem && originalItem.description === trimmedDescription) {
-      // No changes made, just exit edit mode
       setEditingItemId(null);
       setValidationError("");
       clearUpdateError();
@@ -166,10 +164,10 @@ export function DayColumn({
     if (isLoading && itineraryItems.length === 0 && !isAdding) {
       return (
         <div
-          className="text-xs text-gray-400 text-center py-2"
+          className="text-xs text-tf-muted text-center py-2"
           data-testid="day-plans-loading"
         >
-          Loading plans...
+          Loading…
         </div>
       );
     }
@@ -177,7 +175,7 @@ export function DayColumn({
     if (loadError && itineraryItems.length === 0 && !isAdding) {
       return (
         <div
-          className="text-xs text-gray-400 text-center py-2"
+          className="text-xs text-red-300 text-center py-2"
           data-testid="day-plans-load-error"
         >
           {loadError}
@@ -187,8 +185,8 @@ export function DayColumn({
 
     if (itineraryItems.length === 0 && !isAdding) {
       return (
-        <div className="text-xs text-gray-400 text-center py-2">
-          No plans yet
+        <div className="text-xs text-tf-muted text-center py-2">
+          No activities yet
         </div>
       );
     }
@@ -249,37 +247,39 @@ export function DayColumn({
   // Mobile Accordion View
   if (isMobile) {
     return (
-      <div className="border border-gray-200 rounded-lg overflow-hidden">
+      <div className="border border-tf-border rounded-xl overflow-hidden bg-tf-bg-2">
         <button
+          type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+          className="w-full flex items-center justify-between py-[14px] px-4 bg-transparent border-none cursor-pointer text-left"
           aria-expanded={isExpanded}
         >
-          <div className="text-left">
-            <div className="font-semibold text-gray-900">Day {dayNumber}</div>
-            <div className="text-sm text-gray-600">
+          <div>
+            <div className="font-outfit font-semibold text-[13px] text-tf-amber tracking-[0.08em] uppercase">
+              Day {dayNumber}
+            </div>
+            <div className="text-xs text-tf-muted font-outfit mt-[2px]">
               {weekday}, {monthDay}
             </div>
           </div>
           <svg
-            className={`w-5 h-5 text-gray-500 transition-transform ${
-              isExpanded ? "rotate-180" : ""
-            }`}
+            className="text-tf-muted shrink-0 transition-transform duration-200"
+            style={{
+              width: "16px",
+              height: "16px",
+              transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+            }}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
 
         {isExpanded && (
-          <div className="p-4 space-y-3">
+          <div className="px-4 pb-4 flex flex-col gap-2 border-t border-tf-border pt-3">
             {renderItineraryItems()}
             {isAdding && (
               <AddDayPlanForm
@@ -292,23 +292,14 @@ export function DayColumn({
 
             {!isAdding && (
               <button
+                type="button"
                 onClick={handleAddPlan}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-primary-500 hover:text-primary-600 transition-colors"
+                className="w-full flex items-center justify-center gap-1.5 p-2 border border-dashed border-tf-border-amber rounded-lg bg-transparent text-tf-amber text-xs font-outfit font-medium cursor-pointer opacity-70 transition-opacity duration-150"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v16m8-8H4"
-                  />
+                <svg aria-hidden="true" width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                Add Plan
+                Add activity
               </button>
             )}
           </div>
@@ -317,20 +308,24 @@ export function DayColumn({
     );
   }
 
-  // Desktop Table Column View
+  // Desktop Column View
   return (
-    <div className="flex-1 min-w-[200px] border border-gray-200 rounded-lg p-4 bg-white hover:shadow-md transition-shadow">
+    <div className="shrink-0 min-w-[200px] border border-tf-border rounded-[14px] p-4 bg-tf-bg-2 flex flex-col gap-3" style={{ flex: "0 0 200px" }}>
       {/* Day Header */}
-      <div className="mb-4 pb-3 border-b border-gray-200">
-        <div className="font-semibold text-lg text-gray-900">
+      <div className="pb-3 border-b border-tf-border">
+        <div className="font-outfit font-semibold text-[11px] text-tf-amber tracking-[0.1em] uppercase mb-[2px]">
           Day {dayNumber}
         </div>
-        <div className="text-sm text-gray-600">{weekday}</div>
-        <div className="text-sm text-gray-600">{monthDay}</div>
+        <div className="text-[13px] text-tf-text font-outfit font-medium">
+          {weekday}
+        </div>
+        <div className="text-xs text-tf-muted font-outfit">
+          {monthDay}
+        </div>
       </div>
 
-      {/* Itinerary Items Container */}
-      <div className="space-y-2 mb-4 min-h-[100px]">
+      {/* Itinerary Items */}
+      <div className="flex flex-col gap-2 min-h-[80px] flex-1">
         {renderItineraryItems()}
         {isAdding && (
           <AddDayPlanForm
@@ -345,23 +340,14 @@ export function DayColumn({
       {/* Add Plan Button */}
       {!isAdding && (
         <button
+          type="button"
           onClick={handleAddPlan}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-primary-500 hover:text-primary-600 transition-colors text-sm"
+          className="w-full flex items-center justify-center gap-[5px] py-[7px] border border-dashed border-tf-border-amber rounded-lg bg-transparent text-tf-amber text-xs font-outfit font-medium cursor-pointer opacity-70 transition-opacity duration-150"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
+          <svg aria-hidden="true" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Add Plan
+          Add activity
         </button>
       )}
     </div>

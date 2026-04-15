@@ -30,56 +30,44 @@ export function TravelPlansList({ plans, onDeletePlan }: TravelPlansListProps) {
   };
 
   return (
-    <div className="space-y-8" data-testid="travel-plans-list">
+    <div className="flex flex-col gap-6" data-testid="travel-plans-list">
       {plans.map((plan) => {
         const days = getDaysArray(plan.startDate, plan.endDate);
 
         return (
-          <div key={plan.id} className="bg-white rounded-lg shadow-lg p-6">
+          <div
+            key={plan.id}
+            className="bg-tf-card border border-tf-border rounded-[20px] p-7"
+          >
             {/* Plan Header */}
-            <div className="mb-6">
-              <div className="flex items-start justify-between gap-4">
-                <h3 className="text-2xl font-bold text-gray-900">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <h3 className="font-cormorant text-[28px] font-normal text-tf-text tracking-[-0.02em] mb-1 leading-[1.1]">
                   {plan.destination}
                 </h3>
-                <div className="flex items-center gap-2">
-                  <ShareTravelPlanButton travelPlanId={plan.id} />
-                  <DeleteTravelPlanButton
-                    travelPlanId={plan.id}
-                    onDelete={onDeletePlan}
-                  />
-                </div>
+                <p className="text-[13px] text-tf-muted font-outfit">
+                  {formatDateRange(plan.startDate, plan.endDate)} · {days.length} {days.length === 1 ? "day" : "days"}
+                </p>
               </div>
-              <p className="text-sm text-gray-600 mt-1">
-                {formatDateRange(plan.startDate, plan.endDate)} • {days.length}{" "}
-                {days.length === 1 ? "day" : "days"}
-              </p>
+              <div className="flex items-center gap-2 shrink-0">
+                <ShareTravelPlanButton travelPlanId={plan.id} />
+                <DeleteTravelPlanButton travelPlanId={plan.id} onDelete={onDeletePlan} />
+              </div>
             </div>
 
-            {/* Desktop: Table View */}
+            {/* Desktop: scrollable columns */}
             <div className="hidden md:block overflow-x-auto">
-              <div className="flex gap-4 min-w-full">
+              <div className="flex gap-3" style={{ minWidth: "100%" }}>
                 {days.map((day, index) => (
-                  <DayColumn
-                    key={day.toISOString()}
-                    date={day}
-                    dayNumber={index + 1}
-                    travelPlanId={plan.id}
-                  />
+                  <DayColumn key={day.toISOString()} date={day} dayNumber={index + 1} travelPlanId={plan.id} />
                 ))}
               </div>
             </div>
 
-            {/* Mobile: Accordion View */}
-            <div className="md:hidden space-y-2">
+            {/* Mobile: accordion */}
+            <div className="md:hidden flex flex-col gap-2">
               {days.map((day, index) => (
-                <DayColumn
-                  key={day.toISOString()}
-                  date={day}
-                  dayNumber={index + 1}
-                  travelPlanId={plan.id}
-                  isMobile={true}
-                />
+                <DayColumn key={day.toISOString()} date={day} dayNumber={index + 1} travelPlanId={plan.id} isMobile={true} />
               ))}
             </div>
           </div>
