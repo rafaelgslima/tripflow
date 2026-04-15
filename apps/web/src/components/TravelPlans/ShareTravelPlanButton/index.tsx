@@ -15,6 +15,7 @@ export function ShareTravelPlanButton({
   const [friendEmail, setFriendEmail] = useState("");
   const [friendEmailError, setFriendEmailError] = useState<string | null>(null);
   const [result, setResult] = useState<ShareResult>("idle");
+  const [isSending, setIsSending] = useState(false);
 
   const message = useMemo(() => {
     if (result === "success")
@@ -50,6 +51,7 @@ export function ShareTravelPlanButton({
       return;
     }
 
+    setIsSending(true);
     try {
       const accessToken = await getSupabaseAccessToken();
       if (!accessToken) {
@@ -66,10 +68,12 @@ export function ShareTravelPlanButton({
       if (onShareCreated) onShareCreated();
     } catch (error) {
       setResult("error");
+    } finally {
+      setIsSending(false);
     }
   }, [friendEmail, travelPlanId]);
 
-  const isConfirmDisabled = result === "success";
+  const isConfirmDisabled = result === "success" || isSending;
 
   const handleFriendEmailChange = useCallback(
     (email: string) => {
@@ -101,6 +105,7 @@ export function ShareTravelPlanButton({
         friendEmailError={friendEmailError}
         message={message}
         isConfirmDisabled={isConfirmDisabled}
+        isSending={isSending}
         onClose={handleClose}
         onConfirm={handleConfirm}
         onFriendEmailChange={handleFriendEmailChange}
