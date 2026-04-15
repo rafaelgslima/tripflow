@@ -1,5 +1,4 @@
 import { useState, useCallback, type FormEvent } from "react";
-import { supabase } from "@/lib/supabase";
 import { validateEmail } from "@/utils/validation";
 import type {
   ForgotPasswordFormValues,
@@ -65,26 +64,21 @@ export function useForgotPasswordForm(): UseForgotPasswordFormReturn {
       setErrors({});
 
       try {
-        const { error } = await supabase.auth.resetPasswordForEmail(
-          values.email,
-          {
-            redirectTo: `${window.location.origin}/reset-password`,
-          },
-        );
+        const response = await fetch("/api/auth/forgot-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: values.email }),
+        });
 
-        if (error) {
-          setErrors({
-            general: "Failed to send reset email. Please try again.",
-          });
+        if (!response.ok) {
+          setErrors({ general: "Failed to send reset email. Please try again." });
           setIsSuccess(false);
         } else {
           setIsSuccess(true);
           setErrors({});
         }
       } catch (err) {
-        setErrors({
-          general: "Failed to send reset email. Please try again.",
-        });
+        setErrors({ general: "Failed to send reset email. Please try again." });
         setIsSuccess(false);
       } finally {
         setIsSubmitting(false);
