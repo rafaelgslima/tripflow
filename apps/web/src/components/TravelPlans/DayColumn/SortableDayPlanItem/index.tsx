@@ -44,7 +44,7 @@ export function SortableDayPlanItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 cursor-pointer hover:bg-gray-100 transition-colors touch-none select-none cursor-grab active:cursor-grabbing"
+      className="py-2.5 px-3 bg-tf-bg-3 border border-tf-border rounded-[10px] text-[13px] text-tf-text cursor-grab font-outfit leading-[1.4] select-none"
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       aria-label={`Plan ${item.description}`}

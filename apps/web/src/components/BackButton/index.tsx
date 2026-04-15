@@ -5,7 +5,7 @@ export function BackButton({ href = "/", label = "Back" }: BackButtonProps) {
   return (
     <Link
       href={href}
-      className="absolute left-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors"
+      className="absolute left-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 text-[13px] font-medium text-tf-muted no-underline font-outfit"
     >
       <svg
         className="w-4 h-4"

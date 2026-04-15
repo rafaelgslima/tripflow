@@ -20,85 +20,72 @@ export function ShareTravelPlanModal({
       aria-label="Share travel plan"
     >
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        className="fixed inset-0 bg-[rgba(10,8,5,0.85)] backdrop-blur-sm"
         data-testid="share-travel-plan-backdrop"
         onClick={onClose}
       />
 
       <div className="fixed inset-0 overflow-y-auto">
         <div className="flex min-h-full items-center justify-center p-4">
-          <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-6 z-50">
-            <div className="space-y-1">
-              <div className="flex items-start justify-between gap-4">
-                <h3 className="text-2xl font-bold text-gray-900">
-                  Share this plan
-                </h3>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="text-gray-400 hover:text-gray-500 transition-colors"
-                  aria-label="Close modal"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <p className="text-sm text-gray-600">
-                After sharing the plan with a friend, the friend will be able to
-                view and edit the plan.
-              </p>
+          <div className="relative bg-tf-card border border-tf-border rounded-[20px] p-8 max-w-[440px] w-full z-50">
+            {/* Header */}
+            <div className="flex items-start justify-between gap-4 mb-1.5">
+              <h3 className="font-cormorant text-[28px] font-normal text-tf-text tracking-[-0.02em] leading-[1.1]">
+                Share this plan
+              </h3>
+              <button
+                type="button"
+                onClick={onClose}
+                className="bg-transparent border-none cursor-pointer text-tf-muted p-1 shrink-0 mt-1"
+                aria-label="Close modal"
+              >
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
 
-            <div className="space-y-2">
+            <p className="text-sm text-tf-muted font-outfit leading-relaxed mb-6">
+              After sharing, your friend will be able to view and edit this plan.
+            </p>
+
+            {/* Email Input */}
+            <div className="mb-5">
               <label
                 htmlFor="share-friend-email"
-                className="block text-sm font-medium text-gray-700"
+                className="tf-label"
               >
-                Friend email
+                Friend&apos;s email
               </label>
               <input
                 id="share-friend-email"
                 type="email"
                 value={friendEmail}
                 onChange={(event) => onFriendEmailChange(event.target.value)}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 bg-white ${
-                  friendEmailError ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`tf-input${friendEmailError ? " tf-input--error" : ""}`}
                 placeholder="friend@example.com"
               />
               {friendEmailError ? (
-                <p className="text-sm text-red-600">{friendEmailError}</p>
+                <p className="text-[13px] text-red-300 mt-1.5 font-outfit">
+                  {friendEmailError}
+                </p>
               ) : null}
             </div>
 
+            {/* Message */}
             {message ? (
               <div
-                className={
-                  message.type === "success"
-                    ? "rounded-md border border-green-200 bg-green-50 p-3 text-green-800 text-sm"
-                    : "rounded-md border border-red-200 bg-red-50 p-3 text-red-700 text-sm"
-                }
+                className={`${message.type === "success" ? "tf-alert-success" : "tf-alert-error"} mb-5`}
               >
                 {message.text}
               </div>
             ) : null}
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-[10px]">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+                className="tf-btn-ghost flex-1"
               >
                 Cancel
               </button>
@@ -106,9 +93,9 @@ export function ShareTravelPlanModal({
                 type="button"
                 onClick={onConfirm}
                 disabled={isConfirmDisabled}
-                className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`tf-btn-primary flex-1 ${isConfirmDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
               >
-                Confirm
+                Send invite
               </button>
             </div>
           </div>

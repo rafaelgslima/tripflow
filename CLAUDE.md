@@ -186,6 +186,14 @@ API routes live in `apps/web/src/pages/api/`. Server-side utilities in `apps/web
 - Cache API responses (SWR/React Query) with explicit invalidation.
 - Lazy-load heavy modules.
 
+### Styling — Tailwind only, no inline CSS
+
+**Never use React `style={{ }}` props.** All styling must use Tailwind CSS classes.
+
+- Use the named design tokens in `tailwind.config.ts` for theme values: `bg-tf-bg`, `text-tf-text`, `text-tf-amber`, `border-tf-border`, `font-cormorant`, `font-outfit`, etc.
+- For values not on Tailwind's default scale, use arbitrary syntax: `text-[13px]`, `rounded-[20px]`, `tracking-[-0.02em]`.
+- The only permitted exceptions are values that are **genuinely impossible** to express in Tailwind (e.g. multi-stop `radial-gradient` backgrounds, runtime-computed transforms from libraries like `@dnd-kit`). In those cases, keep only the inexpressible properties in `style={{}}` and move everything else to `className`.
+
 ---
 
 ## When Implementing a Feature

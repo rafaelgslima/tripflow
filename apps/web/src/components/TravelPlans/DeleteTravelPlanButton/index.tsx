@@ -25,7 +25,7 @@ export function DeleteTravelPlanButton({
     <>
       <button
         type="button"
-        className="inline-flex items-center rounded-md border border-red-300 bg-white p-2 text-red-500 shadow-sm hover:bg-red-50 hover:border-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 transition-colors"
+        className="inline-flex items-center justify-center p-2 bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.2)] rounded-[9px] text-red-300 cursor-pointer transition-colors duration-150"
         aria-label="Delete this travel plan"
         onClick={handleOpen}
       >
