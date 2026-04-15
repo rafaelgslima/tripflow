@@ -14,6 +14,87 @@ import { sendTravelPlanInvite } from "@/lib/api-server/email";
 
 const INVITE_TTL_HOURS = Number(process.env.SHARE_INVITE_TTL_HOURS ?? "48");
 
+async function handleGet(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+  const user = await getAuthenticatedUser(req.headers.authorization);
+  const travelPlanId = req.query["id"];
+
+  if (typeof travelPlanId !== "string") {
+    throw new ValidationError("Invalid travel plan ID.");
+  }
+
+  const supabase = getSupabaseAdminClient();
+
+  // Verify requester has access and fetch the plan owner
+  const { data: plan } = await supabase
+    .from("travel_plan")
+    .select("id, owner_user_id")
+    .eq("id", travelPlanId)
+    .limit(1)
+    .maybeSingle();
+
+  const { data: collaboratorShare } = await supabase
+    .from("travel_plan_share")
+    .select("id")
+    .eq("travel_plan_id", travelPlanId)
+    .eq("invited_user_id", user.userId)
+    .eq("status", "accepted")
+    .limit(1)
+    .maybeSingle();
+
+  const isOwner = plan?.owner_user_id === user.userId;
+  if (!isOwner && !collaboratorShare) {
+    throw new ForbiddenError("You do not have access to this travel plan.");
+  }
+
+  const { data: shares, error: sharesError } = await supabase
+    .from("travel_plan_share")
+    .select("id, invited_email, status, invited_user_id")
+    .eq("travel_plan_id", travelPlanId)
+    .in("status", ["pending", "accepted"])
+    .order("created_at", { ascending: true });
+
+  if (sharesError) throw new InternalError("Failed to fetch shares.");
+
+  // Collect all user IDs whose names we need: accepted collaborators + the owner
+  const ownerUserId = plan?.owner_user_id as string;
+  const acceptedUserIds = (shares ?? [])
+    .filter((s) => s.status === "accepted" && s.invited_user_id)
+    .map((s) => s.invited_user_id as string);
+  const allUserIds = [...new Set([ownerUserId, ...acceptedUserIds])];
+
+  const namesByUserId: Record<string, string> = {};
+  const emailsByUserId: Record<string, string> = {};
+  await Promise.all(
+    allUserIds.map(async (userId) => {
+      const { data } = await supabase.auth.admin.getUserById(userId);
+      const authUser = data?.user;
+      if (authUser) {
+        const name = authUser.user_metadata?.name as string | undefined;
+        if (name) namesByUserId[userId] = name;
+        if (authUser.email) emailsByUserId[userId] = authUser.email;
+      }
+    }),
+  );
+
+  // Build the owner entry so collaborators can see who created the plan
+  const ownerEntry = {
+    id: `owner-${ownerUserId}`,
+    invited_email: emailsByUserId[ownerUserId] ?? "",
+    status: "accepted" as const,
+    invited_name: namesByUserId[ownerUserId] ?? null,
+  };
+
+  const collaboratorEntries = (shares ?? []).map((s) => ({
+    id: s.id as string,
+    invited_email: s.invited_email as string,
+    status: s.status as "pending" | "accepted",
+    invited_name: s.invited_user_id ? (namesByUserId[s.invited_user_id as string] ?? null) : null,
+  }));
+
+  // Owner entry first, then collaborators
+  res.status(200).json([ownerEntry, ...collaboratorEntries]);
+}
+
 async function handlePost(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const user = await getAuthenticatedUser(req.headers.authorization);
   const travelPlanId = req.query["id"];
@@ -104,6 +185,7 @@ export default async function handler(
   res: NextApiResponse,
 ): Promise<void> {
   try {
+    if (req.method === "GET") return await handleGet(req, res);
     if (req.method === "POST") return await handlePost(req, res);
     methodNotAllowed(res);
   } catch (err) {
