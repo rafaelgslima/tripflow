@@ -96,6 +96,29 @@ export async function deleteTravelPlan(
   });
 }
 
+export interface TravelPlanShareRecord {
+  id: string;
+  invited_email: string;
+  status: "pending" | "accepted";
+  invited_name: string | null;
+}
+
+export async function fetchTravelPlanShares(
+  travelPlanId: string,
+  accessToken: string,
+): Promise<TravelPlanShareRecord[]> {
+  const response = await apiClient.get<TravelPlanShareRecord[]>(
+    `/travel-plans/${travelPlanId}/shares`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  return response.data;
+}
+
 export async function acceptTravelPlanShareInvite(
   payload: AcceptTravelPlanShareInviteRequest,
   accessToken: string,

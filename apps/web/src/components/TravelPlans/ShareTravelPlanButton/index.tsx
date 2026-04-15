@@ -9,6 +9,7 @@ type ShareResult = "idle" | "success" | "error";
 
 export function ShareTravelPlanButton({
   travelPlanId,
+  onShareCreated,
 }: ShareTravelPlanButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [friendEmail, setFriendEmail] = useState("");
@@ -62,6 +63,7 @@ export function ShareTravelPlanButton({
         accessToken,
       );
       setResult("success");
+      if (onShareCreated) onShareCreated();
     } catch (error) {
       setResult("error");
     }

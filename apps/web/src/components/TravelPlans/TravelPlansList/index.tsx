@@ -1,9 +1,17 @@
+import { useState, useCallback } from "react";
 import { DayColumn } from "../DayColumn";
 import { DeleteTravelPlanButton } from "../DeleteTravelPlanButton";
+import { ShareStatusList } from "../ShareStatusList";
 import { ShareTravelPlanButton } from "../ShareTravelPlanButton";
 import type { TravelPlansListProps } from "./types";
 
 export function TravelPlansList({ plans, onDeletePlan }: TravelPlansListProps) {
+  const [shareRefreshKeys, setShareRefreshKeys] = useState<Record<string, number>>({});
+
+  const handleShareCreated = useCallback((planId: string) => {
+    setShareRefreshKeys((prev) => ({ ...prev, [planId]: (prev[planId] ?? 0) + 1 }));
+  }, []);
+
   const getDaysArray = (startDate: Date, endDate: Date): Date[] => {
     const days: Date[] = [];
     const currentDate = new Date(startDate);
@@ -40,19 +48,28 @@ export function TravelPlansList({ plans, onDeletePlan }: TravelPlansListProps) {
             className="bg-tf-card border border-tf-border rounded-[20px] p-7"
           >
             {/* Plan Header */}
-            <div className="mb-6 flex items-start justify-between gap-4">
-              <div>
-                <h3 className="font-cormorant text-[28px] font-normal text-tf-text tracking-[-0.02em] mb-1 leading-[1.1]">
-                  {plan.destination}
-                </h3>
-                <p className="text-[13px] text-tf-muted font-outfit">
-                  {formatDateRange(plan.startDate, plan.endDate)} · {days.length} {days.length === 1 ? "day" : "days"}
-                </p>
+            <div className="mb-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="font-cormorant text-[28px] font-normal text-tf-text tracking-[-0.02em] mb-1 leading-[1.1]">
+                    {plan.destination}
+                  </h3>
+                  <p className="text-[13px] text-tf-muted font-outfit">
+                    {formatDateRange(plan.startDate, plan.endDate)} · {days.length} {days.length === 1 ? "day" : "days"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <ShareTravelPlanButton
+                    travelPlanId={plan.id}
+                    onShareCreated={() => handleShareCreated(plan.id)}
+                  />
+                  <DeleteTravelPlanButton travelPlanId={plan.id} onDelete={onDeletePlan} />
+                </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <ShareTravelPlanButton travelPlanId={plan.id} />
-                <DeleteTravelPlanButton travelPlanId={plan.id} onDelete={onDeletePlan} />
-              </div>
+              <ShareStatusList
+                travelPlanId={plan.id}
+                refreshKey={shareRefreshKeys[plan.id] ?? 0}
+              />
             </div>
 
             {/* Desktop: scrollable columns */}

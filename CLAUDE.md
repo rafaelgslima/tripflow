@@ -135,6 +135,58 @@ Always design for collaboration: a travel plan is a workspace (owner + collabora
 
 ---
 
+## Activity Editing (DayColumn)
+
+Itinerary items are edited **inline** within the day column — never in a modal.
+
+- Clicking the pencil icon on an activity card (`SortableDayPlanItem`) sets `editingItemId` in `DayColumn`.
+- The item card is replaced in-place by `InlineEditActivity`, a compact form with:
+  - A text input (pre-filled with the current description)
+  - `[✗ cancel]` — icon-only, fixed 32px width
+  - `[✓ Save]` — flex-1, fills remaining width
+  - `[🗑 delete]` — icon-only, fixed 32px width
+- The layout `[✗] [── Save ──] [🗑]` always fits inside the 200px column — never use full-text buttons inline in a narrow column.
+- The "Add activity" button is hidden while editing to keep the column clean.
+- Drag handle (`{...listeners}`) is on a separate `<span>` inside `SortableDayPlanItem`, not on the whole item, so the edit button's `onClick` fires without dnd-kit interference.
+
+---
+
+## Share Status Display
+
+Each travel plan card displays who has access to the plan, excluding the current user.
+
+**What is shown:**
+- The plan **owner** is always included as an entry (even though they are not in `travel_plan_share`).
+- All `pending` and `accepted` entries from `travel_plan_share` are included.
+- The current logged-in user is filtered out client-side — you never see your own name.
+- `declined` and `revoked` statuses are excluded.
+
+**Display text:**
+- Accepted: `✓ Shared with [Name]` — green — name comes from `auth.user_metadata.name`; falls back to email.
+- Pending: `⏳ Shared with [email] — waiting for acceptance` — amber.
+- On mobile: left-aligned, emails use `break-all` to prevent overflow.
+- On desktop (`md:`): right-aligned.
+
+**Implementation:**
+- `GET /api/travel-plans/[id]/shares` returns owner entry + collaborator entries. Owner name/email is resolved via `supabase.auth.admin.getUserById(owner_user_id)`. Collaborator names also resolved via `auth.admin.getUserById` (NOT the `profile` table — names live in `user_metadata.name`).
+- The status list refreshes automatically after a new invite is sent via `refreshKey` prop pattern in `TravelPlansList`.
+- Status is persisted in `travel_plan_share` — survives logout/login.
+- Components: `ShareStatusList` (display, `md:items-end` for right-align on desktop) + `useTravelPlanShares` hook (fetches, filters out current user by email).
+- `ShareStatusList` is rendered below the full header row in `TravelPlansList` (not inside the buttons column) so it has full card width on mobile.
+
+---
+
+## Auth API Routes
+
+Auth operations that need `APP_BASE_URL` (for email redirect URLs) must go through server-side API routes — never call Supabase auth directly from the client for these flows.
+
+- **Signup**: `POST /api/auth/signup` — calls `supabase.auth.signUp` with `emailRedirectTo: APP_BASE_URL/login`.
+- **Forgot password**: `POST /api/auth/forgot-password` — calls `supabase.auth.resetPasswordForEmail` with `redirectTo: APP_BASE_URL/reset-password`.
+- `APP_BASE_URL` is a server-only env var (`process.env.APP_BASE_URL`). Never use `window.location.origin` as a substitute when `APP_BASE_URL` is available server-side.
+- User names are stored in Supabase `auth.user_metadata.name` (set at signup via `options.data.name`). The `profile` table does not store names — always read names from `auth.admin.getUserById().user_metadata.name`.
+
+---
+
 ## Security
 
 - Never commit secrets. Supabase service role key: backend only. Frontend uses only public keys.
