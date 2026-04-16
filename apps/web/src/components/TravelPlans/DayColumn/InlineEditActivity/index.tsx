@@ -1,8 +1,10 @@
 import { useState, useEffect, type ChangeEvent } from "react";
+import { TIME_OPTIONS } from "@/utils/timeOptions";
 import type { InlineEditActivityProps } from "./types";
 
 export function InlineEditActivity({
   initialValue,
+  initialTime,
   error,
   onSave,
   onCancel,
@@ -10,14 +12,16 @@ export function InlineEditActivity({
   onClearError,
 }: InlineEditActivityProps) {
   const [value, setValue] = useState(initialValue);
+  const [time, setTime] = useState<string>(initialTime ?? "");
   const [localError, setLocalError] = useState("");
 
   const displayError = error || localError;
 
   useEffect(() => {
     setValue(initialValue);
+    setTime(initialTime ?? "");
     setLocalError("");
-  }, [initialValue]);
+  }, [initialValue, initialTime]);
 
   const handleSave = () => {
     const trimmed = value.trim();
@@ -25,7 +29,7 @@ export function InlineEditActivity({
       setLocalError("Required");
       return;
     }
-    onSave(trimmed);
+    onSave(trimmed, time || null);
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -49,6 +53,19 @@ export function InlineEditActivity({
         className={`tf-input text-[13px]${displayError ? " tf-input--error" : ""}`}
         autoFocus
       />
+
+      <select
+        value={time}
+        onChange={(e) => setTime(e.target.value)}
+        className="tf-input text-[12px] text-tf-muted"
+      >
+        <option value="">No time</option>
+        {TIME_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
 
       {displayError && (
         <p className="text-[11px] text-red-300 px-0.5 leading-tight">{displayError}</p>

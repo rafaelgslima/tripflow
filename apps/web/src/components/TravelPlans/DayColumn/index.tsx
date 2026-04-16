@@ -14,6 +14,8 @@ import {
 } from "@dnd-kit/sortable";
 import { useEffect, useState } from "react";
 import { useDayPlans } from "@/hooks/useDayPlans";
+import { sortItemsByTime } from "@/utils/timeOptions";
+import { formatDayHeader } from "@/utils/dateUtils";
 import { AddDayPlanForm } from "./AddDayPlanForm";
 import { InlineEditActivity } from "./InlineEditActivity";
 import { SortableDayPlanItem } from "./SortableDayPlanItem";
@@ -60,14 +62,6 @@ export function DayColumn({
     }),
   );
 
-  const formatDate = (date: Date): { weekday: string; monthDay: string } => {
-    const weekday = date.toLocaleDateString("en-US", { weekday: "short" });
-    const monthDay = date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
-    return { weekday, monthDay };
-  };
 
   const handleAddPlan = () => {
     clearCreateError();
@@ -78,10 +72,18 @@ export function DayColumn({
     setIsAdding(false);
   };
 
-  const handleConfirm = async (description: string) => {
+  const handleConfirm = async (description: string, time: string | null) => {
     try {
-      await createDayPlan(description);
+      await createDayPlan(description, time);
       setIsAdding(false);
+      // Re-sort after create if a time was set
+      if (time) {
+        setItineraryItems((currentItems) => {
+          const sorted = sortItemsByTime(currentItems);
+          void reorderDayPlans(sorted.map((item) => item.id));
+          return sorted;
+        });
+      }
     } catch (error) {
       console.error("Create day plan failed:", error);
     }
@@ -110,16 +112,26 @@ export function DayColumn({
     }
   };
 
-  const handleUpdate = async (itemId: string, newDescription: string) => {
+  const handleUpdate = async (itemId: string, newDescription: string, newTime: string | null) => {
     const originalItem = itineraryItems.find((item) => item.id === itemId);
-    if (originalItem && originalItem.description === newDescription) {
+    if (
+      originalItem &&
+      originalItem.description === newDescription &&
+      originalItem.time === newTime
+    ) {
       setEditingItemId(null);
       clearUpdateError();
       return;
     }
     try {
-      await updateDayPlan(itemId, newDescription);
+      await updateDayPlan(itemId, newDescription, newTime);
       setEditingItemId(null);
+      // Re-sort after time change and persist new order
+      const sorted = sortItemsByTime(itineraryItems.map((item) =>
+        item.id === itemId ? { ...item, description: newDescription, time: newTime } : item,
+      ));
+      setItineraryItems(() => sorted);
+      void reorderDayPlans(sorted.map((item) => item.id));
     } catch (error) {
       console.error("Update day plan failed:", error);
     }
@@ -132,18 +144,40 @@ export function DayColumn({
       return;
     }
 
-    setItineraryItems((previousItems) => {
-      const oldIndex = previousItems.findIndex((item) => item.id === active.id);
-      const newIndex = previousItems.findIndex((item) => item.id === over.id);
+    const oldIndex = itineraryItems.findIndex((item) => item.id === active.id);
+    const newIndex = itineraryItems.findIndex((item) => item.id === over.id);
 
-      if (oldIndex === -1 || newIndex === -1) {
-        return previousItems;
-      }
+    if (oldIndex === -1 || newIndex === -1) {
+      return;
+    }
 
-      const nextItems = arrayMove(previousItems, oldIndex, newIndex);
-      void reorderDayPlans(nextItems.map((item) => item.id));
-      return nextItems;
+    const draggedItem = itineraryItems[oldIndex];
+    const targetItem = itineraryItems[newIndex];
+    const draggedTime = draggedItem.time;
+    const targetTime = targetItem.time;
+
+    // Use arrayMove as the physical base, then swap times on top
+    const moved = arrayMove(itineraryItems, oldIndex, newIndex);
+    const withSwappedTimes = moved.map((item) => {
+      if (item.id === draggedItem.id) return { ...item, time: targetTime };
+      if (item.id === targetItem.id) return { ...item, time: draggedTime };
+      return item;
     });
+
+    // Only re-sort by time when at least one item has a time; otherwise
+    // keep the arrayMove order so null-time items can be freely reordered
+    const hasTimes = withSwappedTimes.some((item) => item.time !== null);
+    const sorted = hasTimes ? sortItemsByTime(withSwappedTimes) : withSwappedTimes;
+
+    // Update UI immediately (no side effects inside the updater)
+    setItineraryItems(() => sorted);
+
+    // Persist time swaps and new sort order
+    if (draggedTime !== targetTime) {
+      void updateDayPlan(draggedItem.id, draggedItem.description, targetTime);
+      void updateDayPlan(targetItem.id, targetItem.description, draggedTime);
+    }
+    void reorderDayPlans(sorted.map((item) => item.id));
   };
 
   const renderItineraryItems = () => {
@@ -193,8 +227,9 @@ export function DayColumn({
                 <InlineEditActivity
                   key={item.id}
                   initialValue={item.description}
+                  initialTime={item.time}
                   error={updateError || deleteError || undefined}
-                  onSave={(desc) => { void handleUpdate(item.id, desc); }}
+                  onSave={(desc, time) => { void handleUpdate(item.id, desc, time); }}
                   onCancel={handleCancelEdit}
                   onDelete={() => { void handleDelete(item.id); }}
                   onClearError={() => { clearUpdateError(); clearDeleteError(); }}
@@ -214,7 +249,7 @@ export function DayColumn({
     );
   };
 
-  const { weekday, monthDay } = formatDate(date);
+  const { weekday, monthDay } = formatDayHeader(date);
 
   useEffect(() => {
     void loadDayPlans();

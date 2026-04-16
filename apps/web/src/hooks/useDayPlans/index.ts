@@ -9,16 +9,19 @@ import {
 import type { ItineraryItem } from "@/types/itinerary";
 import { getSupabaseAccessToken } from "@/utils/getSupabaseAccessToken";
 import { toDateOnlyISOString } from "@/utils/toDateOnlyISOString";
+import { normalizeTime } from "@/utils/timeOptions";
 import type { UseDayPlansParams, UseDayPlansReturn } from "./types";
 
 function mapApiItineraryItemToUi(item: {
   id: string;
   description: string;
+  time: string | null;
   created_at: string;
 }): ItineraryItem {
   return {
     id: item.id,
     description: item.description,
+    time: normalizeTime(item.time),
     createdAt: new Date(item.created_at),
   };
 }
@@ -61,7 +64,7 @@ export function useDayPlans({
   }, [day, travelPlanId]);
 
   const createDayPlanForDay = useCallback(
-    async (description: string) => {
+    async (description: string, time?: string | null) => {
       setIsCreating(true);
       setCreateError(null);
 
@@ -75,7 +78,7 @@ export function useDayPlans({
         const created = await createDayPlan(
           travelPlanId,
           day,
-          { description },
+          { description, time: time ?? null },
           accessToken,
         );
 
@@ -94,7 +97,7 @@ export function useDayPlans({
   );
 
   const updateDayPlanForDay = useCallback(
-    async (itemId: string, description: string) => {
+    async (itemId: string, description: string, time?: string | null) => {
       setIsUpdating(true);
       setUpdateError(null);
 
@@ -109,7 +112,7 @@ export function useDayPlans({
           travelPlanId,
           day,
           itemId,
-          { description },
+          { description, time: time ?? null },
           accessToken,
         );
 
@@ -181,7 +184,8 @@ export function useDayPlans({
     isUpdating,
     updateError,
     clearUpdateError: () => setUpdateError(null),
-    updateDayPlan: updateDayPlanForDay,
+    updateDayPlan: (itemId: string, description: string, time?: string | null) =>
+      updateDayPlanForDay(itemId, description, time),
     isDeleting,
     deleteError,
     clearDeleteError: () => setDeleteError(null),

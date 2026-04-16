@@ -13,10 +13,12 @@ export interface ItineraryItemApiResponse {
 
 export interface CreateDayPlanRequest {
   description: string;
+  time?: string | null;
 }
 
 export interface UpdateDayPlanRequest {
   description: string;
+  time?: string | null;
 }
 
 export interface ReorderDayPlansRequest {

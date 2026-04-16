@@ -18,12 +18,12 @@ export interface UseDayPlansReturn {
   isCreating: boolean;
   createError: string | null;
   clearCreateError: () => void;
-  createDayPlan: (description: string) => Promise<void>;
+  createDayPlan: (description: string, time?: string | null) => Promise<void>;
 
   isUpdating: boolean;
   updateError: string | null;
   clearUpdateError: () => void;
-  updateDayPlan: (itemId: string, description: string) => Promise<void>;
+  updateDayPlan: (itemId: string, description: string, time?: string | null) => Promise<void>;
 
   isDeleting: boolean;
   deleteError: string | null;

@@ -95,7 +95,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse): Promise<voi
 async function handlePost(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const user = await getAuthenticatedUser(req.headers.authorization);
   const { travelPlanId, day } = extractParams(req);
-  const { description } = validateCreateItineraryItem(req.body);
+  const { description, time } = validateCreateItineraryItem(req.body);
 
   await assertAccess(user.userId, travelPlanId);
 
@@ -108,6 +108,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse): Promise<vo
       travel_plan_id: travelPlanId,
       date: day,
       description,
+      time: time ?? null,
       created_by_user_id: user.userId,
       sort_order: sortOrder,
     })
