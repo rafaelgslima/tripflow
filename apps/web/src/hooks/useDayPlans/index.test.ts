@@ -6,6 +6,7 @@ import {
   deleteDayPlan,
   fetchDayPlans,
   reorderDayPlans,
+  toggleDayPlanDone,
   updateDayPlan,
 } from "@/lib/api/dayPlans";
 import { supabase } from "@/lib/supabase";
@@ -16,6 +17,7 @@ vi.mock("@/lib/api/dayPlans", () => ({
   updateDayPlan: vi.fn(),
   deleteDayPlan: vi.fn(),
   reorderDayPlans: vi.fn(),
+  toggleDayPlanDone: vi.fn(),
 }));
 
 vi.mock("@/lib/supabase", () => ({
@@ -32,6 +34,7 @@ describe("useDayPlans", () => {
   const mockUpdateDayPlan = vi.mocked(updateDayPlan);
   const mockDeleteDayPlan = vi.mocked(deleteDayPlan);
   const mockReorderDayPlans = vi.mocked(reorderDayPlans);
+  const mockToggleDayPlanDone = vi.mocked(toggleDayPlanDone);
   const mockGetSession = vi.mocked(supabase.auth.getSession);
 
   const travelPlanId = "plan-1";
@@ -54,6 +57,7 @@ describe("useDayPlans", () => {
         date: "2026-03-20",
         time: null,
         description: "Breakfast",
+        is_done: false,
         created_by_user_id: "user-1",
         created_at: "2026-03-16T00:00:00.000Z",
         updated_at: "2026-03-16T00:00:00.000Z",
@@ -92,6 +96,7 @@ describe("useDayPlans", () => {
       date: "2026-03-20",
       time: null,
       description: "Visit museum",
+      is_done: false,
       created_by_user_id: "user-1",
       created_at: "2026-03-16T00:00:00.000Z",
       updated_at: "2026-03-16T00:00:00.000Z",
@@ -163,6 +168,7 @@ describe("useDayPlans", () => {
         date: "2026-03-20",
         time: null,
         description: "Breakfast",
+        is_done: false,
         created_by_user_id: "user-1",
         created_at: "2026-03-16T00:00:00.000Z",
         updated_at: "2026-03-16T00:00:00.000Z",
@@ -175,6 +181,7 @@ describe("useDayPlans", () => {
       date: "2026-03-20",
       time: null,
       description: "Brunch",
+      is_done: false,
       created_by_user_id: "user-1",
       created_at: "2026-03-16T00:00:00.000Z",
       updated_at: "2026-03-16T00:00:00.000Z",
@@ -217,6 +224,7 @@ describe("useDayPlans", () => {
         date: "2026-03-20",
         time: null,
         description: "Breakfast",
+        is_done: false,
         created_by_user_id: "user-1",
         created_at: "2026-03-16T00:00:00.000Z",
         updated_at: "2026-03-16T00:00:00.000Z",
@@ -243,6 +251,151 @@ describe("useDayPlans", () => {
     );
 
     expect(result.current.itineraryItems).toHaveLength(0);
+  });
+
+  it("toggleDone optimistically marks item as done and calls the API", async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: "token-toggle" } },
+      error: null,
+    } as never);
+
+    mockFetchDayPlans.mockResolvedValue([
+      {
+        id: "item-1",
+        travel_plan_id: travelPlanId,
+        date: "2026-03-20",
+        time: null,
+        description: "Breakfast",
+        is_done: false,
+        created_by_user_id: "user-1",
+        created_at: "2026-03-16T00:00:00.000Z",
+        updated_at: "2026-03-16T00:00:00.000Z",
+      },
+    ]);
+
+    mockToggleDayPlanDone.mockResolvedValue({
+      id: "item-1",
+      travel_plan_id: travelPlanId,
+      date: "2026-03-20",
+      time: null,
+      description: "Breakfast",
+      is_done: true,
+      created_by_user_id: "user-1",
+      created_at: "2026-03-16T00:00:00.000Z",
+      updated_at: "2026-03-16T00:00:00.000Z",
+    });
+
+    const { result } = renderHook(() => useDayPlans({ travelPlanId, date }));
+
+    await act(async () => {
+      await result.current.loadDayPlans();
+    });
+
+    await act(async () => {
+      await result.current.toggleDone("item-1", true);
+    });
+
+    expect(mockToggleDayPlanDone).toHaveBeenCalledWith(
+      travelPlanId,
+      "2026-03-20",
+      "item-1",
+      true,
+      "token-toggle",
+    );
+
+    expect(result.current.itineraryItems[0].isDone).toBe(true);
+  });
+
+  it("toggleDone reverts optimistic update on API failure", async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: "token-revert" } },
+      error: null,
+    } as never);
+
+    mockFetchDayPlans.mockResolvedValue([
+      {
+        id: "item-1",
+        travel_plan_id: travelPlanId,
+        date: "2026-03-20",
+        time: null,
+        description: "Breakfast",
+        is_done: false,
+        created_by_user_id: "user-1",
+        created_at: "2026-03-16T00:00:00.000Z",
+        updated_at: "2026-03-16T00:00:00.000Z",
+      },
+    ]);
+
+    mockToggleDayPlanDone.mockRejectedValue(new Error("Network error"));
+
+    const { result } = renderHook(() => useDayPlans({ travelPlanId, date }));
+
+    await act(async () => {
+      await result.current.loadDayPlans();
+    });
+
+    await act(async () => {
+      await result.current.toggleDone("item-1", true);
+    });
+
+    // Should revert to false after failure
+    expect(result.current.itineraryItems[0].isDone).toBe(false);
+    expect(result.current.toggleDoneError).toBe(
+      "Unable to update activity. Try again later.",
+    );
+  });
+
+  it("toggleDone unchecks (undo) a done item", async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: "token-undo" } },
+      error: null,
+    } as never);
+
+    mockFetchDayPlans.mockResolvedValue([
+      {
+        id: "item-1",
+        travel_plan_id: travelPlanId,
+        date: "2026-03-20",
+        time: null,
+        description: "Breakfast",
+        is_done: true,
+        created_by_user_id: "user-1",
+        created_at: "2026-03-16T00:00:00.000Z",
+        updated_at: "2026-03-16T00:00:00.000Z",
+      },
+    ]);
+
+    mockToggleDayPlanDone.mockResolvedValue({
+      id: "item-1",
+      travel_plan_id: travelPlanId,
+      date: "2026-03-20",
+      time: null,
+      description: "Breakfast",
+      is_done: false,
+      created_by_user_id: "user-1",
+      created_at: "2026-03-16T00:00:00.000Z",
+      updated_at: "2026-03-16T00:00:00.000Z",
+    });
+
+    const { result } = renderHook(() => useDayPlans({ travelPlanId, date }));
+
+    await act(async () => {
+      await result.current.loadDayPlans();
+    });
+
+    await act(async () => {
+      await result.current.toggleDone("item-1", false);
+    });
+
+    expect(mockToggleDayPlanDone).toHaveBeenCalledWith(
+      travelPlanId,
+      "2026-03-20",
+      "item-1",
+      false,
+      "token-undo",
+    );
+
+    expect(result.current.itineraryItems[0].isDone).toBe(false);
   });
 
   it("reorders day plans by calling the API", async () => {

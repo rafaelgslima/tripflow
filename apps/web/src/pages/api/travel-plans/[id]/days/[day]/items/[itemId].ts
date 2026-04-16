@@ -8,7 +8,10 @@ import {
   ValidationError,
   InternalError,
 } from "@/lib/api-server/errors";
-import { validateUpdateItineraryItem } from "@/lib/api-server/validation";
+import {
+  validateUpdateItineraryItem,
+  validateToggleItineraryItemDone,
+} from "@/lib/api-server/validation";
 
 async function assertAccess(userId: string, travelPlanId: string): Promise<void> {
   const supabase = getSupabaseAdminClient();
@@ -104,6 +107,27 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse): Promise<voi
   res.status(200).json(data);
 }
 
+async function handlePatch(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+  const user = await getAuthenticatedUser(req.headers.authorization);
+  const { travelPlanId, day, itemId } = extractParams(req);
+  const { is_done } = validateToggleItineraryItemDone(req.body);
+
+  await assertAccess(user.userId, travelPlanId);
+  await fetchAndValidateItem(itemId, travelPlanId, day);
+
+  const supabase = getSupabaseAdminClient();
+  const { data, error } = await supabase
+    .from("itinerary_item")
+    .update({ is_done })
+    .eq("id", itemId)
+    .select()
+    .maybeSingle();
+
+  if (error || !data) throw new InternalError("Failed to update itinerary item.");
+
+  res.status(200).json(data);
+}
+
 async function handleDelete(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const user = await getAuthenticatedUser(req.headers.authorization);
   const { travelPlanId, day, itemId } = extractParams(req);
@@ -123,6 +147,7 @@ export default async function handler(
 ): Promise<void> {
   try {
     if (req.method === "PUT") return await handlePut(req, res);
+    if (req.method === "PATCH") return await handlePatch(req, res);
     if (req.method === "DELETE") return await handleDelete(req, res);
     methodNotAllowed(res);
   } catch (err) {

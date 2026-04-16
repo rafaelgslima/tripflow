@@ -44,6 +44,7 @@ export function DayColumn({
     clearDeleteError,
     deleteDayPlan,
     reorderDayPlans,
+    toggleDone,
   } = useDayPlans({ travelPlanId, date });
   const [isAdding, setIsAdding] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
@@ -241,6 +242,7 @@ export function DayColumn({
                 key={item.id}
                 item={item}
                 onEdit={handleEdit}
+                onToggleDone={(itemId, isDone) => { void toggleDone(itemId, isDone); }}
               />
             );
           })}

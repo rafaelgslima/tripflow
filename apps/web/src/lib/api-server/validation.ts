@@ -144,6 +144,21 @@ export function validateCreateShareInvite(body: unknown): CreateShareInviteBody 
   return { invited_email: invited_email.trim().toLowerCase() };
 }
 
+export interface ToggleItineraryItemDoneBody {
+  is_done: boolean;
+}
+
+export function validateToggleItineraryItemDone(body: unknown): ToggleItineraryItemDoneBody {
+  if (!body || typeof body !== "object") {
+    throw new ValidationError("Invalid request body.");
+  }
+  const b = body as Record<string, unknown>;
+  if (typeof b["is_done"] !== "boolean") {
+    throw new ValidationError("is_done must be a boolean.");
+  }
+  return { is_done: b["is_done"] };
+}
+
 export function validateAcceptShareInvite(body: unknown): AcceptShareInviteBody {
   if (!body || typeof body !== "object") {
     throw new ValidationError("Invalid request body.");
