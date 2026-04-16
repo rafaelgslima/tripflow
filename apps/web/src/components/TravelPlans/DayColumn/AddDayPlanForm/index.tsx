@@ -1,4 +1,5 @@
 import { useState, type ChangeEvent } from "react";
+import { TIME_OPTIONS } from "@/utils/timeOptions";
 import type { AddDayPlanFormProps } from "./types";
 
 export function AddDayPlanForm({
@@ -12,6 +13,7 @@ export function AddDayPlanForm({
   deleteLabel = "Delete",
 }: AddDayPlanFormProps) {
   const [description, setDescription] = useState(initialValue);
+  const [time, setTime] = useState<string>("");
   const [localError, setLocalError] = useState("");
 
   const displayError = error || localError;
@@ -22,13 +24,15 @@ export function AddDayPlanForm({
       setLocalError("This field is required");
       return;
     }
-    onConfirm(description);
+    onConfirm(description, time || null);
     setDescription("");
+    setTime("");
     setLocalError("");
   };
 
   const handleCancel = () => {
     setDescription("");
+    setTime("");
     setLocalError("");
     if (onClearError) onClearError();
     onCancel();
@@ -56,6 +60,19 @@ export function AddDayPlanForm({
         className={`tf-input${displayError ? " tf-input--error" : ""}`}
         autoFocus
       />
+
+      <select
+        value={time}
+        onChange={(e) => setTime(e.target.value)}
+        className="tf-input text-[12px] text-tf-muted"
+      >
+        <option value="">No time</option>
+        {TIME_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
 
       {displayError && (
         <p className="text-xs text-red-300 px-0.5">{displayError}</p>

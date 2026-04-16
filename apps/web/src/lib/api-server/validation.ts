@@ -8,10 +8,12 @@ export interface CreateTravelPlanBody {
 
 export interface CreateItineraryItemBody {
   description: string;
+  time: string | null;
 }
 
 export interface UpdateItineraryItemBody {
   description: string;
+  time: string | null;
 }
 
 export interface ReorderItineraryItemsBody {
@@ -72,17 +74,35 @@ export function validateCreateTravelPlan(body: unknown): CreateTravelPlanBody {
   return { destination_city, start_date, end_date };
 }
 
+const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+function parseOptionalTime(body: Record<string, unknown>): string | null {
+  const value = body["time"];
+  if (value === undefined || value === null || value === "") return null;
+  if (typeof value !== "string" || !TIME_REGEX.test(value)) {
+    throw new ValidationError("time must be in HH:MM format (e.g. '09:30').");
+  }
+  return value;
+}
+
 export function validateCreateItineraryItem(body: unknown): CreateItineraryItemBody {
   if (!body || typeof body !== "object") {
     throw new ValidationError("Invalid request body.");
   }
   const b = body as Record<string, unknown>;
   const description = requireString(b, "description", 2000);
-  return { description };
+  const time = parseOptionalTime(b);
+  return { description, time };
 }
 
 export function validateUpdateItineraryItem(body: unknown): UpdateItineraryItemBody {
-  return validateCreateItineraryItem(body);
+  if (!body || typeof body !== "object") {
+    throw new ValidationError("Invalid request body.");
+  }
+  const b = body as Record<string, unknown>;
+  const description = requireString(b, "description", 2000);
+  const time = parseOptionalTime(b);
+  return { description, time };
 }
 
 export function validateReorderItineraryItems(body: unknown): ReorderItineraryItemsBody {

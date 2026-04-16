@@ -86,7 +86,7 @@ async function fetchAndValidateItem(
 async function handlePut(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const user = await getAuthenticatedUser(req.headers.authorization);
   const { travelPlanId, day, itemId } = extractParams(req);
-  const { description } = validateUpdateItineraryItem(req.body);
+  const { description, time } = validateUpdateItineraryItem(req.body);
 
   await assertAccess(user.userId, travelPlanId);
   await fetchAndValidateItem(itemId, travelPlanId, day);
@@ -94,7 +94,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse): Promise<voi
   const supabase = getSupabaseAdminClient();
   const { data, error } = await supabase
     .from("itinerary_item")
-    .update({ description })
+    .update({ description, time: time ?? null })
     .eq("id", itemId)
     .select()
     .maybeSingle();

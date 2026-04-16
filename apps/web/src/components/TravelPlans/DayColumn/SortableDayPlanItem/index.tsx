@@ -1,5 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { formatTime } from "@/utils/timeOptions";
 import type { SortableDayPlanItemProps } from "./types";
 
 export function SortableDayPlanItem({
@@ -18,12 +19,12 @@ export function SortableDayPlanItem({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group flex items-center gap-2 py-2.5 px-2.5 bg-tf-bg-3 border border-tf-border rounded-[10px] font-outfit${isDragging ? " opacity-50" : ""}`}
+      className={`group flex items-start gap-2 py-2.5 px-2.5 bg-tf-bg-3 border border-tf-border rounded-[10px] font-outfit${isDragging ? " opacity-50" : ""}`}
       {...attributes}
     >
       {/* Drag handle */}
       <span
-        className="shrink-0 cursor-grab touch-none text-tf-muted opacity-25 group-hover:opacity-50 transition-opacity"
+        className="shrink-0 mt-[3px] cursor-grab touch-none text-tf-muted opacity-25 group-hover:opacity-50 transition-opacity"
         aria-label="Drag to reorder"
         {...listeners}
       >
@@ -37,16 +38,23 @@ export function SortableDayPlanItem({
         </svg>
       </span>
 
-      {/* Description */}
-      <span className="flex-1 min-w-0 break-words text-[13px] text-tf-text leading-[1.4] select-none">
-        {item.description}
-      </span>
+      {/* Content */}
+      <div className="flex-1 min-w-0 flex flex-col gap-[3px]">
+        {item.time && (
+          <span className="text-[11px] font-semibold text-tf-amber tracking-[0.03em] leading-none">
+            {formatTime(item.time)}
+          </span>
+        )}
+        <span className="break-words text-[13px] text-tf-text leading-[1.4] select-none">
+          {item.description}
+        </span>
+      </div>
 
-      {/* Edit button — always visible, unambiguous */}
+      {/* Edit button */}
       <button
         type="button"
         onClick={() => onEdit(item.id)}
-        className="shrink-0 cursor-pointer bg-transparent border-none p-[3px] text-tf-muted opacity-40 hover:opacity-100 hover:text-tf-amber transition-all duration-150 rounded-[4px] hover:bg-white/5"
+        className="shrink-0 mt-[1px] cursor-pointer bg-transparent border-none p-[3px] text-tf-muted opacity-40 hover:opacity-100 hover:text-tf-amber transition-all duration-150 rounded-[4px] hover:bg-white/5"
         aria-label={`Edit ${item.description}`}
       >
         <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
