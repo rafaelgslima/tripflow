@@ -6,6 +6,7 @@ export interface ItineraryItemApiResponse {
   date: string;
   time: string | null;
   description: string;
+  is_done: boolean;
   created_by_user_id: string;
   created_at: string;
   updated_at: string;
@@ -95,6 +96,21 @@ export async function deleteDayPlan(
       },
     },
   );
+}
+
+export async function toggleDayPlanDone(
+  travelPlanId: string,
+  day: string,
+  itemId: string,
+  isDone: boolean,
+  accessToken: string,
+): Promise<ItineraryItemApiResponse> {
+  const response = await apiClient.patch<ItineraryItemApiResponse>(
+    `/travel-plans/${travelPlanId}/days/${day}/items/${itemId}`,
+    { is_done: isDone },
+    { headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+  return response.data;
 }
 
 export async function reorderDayPlans(

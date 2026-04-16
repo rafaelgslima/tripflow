@@ -4,6 +4,7 @@ import {
   deleteDayPlan,
   fetchDayPlans,
   reorderDayPlans,
+  toggleDayPlanDone,
   updateDayPlan,
 } from "@/lib/api/dayPlans";
 import type { ItineraryItem } from "@/types/itinerary";
@@ -16,12 +17,14 @@ function mapApiItineraryItemToUi(item: {
   id: string;
   description: string;
   time: string | null;
+  is_done: boolean;
   created_at: string;
 }): ItineraryItem {
   return {
     id: item.id,
     description: item.description,
     time: normalizeTime(item.time),
+    isDone: item.is_done,
     createdAt: new Date(item.created_at),
   };
 }
@@ -39,6 +42,8 @@ export function useDayPlans({
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isTogglingDone, setIsTogglingDone] = useState(false);
+  const [toggleDoneError, setToggleDoneError] = useState<string | null>(null);
 
   const day = useMemo(() => toDateOnlyISOString(date), [date]);
 
@@ -158,6 +163,32 @@ export function useDayPlans({
     [day, travelPlanId],
   );
 
+  const toggleDoneForDay = useCallback(
+    async (itemId: string, isDone: boolean) => {
+      // Optimistic update
+      setItineraryItems((prev) =>
+        prev.map((item) => (item.id === itemId ? { ...item, isDone } : item)),
+      );
+      setIsTogglingDone(true);
+      setToggleDoneError(null);
+
+      try {
+        const accessToken = await getSupabaseAccessToken();
+        if (!accessToken) throw new Error("Session not found");
+        await toggleDayPlanDone(travelPlanId, day, itemId, isDone, accessToken);
+      } catch {
+        // Revert optimistic update on failure
+        setItineraryItems((prev) =>
+          prev.map((item) => (item.id === itemId ? { ...item, isDone: !isDone } : item)),
+        );
+        setToggleDoneError("Unable to update activity. Try again later.");
+      } finally {
+        setIsTogglingDone(false);
+      }
+    },
+    [day, travelPlanId],
+  );
+
   const reorderDayPlansForDay = useCallback(
     async (itemIdsInOrder: string[]) => {
       const accessToken = await getSupabaseAccessToken();
@@ -191,5 +222,9 @@ export function useDayPlans({
     clearDeleteError: () => setDeleteError(null),
     deleteDayPlan: deleteDayPlanForDay,
     reorderDayPlans: reorderDayPlansForDay,
+    isTogglingDone,
+    toggleDoneError,
+    clearToggleDoneError: () => setToggleDoneError(null),
+    toggleDone: toggleDoneForDay,
   };
 }

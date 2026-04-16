@@ -31,4 +31,9 @@ export interface UseDayPlansReturn {
   deleteDayPlan: (itemId: string) => Promise<void>;
 
   reorderDayPlans: (itemIdsInOrder: string[]) => Promise<void>;
+
+  isTogglingDone: boolean;
+  toggleDoneError: string | null;
+  clearToggleDoneError: () => void;
+  toggleDone: (itemId: string, isDone: boolean) => Promise<void>;
 }
