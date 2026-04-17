@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { MdCheckCircle, MdCancel } from "react-icons/md";
 import { useSignupForm } from "@/hooks/useSignupForm";
 import { PasswordInput } from "@/components/Form/PasswordInput";
 import type { SignupFormProps } from "./types";
@@ -163,61 +164,41 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
               </p>
               <div className={`flex items-center gap-2 text-xs font-outfit ${passwordRequirements.minLength ? "text-green-400" : "text-tf-muted"}`}>
                 {passwordRequirements.minLength ? (
-                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
+                  <MdCheckCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                 ) : (
-                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
+                  <MdCancel className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                 )}
                 <span>At least 8 characters</span>
               </div>
               <div className={`flex items-center gap-2 text-xs font-outfit ${passwordRequirements.hasUppercase ? "text-green-400" : "text-tf-muted"}`}>
                 {passwordRequirements.hasUppercase ? (
-                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
+                  <MdCheckCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                 ) : (
-                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
+                  <MdCancel className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                 )}
                 <span>One uppercase letter</span>
               </div>
               <div className={`flex items-center gap-2 text-xs font-outfit ${passwordRequirements.hasLowercase ? "text-green-400" : "text-tf-muted"}`}>
                 {passwordRequirements.hasLowercase ? (
-                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
+                  <MdCheckCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                 ) : (
-                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
+                  <MdCancel className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                 )}
                 <span>One lowercase letter</span>
               </div>
               <div className={`flex items-center gap-2 text-xs font-outfit ${passwordRequirements.hasNumber ? "text-green-400" : "text-tf-muted"}`}>
                 {passwordRequirements.hasNumber ? (
-                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
+                  <MdCheckCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                 ) : (
-                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
+                  <MdCancel className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                 )}
                 <span>One number</span>
               </div>
               <div className={`flex items-center gap-2 text-xs font-outfit ${passwordRequirements.hasSpecialChar ? "text-green-400" : "text-tf-muted"}`}>
                 {passwordRequirements.hasSpecialChar ? (
-                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
+                  <MdCheckCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                 ) : (
-                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
+                  <MdCancel className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                 )}
                 <span>One special character</span>
               </div>

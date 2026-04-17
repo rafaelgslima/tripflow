@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { MdAdd } from "react-icons/md";
 import { useTravelPlans } from "@/hooks/useTravelPlans";
 import { LoadingSpinner } from "@/components/Loading/LoadingSpinner";
 import { CreateTravelPlanModal } from "./CreateTravelPlanModal";
@@ -53,9 +54,7 @@ export function TravelPlans({ statusFilter }: TravelPlansProps = {}) {
           onClick={() => setIsModalOpen(true)}
           className="inline-flex items-center gap-2 py-[11px] px-[22px] bg-tf-amber text-[#0E0B09] border-none rounded-[10px] text-sm font-semibold font-outfit cursor-pointer tracking-[-0.01em] shadow-[0_4px_16px_rgba(232,162,58,0.25)]"
         >
-          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+          <MdAdd size={16} aria-hidden="true" />
           New trip
         </button>
       </div>

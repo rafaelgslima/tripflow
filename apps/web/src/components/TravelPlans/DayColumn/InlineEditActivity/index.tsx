@@ -1,4 +1,5 @@
 import { useState, useEffect, type ChangeEvent } from "react";
+import { MdClose, MdCheck, MdDelete } from "react-icons/md";
 import { TIME_OPTIONS } from "@/utils/timeOptions";
 import type { InlineEditActivityProps } from "./types";
 
@@ -79,9 +80,7 @@ export function InlineEditActivity({
           className="shrink-0 w-8 h-8 flex items-center justify-center rounded-[7px] border border-tf-border bg-transparent text-tf-muted hover:text-tf-text hover:border-white/15 cursor-pointer transition-colors duration-150"
           aria-label="Cancel"
         >
-          <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <MdClose size={11} aria-hidden="true" />
         </button>
 
         <button
@@ -90,9 +89,7 @@ export function InlineEditActivity({
           className="flex-1 h-8 flex items-center justify-center gap-1 rounded-[7px] bg-tf-amber text-[#0E0B09] text-[11px] font-semibold border-none cursor-pointer transition-opacity duration-150 hover:opacity-90 font-outfit"
           aria-label="Save changes"
         >
-          <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-          </svg>
+          <MdCheck size={11} aria-hidden="true" />
           Save
         </button>
 
@@ -102,9 +99,7 @@ export function InlineEditActivity({
           className="shrink-0 w-8 h-8 flex items-center justify-center rounded-[7px] border border-red-500/25 bg-red-500/10 text-red-300 hover:bg-red-500/20 cursor-pointer transition-colors duration-150"
           aria-label="Delete activity"
         >
-          <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
+          <MdDelete size={12} aria-hidden="true" />
         </button>
       </div>
     </div>

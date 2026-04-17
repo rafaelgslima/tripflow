@@ -1,3 +1,4 @@
+import { MdCheckCircle, MdHourglassBottom } from "react-icons/md";
 import { useTravelPlanShares } from "@/hooks/useTravelPlanShares";
 import type { ShareStatusListProps } from "./types";
 
@@ -24,21 +25,11 @@ export function ShareStatusList({
               isAccepted ? "text-green-400" : "text-amber-400"
             }`}
           >
-            <svg
-              width="10"
-              height="10"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              className="shrink-0 mt-[1px]"
-            >
-              {isAccepted ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              )}
-            </svg>
+            {isAccepted ? (
+              <MdCheckCircle size={10} aria-hidden="true" className="shrink-0 mt-[1px]" />
+            ) : (
+              <MdHourglassBottom size={10} aria-hidden="true" className="shrink-0 mt-[1px]" />
+            )}
             <span className="min-w-0">
               Shared with{" "}
               <span className={`${isAccepted ? "font-semibold" : "font-medium break-all"}`}>

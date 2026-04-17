@@ -1,4 +1,5 @@
 import { useState, type ChangeEvent } from "react";
+import { MdCheck } from "react-icons/md";
 import { TIME_OPTIONS } from "@/utils/timeOptions";
 import type { AddDayPlanFormProps } from "./types";
 
@@ -84,9 +85,7 @@ export function AddDayPlanForm({
         onClick={handleConfirm}
         className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-[8px] bg-tf-amber text-[#0E0B09] text-xs font-semibold border-none cursor-pointer transition-opacity duration-150 hover:opacity-90 font-outfit"
       >
-        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-        </svg>
+        <MdCheck size={12} aria-hidden="true" />
         {confirmLabel}
       </button>
 

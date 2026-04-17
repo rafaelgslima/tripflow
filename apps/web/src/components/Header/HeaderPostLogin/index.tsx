@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useState } from "react";
+import { MdMenu, MdClose } from "react-icons/md";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
 import { SessionTimeoutWarning } from "@/components/SessionTimeoutWarning";
@@ -72,9 +73,7 @@ export function HeaderPostLogin() {
             aria-expanded={isMobileMenuOpen}
             onClick={handleMobileMenuToggle}
           >
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+            <MdMenu size={20} />
           </button>
         </nav>
       </header>
@@ -95,9 +94,7 @@ export function HeaderPostLogin() {
               onClick={handleMobileMenuClose}
               className="p-2 rounded-lg text-tf-muted bg-transparent border-none cursor-pointer"
             >
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <MdClose size={20} />
             </button>
           </div>
 
