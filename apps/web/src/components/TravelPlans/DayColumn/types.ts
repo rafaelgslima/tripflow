@@ -6,6 +6,7 @@ export interface DayColumnProps {
   date: Date;
   dayNumber: number;
   isMobile?: boolean;
+  shouldShowMoveButton?: boolean;
 
   // Controlled items state (managed by DayColumnsGrid via useTravelPlanItems)
   items: ItineraryItem[];
@@ -23,4 +24,5 @@ export interface DayColumnProps {
   onUpdateItem: (itemId: string, description: string, time: string | null) => Promise<void>;
   onDeleteItem: (itemId: string) => Promise<void>;
   onToggleDone: (itemId: string, isDone: boolean) => void;
+  onMoveUnfinishedToNextDay: () => Promise<void>;
 }

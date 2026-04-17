@@ -33,6 +33,7 @@ function makeProps(overrides: Partial<DayColumnProps> = {}): DayColumnProps {
     onUpdateItem: vi.fn().mockResolvedValue(undefined),
     onDeleteItem: vi.fn().mockResolvedValue(undefined),
     onToggleDone: vi.fn(),
+    onMoveUnfinishedToNextDay: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }
@@ -188,6 +189,57 @@ describe("DayColumn", () => {
 
       await waitFor(() => {
         expect(onDeleteItem).toHaveBeenCalledWith("item-1");
+      });
+    });
+  });
+
+  describe("Move incomplete activities to next day", () => {
+    it("does not show move button when shouldShowMoveButton is false", () => {
+      renderWithDnd(makeProps({ shouldShowMoveButton: false }));
+      expect(screen.queryByRole("button", { name: /move incomplete to next day/i })).not.toBeInTheDocument();
+    });
+
+    it("shows move button when shouldShowMoveButton is true", () => {
+      renderWithDnd(makeProps({ shouldShowMoveButton: true }));
+      expect(screen.getByRole("button", { name: /move incomplete to next day/i })).toBeInTheDocument();
+    });
+
+    it("calls onMoveUnfinishedToNextDay when button is clicked", async () => {
+      const onMoveUnfinishedToNextDay = vi.fn().mockResolvedValue(undefined);
+      renderWithDnd(
+        makeProps({
+          shouldShowMoveButton: true,
+          items: [makeItem("item-1", "Incomplete task", "09:00")],
+          onMoveUnfinishedToNextDay,
+        }),
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /move incomplete to next day/i }));
+
+      await waitFor(() => {
+        expect(onMoveUnfinishedToNextDay).toHaveBeenCalled();
+      });
+    });
+
+    it("disables move button while loading", async () => {
+      const onMoveUnfinishedToNextDay = vi.fn().mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 100))
+      );
+      renderWithDnd(
+        makeProps({
+          shouldShowMoveButton: true,
+          items: [makeItem("item-1", "Incomplete task")],
+          onMoveUnfinishedToNextDay,
+        }),
+      );
+
+      const button = screen.getByRole("button", { name: /move incomplete to next day/i });
+      fireEvent.click(button);
+
+      expect(button).toBeDisabled();
+
+      await waitFor(() => {
+        expect(button).not.toBeDisabled();
       });
     });
   });
