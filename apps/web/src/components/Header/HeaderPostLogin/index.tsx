@@ -57,6 +57,7 @@ export function HeaderPostLogin() {
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
             <Link href="/home" className="tf-nav-link">My trips</Link>
+            <Link href="/past-trips" className="tf-nav-link">Past trips</Link>
             <Link href="/profile" className="tf-nav-link">Profile</Link>
             <button type="button" onClick={handleLogout} className="tf-btn-logout">
               Log out
@@ -108,6 +109,13 @@ export function HeaderPostLogin() {
                 className="block py-[14px] px-4 text-[18px] font-medium text-tf-text no-underline font-outfit rounded-xl"
               >
                 My trips
+              </Link>
+              <Link
+                href="/past-trips"
+                onClick={handleMobileMenuClose}
+                className="block py-[14px] px-4 text-[18px] font-medium text-tf-text no-underline font-outfit rounded-xl"
+              >
+                Past trips
               </Link>
               <Link
                 href="/profile"

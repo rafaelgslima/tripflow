@@ -7,7 +7,7 @@ export default function HomePage() {
       <div className="grain" aria-hidden="true" />
       <HeaderPostLogin />
       <main className="max-w-[1200px] mx-auto py-12 px-6 relative z-[1]">
-        <TravelPlans />
+        <TravelPlans statusFilter="active" />
       </main>
     </div>
   );

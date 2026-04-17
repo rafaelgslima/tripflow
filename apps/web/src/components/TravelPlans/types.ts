@@ -7,5 +7,5 @@ export interface TravelPlan {
 }
 
 export interface TravelPlansProps {
-  // Props will be added when API integration happens
+  statusFilter?: "active" | "past";
 }

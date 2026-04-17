@@ -7,12 +7,23 @@ import { validateCreateTravelPlan } from "@/lib/api-server/validation";
 async function handleGet(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const user = await getAuthenticatedUser(req.headers.authorization);
   const supabase = getSupabaseAdminClient();
+  const status = req.query.status as string | undefined;
+  const today = new Date().toISOString().split("T")[0]; // UTC date string: "YYYY-MM-DD"
 
-  const { data: ownedPlans, error: ownedError } = await supabase
+  // Build owned plans query with optional status filter
+  let ownedQuery = supabase
     .from("travel_plan")
     .select("*")
-    .eq("owner_user_id", user.userId)
-    .order("start_date", { ascending: true });
+    .eq("owner_user_id", user.userId);
+
+  if (status === "active") {
+    ownedQuery = ownedQuery.gte("end_date", today);
+  } else if (status === "past") {
+    ownedQuery = ownedQuery.lt("end_date", today);
+  }
+
+  ownedQuery = ownedQuery.order("start_date", { ascending: true });
+  const { data: ownedPlans, error: ownedError } = await ownedQuery;
 
   if (ownedError) throw new InternalError("Failed to fetch travel plans.");
 
@@ -30,11 +41,20 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse): Promise<voi
 
   let sharedPlans: Record<string, unknown>[] = [];
   if (sharedIds.length > 0) {
-    const { data, error } = await supabase
+    // Build shared plans query with optional status filter
+    let sharedQuery = supabase
       .from("travel_plan")
       .select("*")
-      .in("id", sharedIds)
-      .order("start_date", { ascending: true });
+      .in("id", sharedIds);
+
+    if (status === "active") {
+      sharedQuery = sharedQuery.gte("end_date", today);
+    } else if (status === "past") {
+      sharedQuery = sharedQuery.lt("end_date", today);
+    }
+
+    sharedQuery = sharedQuery.order("start_date", { ascending: true });
+    const { data, error } = await sharedQuery;
 
     if (error) throw new InternalError("Failed to fetch shared travel plans.");
     sharedPlans = (data as Record<string, unknown>[]) ?? [];

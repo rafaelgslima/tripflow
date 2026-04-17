@@ -54,6 +54,7 @@ export async function createTravelPlan(
 
 export async function fetchTravelPlans(
   accessToken: string,
+  status?: "active" | "past",
 ): Promise<TravelPlanApiResponse[]> {
   const response = await apiClient.get<TravelPlanApiResponse[]>(
     "/travel-plans",
@@ -61,6 +62,7 @@ export async function fetchTravelPlans(
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      params: status ? { status } : undefined,
     },
   );
 

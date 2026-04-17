@@ -5,7 +5,7 @@ import { CreateTravelPlanModal } from "./CreateTravelPlanModal";
 import { TravelPlansList } from "./TravelPlansList";
 import type { TravelPlansProps } from "./types";
 
-export function TravelPlans({}: TravelPlansProps = {}) {
+export function TravelPlans({ statusFilter }: TravelPlansProps = {}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
@@ -16,7 +16,7 @@ export function TravelPlans({}: TravelPlansProps = {}) {
     createPlan,
     createError,
     deletePlan,
-  } = useTravelPlans();
+  } = useTravelPlans(statusFilter);
 
   useEffect(() => {
     void loadTravelPlans();

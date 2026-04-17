@@ -25,7 +25,7 @@ function mapApiTravelPlanToUi(travelPlan: {
   };
 }
 
-export function useTravelPlans(): UseTravelPlansReturn {
+export function useTravelPlans(statusFilter?: "active" | "past"): UseTravelPlansReturn {
   const [travelPlans, setTravelPlans] = useState<TravelPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -44,14 +44,14 @@ export function useTravelPlans(): UseTravelPlansReturn {
         return;
       }
 
-      const plans = await fetchTravelPlans(accessToken);
+      const plans = await fetchTravelPlans(accessToken, statusFilter);
       setTravelPlans(plans.map(mapApiTravelPlanToUi));
     } catch {
       setLoadError("Travel plans couldn't be retrieved.");
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [statusFilter]);
 
   const createPlan = useCallback(
     async (destination: string, startDate: Date, endDate: Date) => {

@@ -5,6 +5,7 @@ import { toDateOnlyISOString } from "@/utils/toDateOnlyISOString";
 import { AddDayPlanForm } from "./AddDayPlanForm";
 import { InlineEditActivity } from "./InlineEditActivity";
 import { SortableDayPlanItem } from "./SortableDayPlanItem";
+import { DayPlanItemCard } from "./DayPlanItemCard";
 import type { DayColumnProps } from "./types";
 
 export function DayColumn({
@@ -12,6 +13,7 @@ export function DayColumn({
   dayNumber,
   isMobile = false,
   shouldShowMoveButton = false,
+  readOnly = false,
   items,
   isLoading,
   loadError,
@@ -160,6 +162,17 @@ export function DayColumn({
           />
         );
       }
+      if (readOnly) {
+        return (
+          <DayPlanItemCard
+            key={item.id}
+            item={item}
+            onEdit={() => {}}
+            onToggleDone={() => {}}
+            readOnly
+          />
+        );
+      }
       return (
         <SortableDayPlanItem
           key={item.id}
@@ -218,7 +231,7 @@ export function DayColumn({
                 onClearError={onClearCreateError}
               />
             )}
-            {!isAdding && !editingItemId && (
+            {!isAdding && !editingItemId && !readOnly && (
               <>
                 <button
                   type="button"
@@ -281,7 +294,7 @@ export function DayColumn({
       </div>
 
       {/* Add Plan Button & Move Unfinished Button */}
-      {!isAdding && !editingItemId && (
+      {!isAdding && !editingItemId && !readOnly && (
         <div className="flex flex-col gap-2">
           <button
             type="button"
