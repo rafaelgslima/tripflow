@@ -7,6 +7,8 @@ export interface DayColumnProps {
   dayNumber: number;
   isMobile?: boolean;
   shouldShowMoveButton?: boolean;
+  /** When true, disables editing, adding, and moving activities */
+  readOnly?: boolean;
 
   // Controlled items state (managed by DayColumnsGrid via useTravelPlanItems)
   items: ItineraryItem[];

@@ -6,4 +6,6 @@ export interface DayPlanItemCardProps {
   onToggleDone: (itemId: string, isDone: boolean) => void;
   /** Listeners from useSortable — omit when rendering in a DragOverlay */
   dragListeners?: Record<string, (event: Event) => void>;
+  /** When true, disables editing, done-toggle, and visual interactivity */
+  readOnly?: boolean;
 }

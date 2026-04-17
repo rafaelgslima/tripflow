@@ -1,7 +1,7 @@
 import { formatTime } from "@/utils/timeOptions";
 import type { DayPlanItemCardProps } from "./types";
 
-export function DayPlanItemCard({ item, onEdit, onToggleDone, dragListeners }: DayPlanItemCardProps) {
+export function DayPlanItemCard({ item, onEdit, onToggleDone, dragListeners, readOnly }: DayPlanItemCardProps) {
   return (
     <div
       className={[
@@ -14,11 +14,13 @@ export function DayPlanItemCard({ item, onEdit, onToggleDone, dragListeners }: D
       {/* Done toggle */}
       <button
         type="button"
-        onClick={() => onToggleDone(item.id, !item.isDone)}
+        onClick={() => !readOnly && onToggleDone(item.id, !item.isDone)}
+        disabled={readOnly}
         aria-label={item.isDone ? "Mark as not done" : "Mark as done"}
         aria-pressed={item.isDone}
         className={[
-          "shrink-0 flex items-center justify-center w-9 border-r transition-colors duration-300 cursor-pointer bg-transparent",
+          "shrink-0 flex items-center justify-center w-9 border-r transition-colors duration-300 bg-transparent",
+          readOnly ? "cursor-default opacity-60" : "cursor-pointer",
           item.isDone
             ? "border-white/[0.06]"
             : "border-white/[0.06] hover:bg-white/[0.03]",
@@ -47,7 +49,7 @@ export function DayPlanItemCard({ item, onEdit, onToggleDone, dragListeners }: D
 
       {/* Content — drag handle when dragListeners provided */}
       <div
-        className="flex-1 min-w-0 flex flex-col gap-[3px] py-2.5 px-2.5 cursor-grab touch-none"
+        className={`flex-1 min-w-0 flex flex-col gap-[3px] py-2.5 px-2.5 touch-none ${readOnly ? "cursor-default" : "cursor-grab"}`}
         {...dragListeners}
       >
         {item.time && (
@@ -73,33 +75,35 @@ export function DayPlanItemCard({ item, onEdit, onToggleDone, dragListeners }: D
       </div>
 
       {/* Edit button */}
-      <button
-        type="button"
-        onClick={() => onEdit(item.id)}
-        aria-label={`Edit ${item.description}`}
-        className={[
-          "shrink-0 flex items-center justify-center w-10 bg-transparent border-none cursor-pointer transition-all duration-150 rounded-r-[9px]",
-          item.isDone
-            ? "text-tf-muted opacity-20"
-            : "text-tf-muted opacity-40 md:opacity-0 md:group-hover:opacity-60 hover:opacity-100 hover:text-tf-amber hover:bg-white/5",
-        ].join(" ")}
-      >
-        <svg
-          width="13"
-          height="13"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
+      {!readOnly && (
+        <button
+          type="button"
+          onClick={() => onEdit(item.id)}
+          aria-label={`Edit ${item.description}`}
+          className={[
+            "shrink-0 flex items-center justify-center w-10 bg-transparent border-none cursor-pointer transition-all duration-150 rounded-r-[9px]",
+            item.isDone
+              ? "text-tf-muted opacity-20"
+              : "text-tf-muted opacity-40 md:opacity-0 md:group-hover:opacity-60 hover:opacity-100 hover:text-tf-amber hover:bg-white/5",
+          ].join(" ")}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-          />
-        </svg>
-      </button>
+          <svg
+            width="13"
+            height="13"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }

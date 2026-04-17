@@ -7,7 +7,7 @@ import { ShareStatusList } from "../ShareStatusList";
 import { ShareTravelPlanButton } from "../ShareTravelPlanButton";
 import type { TravelPlansListProps } from "./types";
 
-export function TravelPlansList({ plans, onDeletePlan }: TravelPlansListProps) {
+export function TravelPlansList({ plans, onDeletePlan, readOnly = false }: TravelPlansListProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [shareRefreshKeys, setShareRefreshKeys] = useState<Record<string, number>>({});
 
@@ -36,13 +36,15 @@ export function TravelPlansList({ plans, onDeletePlan }: TravelPlansListProps) {
                     {formatDateRange(plan.startDate, plan.endDate)} · {days.length} {days.length === 1 ? "day" : "days"}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <ShareTravelPlanButton
-                    travelPlanId={plan.id}
-                    onShareCreated={() => handleShareCreated(plan.id)}
-                  />
-                  <DeleteTravelPlanButton travelPlanId={plan.id} onDelete={onDeletePlan} />
-                </div>
+                {!readOnly && (
+                  <div className="flex items-center gap-2 shrink-0">
+                    <ShareTravelPlanButton
+                      travelPlanId={plan.id}
+                      onShareCreated={() => handleShareCreated(plan.id)}
+                    />
+                    <DeleteTravelPlanButton travelPlanId={plan.id} onDelete={onDeletePlan} />
+                  </div>
+                )}
               </div>
               <ShareStatusList
                 travelPlanId={plan.id}
@@ -54,6 +56,7 @@ export function TravelPlansList({ plans, onDeletePlan }: TravelPlansListProps) {
               travelPlanId={plan.id}
               days={days}
               isMobile={!isDesktop}
+              readOnly={readOnly}
             />
           </div>
         );

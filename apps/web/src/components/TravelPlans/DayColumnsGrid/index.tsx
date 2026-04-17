@@ -19,7 +19,10 @@ import { sortItemsByTime, shouldShowMoveIncompleteButton } from "@/utils/timeOpt
 import { DayColumn } from "../DayColumn";
 import type { DayColumnsGridProps } from "./types";
 
-export function DayColumnsGrid({ travelPlanId, days, isMobile }: DayColumnsGridProps) {
+const noop = () => {};
+const noopAsync = async () => {};
+
+export function DayColumnsGrid({ travelPlanId, days, isMobile, readOnly = false }: DayColumnsGridProps) {
   const travelPlanItems = useTravelPlanItems({ travelPlanId });
   const dayStrings = useMemo(() => days.map((d) => toDateOnlyISOString(d)), [days]);
   const [activeItem, setActiveItem] = useState<ItineraryItem | null>(null);
@@ -107,6 +110,49 @@ export function DayColumnsGrid({ travelPlanId, days, isMobile }: DayColumnsGridP
       void travelPlanItems.moveItemBetweenDays(activeId, activeDay, overDay);
     }
   };
+
+  // Read-only mode: skip DnD context entirely
+  if (readOnly) {
+    const readOnlyColumns = days.map((day, index) => {
+      const dayString = toDateOnlyISOString(day);
+      const dayState = travelPlanItems.getDay(dayString);
+
+      return (
+        <DayColumn
+          key={day.toISOString()}
+          date={day}
+          dayNumber={index + 1}
+          isMobile={isMobile}
+          readOnly
+          shouldShowMoveButton={false}
+          items={dayState.items}
+          isLoading={dayState.isLoading}
+          loadError={dayState.loadError}
+          createError={dayState.createError}
+          updateError={dayState.updateError}
+          deleteError={dayState.deleteError}
+          onClearCreateError={noop}
+          onClearUpdateError={noop}
+          onClearDeleteError={noop}
+          onCreateItem={noopAsync}
+          onUpdateItem={noopAsync}
+          onDeleteItem={noopAsync}
+          onToggleDone={noop}
+          onMoveUnfinishedToNextDay={noopAsync}
+        />
+      );
+    });
+
+    return isMobile ? (
+      <div className="flex flex-col gap-2">{readOnlyColumns}</div>
+    ) : (
+      <div className="overflow-x-auto">
+        <div className="flex gap-3" style={{ minWidth: "100%" }}>
+          {readOnlyColumns}
+        </div>
+      </div>
+    );
+  }
 
   const columns = days.map((day, index) => {
     const dayString = toDateOnlyISOString(day);
