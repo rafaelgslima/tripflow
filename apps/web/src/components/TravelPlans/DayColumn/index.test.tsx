@@ -1,462 +1,194 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, expect, it, beforeEach, vi } from "vitest";
-import { supabase } from "@/lib/supabase";
-import {
-  createDayPlan,
-  deleteDayPlan,
-  fetchDayPlans,
-  updateDayPlan,
-} from "@/lib/api/dayPlans";
 import { DayColumn } from "./index";
+import type { DayColumnProps } from "./types";
+import type { ItineraryItem } from "@/types/itinerary";
 
-vi.mock("@/lib/supabase", () => ({
-  supabase: {
-    auth: {
-      getSession: vi.fn(),
-    },
-  },
-}));
+// DayColumn now requires a DndContext ancestor for useDroppable
+vi.mock("@dnd-kit/core", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("@dnd-kit/core")>();
+  return { ...mod };
+});
 
-vi.mock("@/lib/api/dayPlans", () => ({
-  fetchDayPlans: vi.fn(),
-  createDayPlan: vi.fn(),
-  updateDayPlan: vi.fn(),
-  deleteDayPlan: vi.fn(),
-}));
+const mockDate = new Date("2026-03-20");
+
+function makeItem(id: string, description: string, time: string | null = null): ItineraryItem {
+  return { id, description, time, isDone: false, createdAt: new Date() };
+}
+
+function makeProps(overrides: Partial<DayColumnProps> = {}): DayColumnProps {
+  return {
+    date: mockDate,
+    dayNumber: 1,
+    items: [],
+    isLoading: false,
+    loadError: null,
+    createError: null,
+    updateError: null,
+    deleteError: null,
+    onClearCreateError: vi.fn(),
+    onClearUpdateError: vi.fn(),
+    onClearDeleteError: vi.fn(),
+    onCreateItem: vi.fn().mockResolvedValue(undefined),
+    onUpdateItem: vi.fn().mockResolvedValue(undefined),
+    onDeleteItem: vi.fn().mockResolvedValue(undefined),
+    onToggleDone: vi.fn(),
+    ...overrides,
+  };
+}
+
+// Wrap with DndContext so useDroppable works in tests
+import { DndContext } from "@dnd-kit/core";
+function renderWithDnd(props: DayColumnProps) {
+  return render(
+    <DndContext>
+      <DayColumn {...props} />
+    </DndContext>,
+  );
+}
 
 describe("DayColumn", () => {
-  const mockDate = new Date("2026-03-20");
-  const mockFetchDayPlans = vi.mocked(fetchDayPlans);
-
   beforeEach(() => {
     vi.clearAllMocks();
-    (
-      supabase.auth.getSession as unknown as ReturnType<typeof vi.fn>
-    ).mockResolvedValue({
-      data: {
-        session: {
-          access_token: "token",
-        },
-      },
-    });
-    mockFetchDayPlans.mockResolvedValue([]);
   });
 
-  const waitForInitialLoad = async () => {
-    await waitFor(() => {
-      expect(mockFetchDayPlans).toHaveBeenCalled();
-    });
-  };
-
-  it("should render day column with date and day number", async () => {
-    render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
-
-    await waitForInitialLoad();
-
+  it("renders day column with date and day number", () => {
+    renderWithDnd(makeProps());
     expect(screen.getByText("Day 1")).toBeInTheDocument();
     expect(screen.getByText(/Fri/)).toBeInTheDocument();
     expect(screen.getByText(/Mar 20/)).toBeInTheDocument();
   });
 
-  it("should render add plan button", async () => {
-    render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
-
-    await waitForInitialLoad();
-
-    expect(
-      screen.getByRole("button", { name: /add plan/i }),
-    ).toBeInTheDocument();
+  it("renders add plan button", () => {
+    renderWithDnd(makeProps());
+    expect(screen.getByRole("button", { name: /add activity/i })).toBeInTheDocument();
   });
 
-  it("should render as accordion on mobile", async () => {
-    render(
-      <DayColumn
-        date={mockDate}
-        dayNumber={1}
-        travelPlanId="plan-1"
-        isMobile={true}
-      />,
-    );
-
-    await waitForInitialLoad();
-
-    const accordionButton = screen.getByRole("button", {
-      name: /day 1/i,
-    });
+  it("renders as accordion on mobile", () => {
+    renderWithDnd(makeProps({ isMobile: true }));
+    const accordionButton = screen.getByRole("button", { name: /day 1/i });
     expect(accordionButton).toBeInTheDocument();
   });
 
-  it("should toggle accordion content on mobile", async () => {
-    render(
-      <DayColumn
-        date={mockDate}
-        dayNumber={1}
-        travelPlanId="plan-1"
-        isMobile={true}
-      />,
-    );
+  it("toggles accordion content on mobile", () => {
+    renderWithDnd(makeProps({ isMobile: true }));
+    const accordionButton = screen.getByRole("button", { name: /day 1/i });
 
-    await waitForInitialLoad();
+    expect(screen.queryByRole("button", { name: /add activity/i })).not.toBeInTheDocument();
 
-    const accordionButton = screen.getByRole("button", {
-      name: /day 1/i,
-    });
-
-    // Content should be hidden initially
-    expect(
-      screen.queryByRole("button", { name: /add plan/i }),
-    ).not.toBeInTheDocument();
-
-    // Click to expand
     fireEvent.click(accordionButton);
 
-    // Content should be visible
-    expect(screen.getByRole("button", { name: /add plan/i })).toBeVisible();
+    expect(screen.getByRole("button", { name: /add activity/i })).toBeVisible();
+  });
+
+  it("shows loading indicator when isLoading is true and items is empty", () => {
+    renderWithDnd(makeProps({ isLoading: true }));
+    expect(screen.getByTestId("day-plans-loading")).toBeInTheDocument();
+  });
+
+  it("shows loadError when provided and items is empty", () => {
+    renderWithDnd(makeProps({ loadError: "Could not load" }));
+    expect(screen.getByTestId("day-plans-load-error")).toBeInTheDocument();
+  });
+
+  it("shows No activities yet when items is empty and not loading", () => {
+    renderWithDnd(makeProps());
+    expect(screen.getByText(/no activities yet/i)).toBeInTheDocument();
+  });
+
+  it("renders items when provided", () => {
+    renderWithDnd(makeProps({ items: [makeItem("item-1", "Visit Museum")] }));
+    expect(screen.getByText("Visit Museum")).toBeInTheDocument();
+    expect(screen.queryByText(/no activities yet/i)).not.toBeInTheDocument();
   });
 
   describe("Adding itinerary items", () => {
-    it("should show input and buttons when Add Plan is clicked", async () => {
-      render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+    it("shows input and buttons when Add Activity is clicked", () => {
+      renderWithDnd(makeProps());
 
-      await waitForInitialLoad();
+      fireEvent.click(screen.getByRole("button", { name: /add activity/i }));
 
-      const addButton = screen.getByRole("button", { name: /add plan/i });
-      fireEvent.click(addButton);
-
-      // Should show input
-      expect(
-        screen.getByPlaceholderText(/what's the plan\?/i),
-      ).toBeInTheDocument();
-      // Should show cancel and confirm buttons
-      expect(
-        screen.getByRole("button", { name: /cancel/i }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /confirm/i }),
-      ).toBeInTheDocument();
-      // Should hide the Add Plan button
-      expect(
-        screen.queryByRole("button", { name: /add plan/i }),
-      ).not.toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/what's the plan\?/i)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /add activity/i })).not.toBeInTheDocument();
     });
 
-    it("should cancel adding a plan and return to initial state", async () => {
-      render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+    it("cancels adding and returns to initial state", () => {
+      renderWithDnd(makeProps());
 
-      await waitForInitialLoad();
+      fireEvent.click(screen.getByRole("button", { name: /add activity/i }));
+      fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-      const addButton = screen.getByRole("button", { name: /add plan/i });
-      fireEvent.click(addButton);
-
-      const input = screen.getByPlaceholderText(/what's the plan\?/i);
-      fireEvent.change(input, { target: { value: "Visit Museum" } });
-
-      const cancelButton = screen.getByRole("button", { name: /cancel/i });
-      fireEvent.click(cancelButton);
-
-      // Should hide input and buttons
-      expect(
-        screen.queryByPlaceholderText(/what's the plan\?/i),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: /cancel/i }),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: /confirm/i }),
-      ).not.toBeInTheDocument();
-      // Should show Add Plan button again
-      expect(
-        screen.getByRole("button", { name: /add plan/i }),
-      ).toBeInTheDocument();
+      expect(screen.queryByPlaceholderText(/what's the plan\?/i)).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /add activity/i })).toBeInTheDocument();
     });
 
-    it("should save a new itinerary item when confirmed", async () => {
-      (createDayPlan as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-        id: "item-1",
-        travel_plan_id: "plan-1",
-        date: "2026-03-20",
-        time: null,
-        description: "Visit Museum",
-        created_by_user_id: "user-1",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+    it("calls onCreateItem when confirmed", async () => {
+      const onCreateItem = vi.fn().mockResolvedValue(undefined);
+      renderWithDnd(makeProps({ onCreateItem }));
+
+      fireEvent.click(screen.getByRole("button", { name: /add activity/i }));
+      fireEvent.change(screen.getByPlaceholderText(/what's the plan\?/i), {
+        target: { value: "Visit Museum" },
       });
-
-      render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
-
-      await waitForInitialLoad();
-
-      const addButton = screen.getByRole("button", { name: /add plan/i });
-      fireEvent.click(addButton);
-
-      const input = screen.getByPlaceholderText(/what's the plan\?/i);
-      fireEvent.change(input, { target: { value: "Visit Museum" } });
-
-      const confirmButton = screen.getByRole("button", { name: /confirm/i });
-      fireEvent.click(confirmButton);
-
-      // Should display the saved item
-      await waitFor(() => {
-        expect(screen.getByText("Visit Museum")).toBeInTheDocument();
-      });
-      // Should hide the input form
-      expect(
-        screen.queryByPlaceholderText(/what's the plan\?/i),
-      ).not.toBeInTheDocument();
-      // Should show Add Plan button again for adding more items
-      expect(
-        screen.getByRole("button", { name: /add plan/i }),
-      ).toBeInTheDocument();
-    });
-
-    it("should not save an empty itinerary item", async () => {
-      render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
-
-      await waitForInitialLoad();
-
-      const addButton = screen.getByRole("button", { name: /add plan/i });
-      fireEvent.click(addButton);
-
-      const confirmButton = screen.getByRole("button", { name: /confirm/i });
-      fireEvent.click(confirmButton);
-
-      // Should still show the input (not saved)
-      expect(
-        screen.getByPlaceholderText(/what's the plan\?/i),
-      ).toBeInTheDocument();
-    });
-
-    it("should allow adding multiple itinerary items", async () => {
-      (createDayPlan as unknown as ReturnType<typeof vi.fn>)
-        .mockResolvedValueOnce({
-          id: "item-1",
-          travel_plan_id: "plan-1",
-          date: "2026-03-20",
-          time: null,
-          description: "Visit Museum",
-          created_by_user_id: "user-1",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .mockResolvedValueOnce({
-          id: "item-2",
-          travel_plan_id: "plan-1",
-          date: "2026-03-20",
-          time: null,
-          description: "Lunch at Restaurant",
-          created_by_user_id: "user-1",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        });
-
-      render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
-
-      await waitForInitialLoad();
-
-      // Add first item
-      const addButton = screen.getByRole("button", { name: /add plan/i });
-      fireEvent.click(addButton);
-
-      const input = screen.getByPlaceholderText(/what's the plan\?/i);
-      fireEvent.change(input, { target: { value: "Visit Museum" } });
-
-      const confirmButton = screen.getByRole("button", { name: /confirm/i });
-      fireEvent.click(confirmButton);
+      fireEvent.click(screen.getByRole("button", { name: /save/i }));
 
       await waitFor(() => {
-        expect(screen.getByText("Visit Museum")).toBeInTheDocument();
-      });
-
-      // Add second item
-      const addButton2 = screen.getByRole("button", { name: /add plan/i });
-      fireEvent.click(addButton2);
-
-      const input2 = screen.getByPlaceholderText(/what's the plan\?/i);
-      fireEvent.change(input2, { target: { value: "Lunch at Restaurant" } });
-
-      const confirmButton2 = screen.getByRole("button", { name: /confirm/i });
-      fireEvent.click(confirmButton2);
-
-      // Should display both items
-      await waitFor(() => {
-        expect(screen.getByText("Visit Museum")).toBeInTheDocument();
-        expect(screen.getByText("Lunch at Restaurant")).toBeInTheDocument();
+        expect(onCreateItem).toHaveBeenCalledWith("Visit Museum", null);
       });
     });
 
-    it("should display No plans yet when no items exist and not adding", async () => {
-      render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
+    it("does not save an empty description", () => {
+      const onCreateItem = vi.fn().mockResolvedValue(undefined);
+      renderWithDnd(makeProps({ onCreateItem }));
 
-      await waitForInitialLoad();
+      fireEvent.click(screen.getByRole("button", { name: /add activity/i }));
+      fireEvent.click(screen.getByRole("button", { name: /save/i }));
 
-      await waitFor(() => {
-        expect(screen.getByText(/no plans yet/i)).toBeInTheDocument();
-      });
-    });
-
-    it("should hide No plans yet when items exist", async () => {
-      (createDayPlan as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-        id: "item-1",
-        travel_plan_id: "plan-1",
-        date: "2026-03-20",
-        time: null,
-        description: "Visit Museum",
-        created_by_user_id: "user-1",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
-
-      render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
-
-      await waitForInitialLoad();
-
-      // Add an item
-      const addButton = screen.getByRole("button", { name: /add plan/i });
-      fireEvent.click(addButton);
-
-      const input = screen.getByPlaceholderText(/what's the plan\?/i);
-      fireEvent.change(input, { target: { value: "Visit Museum" } });
-
-      const confirmButton = screen.getByRole("button", { name: /confirm/i });
-      fireEvent.click(confirmButton);
-
-      await waitFor(() => {
-        expect(screen.getByText("Visit Museum")).toBeInTheDocument();
-      });
-
-      // Should not show "No plans yet"
-      expect(screen.queryByText(/no plans yet/i)).not.toBeInTheDocument();
-    });
-
-    it("should render saved item card for click and long-press interactions", async () => {
-      (createDayPlan as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-        id: "item-1",
-        travel_plan_id: "plan-1",
-        date: "2026-03-20",
-        time: null,
-        description: "Visit Museum",
-        created_by_user_id: "user-1",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
-
-      render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
-
-      await waitForInitialLoad();
-
-      const addButton = screen.getByRole("button", { name: /add plan/i });
-      fireEvent.click(addButton);
-
-      const input = screen.getByPlaceholderText(/what's the plan\?/i);
-      fireEvent.change(input, { target: { value: "Visit Museum" } });
-
-      const confirmButton = screen.getByRole("button", { name: /confirm/i });
-      fireEvent.click(confirmButton);
-
-      await waitFor(() => {
-        expect(screen.getByLabelText(/plan visit museum/i)).toBeInTheDocument();
-      });
+      expect(onCreateItem).not.toHaveBeenCalled();
+      expect(screen.getByPlaceholderText(/what's the plan\?/i)).toBeInTheDocument();
     });
   });
 
-  it("updates an itinerary item when edited", async () => {
-    mockFetchDayPlans.mockResolvedValue([
-      {
-        id: "item-1",
-        travel_plan_id: "plan-1",
-        date: "2026-03-20",
-        time: null,
-        description: "Breakfast",
-        created_by_user_id: "user-1",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ]);
-
-    (updateDayPlan as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      id: "item-1",
-      travel_plan_id: "plan-1",
-      date: "2026-03-20",
-      time: null,
-      description: "Brunch",
-      created_by_user_id: "user-1",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    });
-
-    render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
-
-    await waitFor(() => {
-      expect(screen.getByText("Breakfast")).toBeInTheDocument();
-    });
-
-    const item = screen.getByLabelText("Plan Breakfast");
-    fireEvent.pointerDown(item);
-    fireEvent.pointerUp(item);
-
-    const input = await screen.findByPlaceholderText(/what's the plan\?/i);
-    fireEvent.change(input, { target: { value: "Brunch" } });
-
-    const updateButton = screen.getByRole("button", { name: /update/i });
-    fireEvent.click(updateButton);
-
-    await waitFor(() => {
-      expect(updateDayPlan).toHaveBeenCalledWith(
-        "plan-1",
-        "2026-03-20",
-        "item-1",
-        { description: "Brunch" },
-        "token",
+  describe("Editing itinerary items", () => {
+    it("calls onUpdateItem when saved", async () => {
+      const onUpdateItem = vi.fn().mockResolvedValue(undefined);
+      renderWithDnd(
+        makeProps({
+          items: [makeItem("item-1", "Breakfast")],
+          onUpdateItem,
+        }),
       );
+
+      fireEvent.click(screen.getByRole("button", { name: /edit breakfast/i }));
+
+      const input = screen.getByRole("textbox");
+      fireEvent.change(input, { target: { value: "Brunch" } });
+      fireEvent.click(screen.getByRole("button", { name: /save changes/i }));
+
+      await waitFor(() => {
+        expect(onUpdateItem).toHaveBeenCalledWith("item-1", "Brunch", null);
+      });
     });
 
-    await waitFor(() => {
-      expect(screen.getByText("Brunch")).toBeInTheDocument();
-    });
-  });
-
-  it("deletes an itinerary item when Delete is clicked", async () => {
-    mockFetchDayPlans.mockResolvedValue([
-      {
-        id: "item-1",
-        travel_plan_id: "plan-1",
-        date: "2026-03-20",
-        time: null,
-        description: "Breakfast",
-        created_by_user_id: "user-1",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ]);
-
-    (deleteDayPlan as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
-      undefined,
-    );
-
-    render(<DayColumn date={mockDate} dayNumber={1} travelPlanId="plan-1" />);
-
-    await waitFor(() => {
-      expect(screen.getByText("Breakfast")).toBeInTheDocument();
-    });
-
-    const item = screen.getByLabelText("Plan Breakfast");
-    fireEvent.pointerDown(item);
-    fireEvent.pointerUp(item);
-
-    const deleteButton = await screen.findByRole("button", { name: /delete/i });
-    fireEvent.click(deleteButton);
-
-    await waitFor(() => {
-      expect(deleteDayPlan).toHaveBeenCalledWith(
-        "plan-1",
-        "2026-03-20",
-        "item-1",
-        "token",
+    it("calls onDeleteItem when delete is clicked", async () => {
+      const onDeleteItem = vi.fn().mockResolvedValue(undefined);
+      renderWithDnd(
+        makeProps({
+          items: [makeItem("item-1", "Breakfast")],
+          onDeleteItem,
+        }),
       );
-    });
 
-    await waitFor(() => {
-      expect(screen.queryByText("Breakfast")).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: /edit breakfast/i }));
+
+      const deleteButton = screen.getByRole("button", { name: /delete activity/i });
+      fireEvent.click(deleteButton);
+
+      await waitFor(() => {
+        expect(onDeleteItem).toHaveBeenCalledWith("item-1");
+      });
     });
   });
 });

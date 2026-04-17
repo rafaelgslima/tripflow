@@ -113,6 +113,31 @@ export async function toggleDayPlanDone(
   return response.data;
 }
 
+export interface MoveItemToDayRequest {
+  target_day: string;
+  time: string | null;
+}
+
+export async function moveItemToDay(
+  travelPlanId: string,
+  day: string,
+  itemId: string,
+  payload: MoveItemToDayRequest,
+  accessToken: string,
+): Promise<ItineraryItemApiResponse> {
+  const response = await apiClient.patch<ItineraryItemApiResponse>(
+    `/travel-plans/${travelPlanId}/days/${day}/items/${itemId}/move`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  return response.data;
+}
+
 export async function reorderDayPlans(
   travelPlanId: string,
   day: string,

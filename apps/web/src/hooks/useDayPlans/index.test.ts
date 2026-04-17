@@ -115,7 +115,7 @@ describe("useDayPlans", () => {
     expect(mockCreateDayPlan).toHaveBeenCalledWith(
       travelPlanId,
       "2026-03-20",
-      { description: "Visit museum" },
+      { description: "Visit museum", time: null },
       "token-abc",
     );
 
@@ -201,7 +201,7 @@ describe("useDayPlans", () => {
       travelPlanId,
       "2026-03-20",
       "item-1",
-      { description: "Brunch" },
+      { description: "Brunch", time: null },
       "token-xyz",
     );
 

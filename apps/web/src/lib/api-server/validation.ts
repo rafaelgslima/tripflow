@@ -159,6 +159,26 @@ export function validateToggleItineraryItemDone(body: unknown): ToggleItineraryI
   return { is_done: b["is_done"] };
 }
 
+export interface MoveItineraryItemBody {
+  target_day: string;
+  time: string | null;
+}
+
+export function validateMoveItineraryItem(body: unknown): MoveItineraryItemBody {
+  if (!body || typeof body !== "object") {
+    throw new ValidationError("Invalid request body.");
+  }
+  const b = body as Record<string, unknown>;
+
+  const target_day = b["target_day"];
+  if (typeof target_day !== "string" || !DATE_REGEX.test(target_day)) {
+    throw new ValidationError("target_day must be a valid date (YYYY-MM-DD).");
+  }
+
+  const time = parseOptionalTime(b);
+  return { target_day, time };
+}
+
 export function validateAcceptShareInvite(body: unknown): AcceptShareInviteBody {
   if (!body || typeof body !== "object") {
     throw new ValidationError("Invalid request body.");

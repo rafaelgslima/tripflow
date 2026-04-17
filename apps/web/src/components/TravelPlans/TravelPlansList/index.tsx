@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { getDaysArray, formatDateRange } from "@/utils/dateUtils";
-import { DayColumn } from "../DayColumn";
+import { DayColumnsGrid } from "../DayColumnsGrid";
 import { DeleteTravelPlanButton } from "../DeleteTravelPlanButton";
 import { ShareStatusList } from "../ShareStatusList";
 import { ShareTravelPlanButton } from "../ShareTravelPlanButton";
@@ -50,21 +50,11 @@ export function TravelPlansList({ plans, onDeletePlan }: TravelPlansListProps) {
               />
             </div>
 
-            {isDesktop ? (
-              <div className="overflow-x-auto">
-                <div className="flex gap-3" style={{ minWidth: "100%" }}>
-                  {days.map((day, index) => (
-                    <DayColumn key={day.toISOString()} date={day} dayNumber={index + 1} travelPlanId={plan.id} />
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {days.map((day, index) => (
-                  <DayColumn key={day.toISOString()} date={day} dayNumber={index + 1} travelPlanId={plan.id} isMobile={true} />
-                ))}
-              </div>
-            )}
+            <DayColumnsGrid
+              travelPlanId={plan.id}
+              days={days}
+              isMobile={!isDesktop}
+            />
           </div>
         );
       })}

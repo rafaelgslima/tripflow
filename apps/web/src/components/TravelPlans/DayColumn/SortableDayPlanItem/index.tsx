@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { formatTime } from "@/utils/timeOptions";
+import { DayPlanItemCard } from "../DayPlanItemCard";
 import type { SortableDayPlanItemProps } from "./types";
 
 export function SortableDayPlanItem({
@@ -11,113 +11,24 @@ export function SortableDayPlanItem({
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: item.id });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className={[
-        "group flex items-stretch border rounded-[10px] font-outfit overflow-hidden transition-colors duration-300",
-        item.isDone
-          ? "bg-green-950/20 border-green-900/40"
-          : "bg-tf-bg-3 border-tf-border",
-        isDragging ? "opacity-50" : "",
-      ].join(" ")}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+      }}
+      // When a DragOverlay is active this item is the "placeholder" —
+      // make it invisible so only the overlay ghost is visible.
+      className={isDragging ? "opacity-0" : ""}
       {...attributes}
     >
-      {/* Done toggle — left zone with subtle separator */}
-      <button
-        type="button"
-        onClick={() => onToggleDone(item.id, !item.isDone)}
-        aria-label={item.isDone ? "Mark as not done" : "Mark as done"}
-        aria-pressed={item.isDone}
-        className={[
-          "shrink-0 flex items-center justify-center w-9 border-r transition-colors duration-300 cursor-pointer bg-transparent",
-          item.isDone
-            ? "border-white/[0.06]"
-            : "border-white/[0.06] hover:bg-white/[0.03]",
-        ].join(" ")}
-      >
-        {item.isDone ? (
-          <div className="w-[15px] h-[15px] rounded-full bg-green-500 flex items-center justify-center shrink-0">
-            <svg
-              width="9"
-              height="7"
-              viewBox="0 0 9 7"
-              fill="none"
-              stroke="white"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M1 3.5L3.5 6L8 1" />
-            </svg>
-          </div>
-        ) : (
-          <div className="w-[15px] h-[15px] rounded-full border border-white/20 group-hover:border-white/35 transition-colors duration-200 shrink-0" />
-        )}
-      </button>
-
-      {/* Content — also the drag handle */}
-      <div
-        className="flex-1 min-w-0 flex flex-col gap-[3px] py-2.5 px-2.5 cursor-grab touch-none"
-        {...listeners}
-      >
-        {item.time && (
-          <span
-            className={[
-              "text-[11px] font-semibold text-tf-amber tracking-[0.03em] leading-none transition-opacity duration-300",
-              item.isDone ? "opacity-40" : "",
-            ].join(" ")}
-          >
-            {formatTime(item.time)}
-          </span>
-        )}
-        <span
-          className={[
-            "break-words text-[13px] leading-[1.4] select-none transition-all duration-300",
-            item.isDone
-              ? "text-green-400/60 line-through decoration-green-700/40"
-              : "text-tf-text",
-          ].join(" ")}
-        >
-          {item.description}
-        </span>
-      </div>
-
-      {/* Edit button — always visible at low opacity on mobile, hover-only on desktop */}
-      <button
-        type="button"
-        onClick={() => onEdit(item.id)}
-        aria-label={`Edit ${item.description}`}
-        className={[
-          "shrink-0 flex items-center justify-center w-10 bg-transparent border-none cursor-pointer transition-all duration-150 rounded-r-[9px]",
-          item.isDone
-            ? "text-tf-muted opacity-20"
-            : "text-tf-muted opacity-40 md:opacity-0 md:group-hover:opacity-60 hover:opacity-100 hover:text-tf-amber hover:bg-white/5",
-        ].join(" ")}
-      >
-        <svg
-          width="13"
-          height="13"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-          />
-        </svg>
-      </button>
+      <DayPlanItemCard
+        item={item}
+        onEdit={onEdit}
+        onToggleDone={onToggleDone}
+        dragListeners={listeners as Record<string, (event: Event) => void> | undefined}
+      />
     </div>
   );
 }
