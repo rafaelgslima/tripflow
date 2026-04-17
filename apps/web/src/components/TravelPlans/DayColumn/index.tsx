@@ -1,5 +1,5 @@
 import { useDroppable } from "@dnd-kit/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatDayHeader } from "@/utils/dateUtils";
 import { toDateOnlyISOString } from "@/utils/toDateOnlyISOString";
 import { AddDayPlanForm } from "./AddDayPlanForm";
@@ -29,12 +29,19 @@ export function DayColumn({
 }: DayColumnProps) {
   const dayString = toDateOnlyISOString(date);
   // Register as a droppable zone so cross-day drags can land on empty columns
-  const { setNodeRef } = useDroppable({ id: dayString });
+  const { setNodeRef, isOver } = useDroppable({ id: dayString });
 
   const [isAdding, setIsAdding] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMoveLoading, setIsMoveLoading] = useState(false);
+
+  // On mobile, auto-expand accordion when dragging over it (to allow dropping)
+  useEffect(() => {
+    if (isMobile && isOver && !isExpanded) {
+      setIsExpanded(true);
+    }
+  }, [isMobile, isOver, isExpanded]);
 
   const handleAddPlan = () => {
     onClearCreateError();
@@ -169,7 +176,7 @@ export function DayColumn({
   // Mobile Accordion View
   if (isMobile) {
     return (
-      <div className="border border-tf-border rounded-xl overflow-hidden bg-tf-bg-2">
+      <div ref={setNodeRef} className="border border-tf-border rounded-xl overflow-hidden bg-tf-bg-2">
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
@@ -201,7 +208,7 @@ export function DayColumn({
         </button>
 
         {isExpanded && (
-          <div ref={setNodeRef} className="px-4 pb-4 flex flex-col gap-2 border-t border-tf-border pt-3">
+          <div className="px-4 pb-4 flex flex-col gap-2 border-t border-tf-border pt-3">
             {renderItineraryItems()}
             {isAdding && (
               <AddDayPlanForm
