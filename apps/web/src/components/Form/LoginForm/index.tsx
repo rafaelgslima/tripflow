@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useLoginForm } from "@/hooks/useLoginForm";
 import { LoadingSpinner } from "@/components/Loading/LoadingSpinner";
+import { PasswordInput } from "@/components/Form/PasswordInput";
 import type { LoginFormProps } from "./types";
 
 export function LoginForm(_props: LoginFormProps) {
@@ -58,20 +59,19 @@ export function LoginForm(_props: LoginFormProps) {
               Forgot password?
             </Link>
           </div>
-          <input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
-            autoComplete="current-password"
-            required
             value={values.password}
-            onChange={handleChange("password")}
-            onBlur={handleBlur("password")}
-            className={`tf-input${touched.email && errors.email ? " tf-input--error" : ""}`}
-            placeholder="••••••••"
+            onChange={(value) => handleChange("password")({ target: { value } } as any)}
+            onBlur={() => handleBlur("password")}
+            autoComplete="current-password"
+            hasError={touched.password && !!errors.password}
+            ariaInvalid={touched.password && !!errors.password}
+            ariaDescribedBy={touched.password && errors.password ? "password-error" : undefined}
           />
           {touched.password && errors.password && (
-            <p className="text-xs text-red-300 font-outfit mt-1">{errors.password}</p>
+            <p id="password-error" className="text-xs text-red-300 font-outfit mt-1">{errors.password}</p>
           )}
         </div>
       </div>

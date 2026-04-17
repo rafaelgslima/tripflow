@@ -1,10 +1,7 @@
-import { useState } from "react";
 import { useResetPasswordForm } from "@/hooks/useResetPasswordForm";
 import { LoadingSpinner } from "@/components/Loading/LoadingSpinner";
+import { PasswordInput } from "@/components/Form/PasswordInput";
 import type { ResetPasswordFormProps } from "./types";
-
-const showHideBtnClass =
-  "absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-xs font-medium text-tf-muted font-outfit p-1";
 
 export function ResetPasswordForm(_props: ResetPasswordFormProps) {
   const {
@@ -17,9 +14,6 @@ export function ResetPasswordForm(_props: ResetPasswordFormProps) {
     handleBlur,
     handleSubmit,
   } = useResetPasswordForm();
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
@@ -38,53 +32,41 @@ export function ResetPasswordForm(_props: ResetPasswordFormProps) {
 
       <div>
         <label htmlFor="password" className="tf-label">New password</label>
-        <div className="relative">
-          <input
-            id="password"
-            name="password"
-            type={showPassword ? "text" : "password"}
-            autoComplete="new-password"
-            required
-            value={values.password}
-            onChange={handleChange}
-            onBlur={() => handleBlur("password")}
-            disabled={isSubmitting || isSuccess}
-            className={`tf-input${touched.password && errors.password ? " tf-input--error" : ""}`}
-            style={{ paddingRight: "56px" }}
-            placeholder="Enter new password"
-          />
-          <button type="button" onClick={() => setShowPassword(!showPassword)} disabled={isSubmitting || isSuccess} className={showHideBtnClass} aria-label={showPassword ? "Hide password" : "Show password"}>
-            {showPassword ? "Hide" : "Show"}
-          </button>
-        </div>
+        <PasswordInput
+          id="password"
+          name="password"
+          value={values.password}
+          onChange={(value) => handleChange({ target: { name: "password", value } } as any)}
+          onBlur={() => handleBlur("password")}
+          autoComplete="new-password"
+          disabled={isSubmitting || isSuccess}
+          hasError={touched.password && !!errors.password}
+          ariaInvalid={touched.password && !!errors.password}
+          ariaDescribedBy={touched.password && errors.password ? "password-error" : undefined}
+          placeholder="Enter new password"
+        />
         {touched.password && errors.password && (
-          <p className="text-xs text-red-300 font-outfit mt-1" role="alert">{errors.password}</p>
+          <p id="password-error" className="text-xs text-red-300 font-outfit mt-1" role="alert">{errors.password}</p>
         )}
       </div>
 
       <div>
         <label htmlFor="confirmPassword" className="tf-label">Confirm password</label>
-        <div className="relative">
-          <input
-            id="confirmPassword"
-            name="confirmPassword"
-            type={showConfirmPassword ? "text" : "password"}
-            autoComplete="new-password"
-            required
-            value={values.confirmPassword}
-            onChange={handleChange}
-            onBlur={() => handleBlur("confirmPassword")}
-            disabled={isSubmitting || isSuccess}
-            className={`tf-input${touched.confirmPassword && errors.confirmPassword ? " tf-input--error" : ""}`}
-            style={{ paddingRight: "56px" }}
-            placeholder="Confirm new password"
-          />
-          <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} disabled={isSubmitting || isSuccess} className={showHideBtnClass} aria-label={showConfirmPassword ? "Hide password" : "Show password"}>
-            {showConfirmPassword ? "Hide" : "Show"}
-          </button>
-        </div>
+        <PasswordInput
+          id="confirmPassword"
+          name="confirmPassword"
+          value={values.confirmPassword}
+          onChange={(value) => handleChange({ target: { name: "confirmPassword", value } } as any)}
+          onBlur={() => handleBlur("confirmPassword")}
+          autoComplete="new-password"
+          disabled={isSubmitting || isSuccess}
+          hasError={touched.confirmPassword && !!errors.confirmPassword}
+          ariaInvalid={touched.confirmPassword && !!errors.confirmPassword}
+          ariaDescribedBy={touched.confirmPassword && errors.confirmPassword ? "confirm-password-error" : undefined}
+          placeholder="Confirm new password"
+        />
         {touched.confirmPassword && errors.confirmPassword && (
-          <p className="text-xs text-red-300 font-outfit mt-1" role="alert">{errors.confirmPassword}</p>
+          <p id="confirm-password-error" className="text-xs text-red-300 font-outfit mt-1" role="alert">{errors.confirmPassword}</p>
         )}
       </div>
 
