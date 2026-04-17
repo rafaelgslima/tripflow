@@ -7,6 +7,7 @@ import {
   validateReorderItineraryItems,
   validateCreateShareInvite,
   validateAcceptShareInvite,
+  validateMoveItineraryItem,
 } from "./validation";
 import { ValidationError } from "./errors";
 
@@ -59,12 +60,14 @@ describe("validateCreateItineraryItem", () => {
   it("accepts a valid description", () => {
     expect(validateCreateItineraryItem({ description: "Breakfast" })).toEqual({
       description: "Breakfast",
+      time: null,
     });
   });
 
   it("trims description whitespace", () => {
     expect(validateCreateItineraryItem({ description: "  Breakfast  " })).toEqual({
       description: "Breakfast",
+      time: null,
     });
   });
 
@@ -83,6 +86,7 @@ describe("validateUpdateItineraryItem", () => {
   it("delegates to the same rules as create", () => {
     expect(validateUpdateItineraryItem({ description: "Museum visit" })).toEqual({
       description: "Museum visit",
+      time: null,
     });
     expect(() => validateUpdateItineraryItem({ description: "" })).toThrow(ValidationError);
   });
@@ -150,5 +154,44 @@ describe("validateAcceptShareInvite", () => {
 
   it("throws when token is missing", () => {
     expect(() => validateAcceptShareInvite({})).toThrow(ValidationError);
+  });
+});
+
+describe("validateMoveItineraryItem", () => {
+  it("accepts a valid target_day with no time", () => {
+    expect(validateMoveItineraryItem({ target_day: "2026-06-05" })).toEqual({
+      target_day: "2026-06-05",
+      time: null,
+    });
+  });
+
+  it("accepts a valid target_day with a valid time", () => {
+    expect(validateMoveItineraryItem({ target_day: "2026-06-05", time: "09:30" })).toEqual({
+      target_day: "2026-06-05",
+      time: "09:30",
+    });
+  });
+
+  it("throws when target_day is missing", () => {
+    expect(() => validateMoveItineraryItem({})).toThrow(ValidationError);
+  });
+
+  it("throws when target_day is not a valid date format", () => {
+    expect(() => validateMoveItineraryItem({ target_day: "06-05-2026" })).toThrow(ValidationError);
+  });
+
+  it("throws when time is not in HH:MM format", () => {
+    expect(() => validateMoveItineraryItem({ target_day: "2026-06-05", time: "9:30" })).toThrow(ValidationError);
+  });
+
+  it("treats empty string time as null", () => {
+    expect(validateMoveItineraryItem({ target_day: "2026-06-05", time: "" })).toEqual({
+      target_day: "2026-06-05",
+      time: null,
+    });
+  });
+
+  it("throws when body is not an object", () => {
+    expect(() => validateMoveItineraryItem("invalid")).toThrow(ValidationError);
   });
 });
