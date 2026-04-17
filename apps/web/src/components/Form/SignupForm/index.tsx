@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { useSignupForm } from "@/hooks/useSignupForm";
+import { PasswordInput } from "@/components/Form/PasswordInput";
 import type { SignupFormProps } from "./types";
 
 export function SignupForm({ onSuccess }: SignupFormProps) {
@@ -126,30 +127,25 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
           >
             Password{" "}
           </label>
-          <input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            aria-required="true"
-            aria-invalid={
-              touched.password && errors.password ? "true" : "false"
-            }
-            aria-describedby={
-              touched.password && errors.password
-                ? "password-error password-requirements"
-                : "password-requirements"
-            }
             value={values.password}
-            onChange={(e) => handleChange("password", e.target.value)}
+            onChange={(value) => handleChange("password", value)}
             onFocus={() => setIsPasswordFocused(true)}
             onBlur={() => {
               setIsPasswordFocused(false);
               handleBlur("password");
             }}
-            className={`tf-input${touched.password && errors.password ? " tf-input--error" : ""}`}
-            placeholder="••••••••"
+            autoComplete="new-password"
+            required
+            hasError={touched.password && !!errors.password}
+            ariaInvalid={touched.password && !!errors.password}
+            ariaDescribedBy={
+              touched.password && errors.password
+                ? "password-error password-requirements"
+                : "password-requirements"
+            }
           />
           {touched.password && errors.password && (
             <p
@@ -237,28 +233,21 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
           >
             Confirm Password{" "}
           </label>
-          <input
+          <PasswordInput
             id="confirm-password"
             name="confirm-password"
-            type="password"
+            value={values.confirmPassword}
+            onChange={(value) => handleChange("confirmPassword", value)}
+            onBlur={() => handleBlur("confirmPassword")}
             autoComplete="new-password"
             required
-            aria-required="true"
-            aria-invalid={
-              touched.confirmPassword && errors.confirmPassword
-                ? "true"
-                : "false"
-            }
-            aria-describedby={
+            hasError={touched.confirmPassword && !!errors.confirmPassword}
+            ariaInvalid={touched.confirmPassword && !!errors.confirmPassword}
+            ariaDescribedBy={
               touched.confirmPassword && errors.confirmPassword
                 ? "confirm-password-error"
                 : undefined
             }
-            value={values.confirmPassword}
-            onChange={(e) => handleChange("confirmPassword", e.target.value)}
-            onBlur={() => handleBlur("confirmPassword")}
-            className={`tf-input${touched.confirmPassword && errors.confirmPassword ? " tf-input--error" : ""}`}
-            placeholder="••••••••"
           />
           {touched.confirmPassword && errors.confirmPassword && (
             <p
