@@ -11,6 +11,7 @@ export function DayColumn({
   date,
   dayNumber,
   isMobile = false,
+  shouldShowMoveButton = false,
   items,
   isLoading,
   loadError,
@@ -24,6 +25,7 @@ export function DayColumn({
   onUpdateItem,
   onDeleteItem,
   onToggleDone,
+  onMoveUnfinishedToNextDay,
 }: DayColumnProps) {
   const dayString = toDateOnlyISOString(date);
   // Register as a droppable zone so cross-day drags can land on empty columns
@@ -32,6 +34,7 @@ export function DayColumn({
   const [isAdding, setIsAdding] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMoveLoading, setIsMoveLoading] = useState(false);
 
   const handleAddPlan = () => {
     onClearCreateError();
@@ -90,6 +93,17 @@ export function DayColumn({
       setEditingItemId(null);
     } catch (error) {
       console.error("Update day plan failed:", error);
+    }
+  };
+
+  const handleMoveUnfinished = async () => {
+    setIsMoveLoading(true);
+    try {
+      await onMoveUnfinishedToNextDay();
+    } catch (error) {
+      console.error("Move unfinished activities failed:", error);
+    } finally {
+      setIsMoveLoading(false);
     }
   };
 
@@ -198,16 +212,31 @@ export function DayColumn({
               />
             )}
             {!isAdding && !editingItemId && (
-              <button
-                type="button"
-                onClick={handleAddPlan}
-                className="w-full flex items-center justify-center gap-1.5 p-2 border border-dashed border-tf-border-amber rounded-lg bg-transparent text-tf-amber text-xs font-outfit font-medium cursor-pointer opacity-70 transition-opacity duration-150"
-              >
-                <svg aria-hidden="true" width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Add activity
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={handleAddPlan}
+                  className="w-full flex items-center justify-center gap-1.5 p-2 border border-dashed border-tf-border-amber rounded-lg bg-transparent text-tf-amber text-xs font-outfit font-medium cursor-pointer opacity-70 transition-opacity duration-150"
+                >
+                  <svg aria-hidden="true" width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add activity
+                </button>
+                {shouldShowMoveButton && (
+                  <button
+                    type="button"
+                    onClick={() => { void handleMoveUnfinished(); }}
+                    disabled={isMoveLoading}
+                    className="w-full flex items-center justify-center gap-1.5 p-2 border border-dashed border-tf-border-amber rounded-lg bg-transparent text-tf-amber text-xs font-outfit font-medium cursor-pointer opacity-70 transition-opacity duration-150 enabled:hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <svg aria-hidden="true" width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="flex-shrink-0">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8L5 17M5 5h8V3m0 0L3 7" />
+                    </svg>
+                    Move incomplete to next day
+                  </button>
+                )}
+              </>
             )}
           </div>
         )}
@@ -244,18 +273,33 @@ export function DayColumn({
         )}
       </div>
 
-      {/* Add Plan Button */}
+      {/* Add Plan Button & Move Unfinished Button */}
       {!isAdding && !editingItemId && (
-        <button
-          type="button"
-          onClick={handleAddPlan}
-          className="w-full flex items-center justify-center gap-[5px] py-[7px] border border-dashed border-tf-border-amber rounded-lg bg-transparent text-tf-amber text-xs font-outfit font-medium cursor-pointer opacity-70 transition-opacity duration-150"
-        >
-          <svg aria-hidden="true" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Add activity
-        </button>
+        <div className="flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={handleAddPlan}
+            className="w-full flex items-center justify-center gap-[5px] py-[7px] border border-dashed border-tf-border-amber rounded-lg bg-transparent text-tf-amber text-xs font-outfit font-medium cursor-pointer opacity-70 transition-opacity duration-150"
+          >
+            <svg aria-hidden="true" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add activity
+          </button>
+          {shouldShowMoveButton && (
+            <button
+              type="button"
+              onClick={() => { void handleMoveUnfinished(); }}
+              disabled={isMoveLoading}
+              className="w-full flex items-center justify-center gap-[5px] py-[7px] border border-dashed border-tf-border-amber rounded-lg bg-transparent text-tf-amber text-xs font-outfit font-medium cursor-pointer opacity-70 transition-opacity duration-150 enabled:hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <svg aria-hidden="true" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="flex-shrink-0">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8L5 17M5 5h8V3m0 0L3 7" />
+              </svg>
+              Move incomplete to next day
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

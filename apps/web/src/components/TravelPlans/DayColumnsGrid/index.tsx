@@ -15,7 +15,7 @@ import { DayPlanItemCard } from "../DayColumn/DayPlanItemCard";
 import { useTravelPlanItems } from "@/hooks/useTravelPlanItems";
 import type { ItineraryItem } from "@/types/itinerary";
 import { toDateOnlyISOString } from "@/utils/toDateOnlyISOString";
-import { sortItemsByTime } from "@/utils/timeOptions";
+import { sortItemsByTime, shouldShowMoveIncompleteButton } from "@/utils/timeOptions";
 import { DayColumn } from "../DayColumn";
 import type { DayColumnsGridProps } from "./types";
 
@@ -111,6 +111,29 @@ export function DayColumnsGrid({ travelPlanId, days, isMobile }: DayColumnsGridP
   const columns = days.map((day, index) => {
     const dayString = toDateOnlyISOString(day);
     const dayState = travelPlanItems.getDay(dayString);
+    const isLastDay = index === days.length - 1;
+    const nextDay = !isLastDay ? days[index + 1] : null;
+    const nextDayString = nextDay ? toDateOnlyISOString(nextDay) : null;
+    const shouldShowMoveButton = !isLastDay && shouldShowMoveIncompleteButton(dayState.items, day);
+
+    const handleMoveUnfinished = async () => {
+      if (!nextDayString) return;
+
+      // Get current state at click time, not render time
+      const currentDayState = travelPlanItems.getDay(dayString);
+      const unfinishedItems = currentDayState.items.filter((item) => !item.isDone);
+      if (unfinishedItems.length === 0) return;
+
+      try {
+        // Move items sequentially to avoid race conditions and ensure state consistency
+        for (const item of unfinishedItems) {
+          await travelPlanItems.moveItemBetweenDays(item.id, dayString, nextDayString);
+        }
+      } catch (error) {
+        console.error("Failed to move incomplete activities:", error);
+        throw error;
+      }
+    };
 
     return (
       <SortableContext
@@ -123,6 +146,7 @@ export function DayColumnsGrid({ travelPlanId, days, isMobile }: DayColumnsGridP
           date={day}
           dayNumber={index + 1}
           isMobile={isMobile}
+          shouldShowMoveButton={shouldShowMoveButton}
           items={dayState.items}
           isLoading={dayState.isLoading}
           loadError={dayState.loadError}
@@ -138,6 +162,7 @@ export function DayColumnsGrid({ travelPlanId, days, isMobile }: DayColumnsGridP
           }
           onDeleteItem={(itemId) => travelPlanItems.deleteItem(dayString, itemId)}
           onToggleDone={(itemId, isDone) => travelPlanItems.toggleDone(dayString, itemId, isDone)}
+          onMoveUnfinishedToNextDay={handleMoveUnfinished}
         />
       </SortableContext>
     );

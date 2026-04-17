@@ -41,3 +41,52 @@ export function sortItemsByTime<T extends { time: string | null }>(items: T[]): 
     return 0;
   });
 }
+
+export function getCurrentTime(): string {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mm = String(now.getMinutes()).padStart(2, "0");
+  return `${hh}:${mm}`;
+}
+
+export function getLastActivityTime<T extends { time: string | null }>(items: T[]): string | null {
+  const sortedItems = sortItemsByTime(items);
+  for (let i = sortedItems.length - 1; i >= 0; i--) {
+    if (sortedItems[i].time) {
+      return sortedItems[i].time;
+    }
+  }
+  return null;
+}
+
+export function isToday(date: Date): boolean {
+  const today = new Date();
+  return (
+    date.getFullYear() === today.getFullYear() &&
+    date.getMonth() === today.getMonth() &&
+    date.getDate() === today.getDate()
+  );
+}
+
+export function shouldShowMoveIncompleteButton<T extends { time: string | null; isDone?: boolean }>(
+  items: T[],
+  date?: Date
+): boolean {
+  // Only show button today
+  if (date && !isToday(date)) return false;
+
+  // Don't show if no items or all items are done
+  const incompleteItems = items.filter((item) => !item.isDone);
+  if (incompleteItems.length === 0) return false;
+
+  // Don't show if all incomplete items have no timing
+  const incompleteTimed = incompleteItems.filter((item) => item.time);
+  if (incompleteTimed.length === 0) return false;
+
+  // Show if current time is at or after the last timed incomplete activity
+  const lastTime = getLastActivityTime(incompleteTimed);
+  if (!lastTime) return false;
+
+  const currentTime = getCurrentTime();
+  return currentTime >= lastTime;
+}
