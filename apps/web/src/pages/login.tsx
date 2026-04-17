@@ -13,6 +13,7 @@ export default function LoginPage() {
           left: "50%",
           transform: "translateX(-50%)",
           width: "600px",
+          maxWidth: "100vw",
           height: "400px",
           background: "radial-gradient(ellipse at center, rgba(232,162,58,0.06) 0%, transparent 65%)",
         }}
