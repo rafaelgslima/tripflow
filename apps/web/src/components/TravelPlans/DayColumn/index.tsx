@@ -1,5 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import { useEffect, useState } from "react";
+import { MdAdd, MdExpandMore, MdArrowRightAlt } from "react-icons/md";
 import { formatDayHeader } from "@/utils/dateUtils";
 import { toDateOnlyISOString } from "@/utils/toDateOnlyISOString";
 import { AddDayPlanForm } from "./AddDayPlanForm";
@@ -204,20 +205,15 @@ export function DayColumn({
               {weekday}, {monthDay}
             </div>
           </div>
-          <svg
+          <MdExpandMore
             className="text-tf-muted shrink-0 transition-transform duration-200"
             style={{
               width: "16px",
               height: "16px",
               transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
             }}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
             aria-hidden="true"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
+          />
         </button>
 
         {isExpanded && (
@@ -238,9 +234,7 @@ export function DayColumn({
                   onClick={handleAddPlan}
                   className="w-full flex items-center justify-center gap-1.5 p-2 border border-dashed border-tf-border-amber rounded-lg bg-transparent text-tf-amber text-xs font-outfit font-medium cursor-pointer opacity-70 transition-opacity duration-150"
                 >
-                  <svg aria-hidden="true" width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
+                  <MdAdd size={13} aria-hidden="true" />
                   Add activity
                 </button>
                 {shouldShowMoveButton && (
@@ -250,9 +244,7 @@ export function DayColumn({
                     disabled={isMoveLoading}
                     className="w-full flex items-center justify-center gap-1.5 p-2 border border-dashed border-tf-border-amber rounded-lg bg-transparent text-tf-amber text-xs font-outfit font-medium cursor-pointer opacity-70 transition-opacity duration-150 enabled:hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    <svg aria-hidden="true" width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="flex-shrink-0">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8L5 17M5 5h8V3m0 0L3 7" />
-                    </svg>
+                    <MdArrowRightAlt size={13} aria-hidden="true" className="flex-shrink-0" />
                     Move incomplete to next day
                   </button>
                 )}
@@ -301,9 +293,7 @@ export function DayColumn({
             onClick={handleAddPlan}
             className="w-full flex items-center justify-center gap-[5px] py-[7px] border border-dashed border-tf-border-amber rounded-lg bg-transparent text-tf-amber text-xs font-outfit font-medium cursor-pointer opacity-70 transition-opacity duration-150"
           >
-            <svg aria-hidden="true" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+            <MdAdd size={12} aria-hidden="true" />
             Add activity
           </button>
           {shouldShowMoveButton && (
@@ -313,9 +303,7 @@ export function DayColumn({
               disabled={isMoveLoading}
               className="w-full flex items-center justify-center gap-[5px] py-[7px] border border-dashed border-tf-border-amber rounded-lg bg-transparent text-tf-amber text-xs font-outfit font-medium cursor-pointer opacity-70 transition-opacity duration-150 enabled:hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <svg aria-hidden="true" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="flex-shrink-0">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8L5 17M5 5h8V3m0 0L3 7" />
-              </svg>
+              <MdArrowRightAlt size={12} aria-hidden="true" className="flex-shrink-0" />
               Move incomplete to next day
             </button>
           )}

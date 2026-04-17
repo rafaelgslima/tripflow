@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { MdAccessTime } from "react-icons/md";
 import { useTravelPlans } from "@/hooks/useTravelPlans";
 import { LoadingSpinner } from "@/components/Loading/LoadingSpinner";
 import { TravelPlansList } from "../TravelPlans/TravelPlansList";
@@ -64,18 +65,11 @@ export function PastTrips({}: PastTripsProps = {}) {
           {/* Secondary visual element */}
           <div className="mt-8 flex justify-center">
             <div className="inline-flex items-center gap-3 px-4 py-3 rounded-[12px] bg-white/[0.02] border border-white/[0.05]">
-              <svg
-                width="18"
-                height="18"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                viewBox="0 0 24 24"
+              <MdAccessTime
+                size={18}
                 className="text-tf-amber opacity-60"
                 aria-hidden="true"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 2m6-11a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              />
               <span className="text-xs font-outfit text-tf-muted opacity-70">
                 Your completed adventures await
               </span>

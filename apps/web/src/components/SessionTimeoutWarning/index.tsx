@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MdWarning } from "react-icons/md";
 import type { SessionTimeoutWarningProps } from "./types";
 
 export function SessionTimeoutWarning({
@@ -19,9 +20,7 @@ export function SessionTimeoutWarning({
       <div className="bg-tf-card border border-tf-border-amber rounded-[20px] p-7 max-w-[420px] w-full shadow-[0_24px_64px_rgba(0,0,0,0.5)]">
         <div className="flex items-start gap-[14px] mb-5">
           <div className="w-[36px] h-[36px] rounded-[10px] bg-tf-amber-soft border border-tf-border-amber flex items-center justify-center shrink-0 text-tf-amber">
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-            </svg>
+            <MdWarning size={18} />
           </div>
           <div>
             <h3 className="text-[16px] font-semibold text-tf-text font-outfit mb-1.5">

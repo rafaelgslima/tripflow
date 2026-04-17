@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MdClose } from "react-icons/md";
 import { validateTravelPlanForm } from "@/utils/validation";
 import type { CreateTravelPlanModalProps } from "./types";
 
@@ -92,9 +93,7 @@ export function CreateTravelPlanModal({
                 className="bg-transparent border-none cursor-pointer text-tf-muted p-1 shrink-0 mt-1"
                 aria-label="Close modal"
               >
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <MdClose size={18} aria-hidden="true" />
               </button>
             </div>
 
