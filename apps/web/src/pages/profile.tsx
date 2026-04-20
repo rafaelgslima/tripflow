@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { HeaderPostLogin } from "@/components/Header/HeaderPostLogin";
 import { Loading } from "@/components/Loading";
 import { EditProfileForm } from "@/components/EditProfileForm";
+import { DangerousZoneSection } from "@/components/DangerousZoneSection";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { useUserProfile } from "@/hooks/useUserProfile";
 
@@ -90,6 +91,9 @@ export default function ProfilePage() {
                 onNameUpdated={setDisplayName}
               />
             </div>
+
+            {/* Dangerous Zone Section */}
+            <DangerousZoneSection />
           </div>
         </div>
       </main>
