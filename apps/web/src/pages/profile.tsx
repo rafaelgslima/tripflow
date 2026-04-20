@@ -1,14 +1,37 @@
+import { useState, useEffect } from "react";
 import { HeaderPostLogin } from "@/components/Header/HeaderPostLogin";
 import { Loading } from "@/components/Loading";
+import { EditProfileForm } from "@/components/EditProfileForm";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 export default function ProfilePage() {
-  const { user, loading } = useRequireAuth();
+  const { user, loading: authLoading } = useRequireAuth();
+  const { profile, loading: profileLoading } = useUserProfile(user?.id);
+  const [displayName, setDisplayName] = useState(
+    user?.user_metadata?.name || user?.email || ""
+  );
+
+  useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.name);
+    }
+  }, [profile]);
+
+  const loading = authLoading || profileLoading;
 
   if (loading) return <Loading />;
   if (!user) return null;
 
-  const displayName = user.user_metadata?.name || user.email;
+  // Fallback to auth data if profile table doesn't have data
+  const profileData = profile || {
+    id: user.id,
+    name: user.user_metadata?.name || user.email || "",
+    email: user.email || "",
+    avatar_url: null,
+    country: null,
+    city: null,
+  };
 
   return (
     <div className="min-h-screen bg-tf-bg">
@@ -44,45 +67,28 @@ export default function ProfilePage() {
                 {user.email}
               </div>
             </div>
-            {/* Active badge */}
-            <div className="ml-auto inline-flex items-center gap-1.5 py-1 px-[10px] rounded-full bg-[rgba(74,222,128,0.08)] border border-[rgba(74,222,128,0.18)]">
-              <div className="w-[6px] h-[6px] rounded-full bg-green-400" />
-              <span className="text-xs font-semibold text-green-300 font-outfit">
-                Active
-              </span>
-            </div>
           </div>
 
           {/* Account details */}
           <div className="p-7">
-            <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-tf-muted font-outfit mb-5">
-              Account information
-            </div>
-
-            <dl className="flex flex-col gap-5">
+            <dl className="flex flex-col gap-5 mb-7">
               <div>
                 <dt className="text-xs text-tf-muted font-outfit mb-1">
                   Email address
                 </dt>
                 <dd className="text-sm text-tf-text font-outfit font-medium">
-                  {user.email}
+                  {profileData.email}
                 </dd>
               </div>
-
-              {user.user_metadata?.name && (
-                <div>
-                  <dt className="text-xs text-tf-muted font-outfit mb-1">
-                    Display name
-                  </dt>
-                  <dd className="text-sm text-tf-text font-outfit font-medium">
-                    {user.user_metadata.name}
-                  </dd>
-                </div>
-              )}
             </dl>
 
-            <div className="mt-7 pt-6 border-t border-tf-border text-[13px] text-tf-muted font-outfit text-center">
-              Profile editing coming soon
+            {/* Edit profile form */}
+            <div className="border-t border-tf-border pt-7">
+              <EditProfileForm
+                name={displayName}
+                email={profileData.email}
+                onNameUpdated={setDisplayName}
+              />
             </div>
           </div>
         </div>

@@ -6,9 +6,9 @@ import type {
   UseForgotPasswordFormReturn,
 } from "./types";
 
-export function useForgotPasswordForm(): UseForgotPasswordFormReturn {
+export function useForgotPasswordForm(initialEmail?: string): UseForgotPasswordFormReturn {
   const [values, setValues] = useState<ForgotPasswordFormValues>({
-    email: "",
+    email: initialEmail || "",
   });
   const [errors, setErrors] = useState<ForgotPasswordFormErrors>({});
   const [touched, setTouched] = useState({ email: false });
