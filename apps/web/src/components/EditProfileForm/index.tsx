@@ -54,7 +54,7 @@ export function EditProfileForm({ name, email, onNameUpdated }: EditProfileFormP
         </div>
 
         {/* Change password section */}
-        <div className="pt-2 border-t border-tf-border">
+        <div className="pt-5 border-t border-tf-border">
           <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-tf-muted font-outfit mb-4">
             Password
           </div>
