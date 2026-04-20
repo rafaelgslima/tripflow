@@ -1,7 +1,12 @@
+import { useRouter } from "next/router";
 import { AuthPageHeader } from "@/components/AuthPageHeader";
 import { ForgotPasswordForm } from "@/components/Form/ForgotPasswordForm";
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
+  const emailQuery = router.query.email;
+  const initialEmail = typeof emailQuery === "string" ? emailQuery : undefined;
+
   return (
     <div className="min-h-screen bg-tf-bg flex flex-col items-center justify-center p-6 relative">
       <div className="grain" aria-hidden="true" />
@@ -23,7 +28,7 @@ export default function ForgotPasswordPage() {
           title="Reset your password"
           subtitle="We'll send a reset link to your inbox"
         />
-        <ForgotPasswordForm />
+        <ForgotPasswordForm initialEmail={initialEmail} />
       </div>
     </div>
   );

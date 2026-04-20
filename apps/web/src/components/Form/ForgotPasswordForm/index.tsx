@@ -3,7 +3,7 @@ import { useForgotPasswordForm } from "@/hooks/useForgotPasswordForm";
 import { LoadingSpinner } from "@/components/Loading/LoadingSpinner";
 import type { ForgotPasswordFormProps } from "./types";
 
-export function ForgotPasswordForm(_props: ForgotPasswordFormProps) {
+export function ForgotPasswordForm({ initialEmail }: ForgotPasswordFormProps) {
   const {
     values,
     errors,
@@ -13,7 +13,7 @@ export function ForgotPasswordForm(_props: ForgotPasswordFormProps) {
     handleChange,
     handleBlur,
     handleSubmit,
-  } = useForgotPasswordForm();
+  } = useForgotPasswordForm(initialEmail);
 
   return (
     <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
