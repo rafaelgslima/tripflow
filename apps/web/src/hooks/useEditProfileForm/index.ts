@@ -18,6 +18,7 @@ export function useEditProfileForm(initialName: string): UseEditProfileFormRetur
   const [isSuccess, setIsSuccess] = useState(false);
 
   // Update name when the initialName prop changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (initialName && initialName !== values.name) {
       setValues((prev) => ({ ...prev, name: initialName }));
