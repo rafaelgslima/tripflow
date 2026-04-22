@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { MdAirplanemodeActive, MdCalendarToday, MdPeople, MdEdit } from "react-icons/md";
+import {
+  MdCalendarToday,
+  MdPeople,
+  MdEdit,
+} from "react-icons/md";
 import { supabase } from "@/lib/supabase";
+import { HeaderPreLogin } from "@/components/Header/HeaderPreLogin";
 
 /* ── Icons ────────────────────────────────────────────────────────────── */
-function PlaneIcon() {
-  return <MdAirplanemodeActive size={20} />;
-}
-
 function CalendarIcon() {
   return <MdCalendarToday size={22} />;
 }
@@ -36,7 +37,9 @@ function MockItem({ time, text, active }: MockItemProps) {
       <span className="text-[11px] font-semibold text-tf-amber font-outfit tracking-[0.02em] w-[36px] shrink-0">
         {time}
       </span>
-      <span className={`text-xs font-outfit ${active ? "text-tf-text" : "text-tf-muted"}`}>
+      <span
+        className={`text-xs font-outfit ${active ? "text-tf-text" : "text-tf-muted"}`}
+      >
         {text}
       </span>
     </div>
@@ -57,7 +60,8 @@ function AppMockup() {
           width: "380px",
           maxWidth: "100vw",
           height: "380px",
-          background: "radial-gradient(ellipse at center, rgba(232,162,58,0.18) 0%, transparent 65%)",
+          background:
+            "radial-gradient(ellipse at center, rgba(232,162,58,0.18) 0%, transparent 65%)",
         }}
       />
 
@@ -66,7 +70,8 @@ function AppMockup() {
         className="animate-float relative z-[1] bg-tf-card rounded-[20px] p-6 max-w-[340px] ml-auto"
         style={{
           border: "1px solid rgba(255,255,255,0.09)",
-          boxShadow: "0 0 0 1px rgba(255,255,255,0.04), 0 24px 64px rgba(0,0,0,0.55), 0 8px 16px rgba(0,0,0,0.3)",
+          boxShadow:
+            "0 0 0 1px rgba(255,255,255,0.04), 0 24px 64px rgba(0,0,0,0.55), 0 8px 16px rgba(0,0,0,0.3)",
         }}
       >
         {/* Card header */}
@@ -130,9 +135,7 @@ function AppMockup() {
       </div>
 
       {/* Floating collaboration notice */}
-      <div
-        className="animate-float-sub absolute bottom-[10px] left-0 z-[2] bg-tf-bg-3 border border-tf-border-amber rounded-xl py-2.5 px-3.5 shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex items-center gap-[10px] min-w-[220px]"
-      >
+      <div className="animate-float-sub absolute bottom-[10px] left-0 z-[2] bg-tf-bg-3 border border-tf-border-amber rounded-xl py-2.5 px-3.5 shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex items-center gap-[10px] min-w-[220px]">
         <div
           className="w-[8px] h-[8px] rounded-full bg-green-400 shrink-0"
           style={{ boxShadow: "0 0 8px rgba(74,222,128,0.5)" }}
@@ -148,10 +151,11 @@ function AppMockup() {
       </div>
 
       {/* Floating date badge */}
-      <div
-        className="absolute top-[8px] right-0 z-[2] bg-tf-amber rounded-[10px] py-2 px-3.5 shadow-[0_4px_16px_rgba(232,162,58,0.35)] flex flex-col items-center"
-      >
-        <div className="text-[10px] font-bold tracking-[0.08em] uppercase font-outfit" style={{ color: "rgba(13,11,10,0.65)" }}>
+      <div className="absolute top-[8px] right-0 z-[2] bg-tf-amber rounded-[10px] py-2 px-3.5 shadow-[0_4px_16px_rgba(232,162,58,0.35)] flex flex-col items-center">
+        <div
+          className="text-[10px] font-bold tracking-[0.08em] uppercase font-outfit"
+          style={{ color: "rgba(13,11,10,0.65)" }}
+        >
           Mar
         </div>
         <div className="text-[24px] font-bold leading-none text-[#0E0B09] font-outfit">
@@ -183,7 +187,10 @@ function FeatureCard({ icon, title, description, featured }: FeatureCardProps) {
       <h3 className="text-[16px] font-semibold text-tf-text mb-[10px] font-outfit tracking-[-0.01em]">
         {title}
       </h3>
-      <p className="text-sm font-outfit text-tf-muted" style={{ lineHeight: 1.65 }}>
+      <p
+        className="text-sm font-outfit text-tf-muted"
+        style={{ lineHeight: 1.65 }}
+      >
         {description}
       </p>
     </div>
@@ -225,58 +232,21 @@ export default function Home() {
           width: "900px",
           maxWidth: "100vw",
           height: "500px",
-          background: "radial-gradient(ellipse at 50% 0%, rgba(232,162,58,0.07) 0%, transparent 60%)",
+          background:
+            "radial-gradient(ellipse at 50% 0%, rgba(232,162,58,0.07) 0%, transparent 60%)",
         }}
       />
 
-      {/* ── Nav ─────────────────────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-tf-border backdrop-blur-[16px] bg-[rgba(14,11,9,0.75)]">
-        <nav className="max-w-[1200px] mx-auto px-6 h-[62px] flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-[9px] no-underline"
-          >
-            <span className="text-tf-amber">
-              <PlaneIcon />
-            </span>
-            <span className="text-[17px] font-semibold text-tf-text font-outfit tracking-[-0.025em]">
-              TripFlow
-            </span>
-          </Link>
-
-          <div className="flex items-center gap-1.5">
-            <Link
-              href="/contact"
-              className="py-2 px-4 text-sm font-medium text-tf-muted no-underline font-outfit rounded-lg transition-colors duration-150"
-            >
-              Contact
-            </Link>
-            <Link
-              href="/login"
-              className="py-2 px-4 text-sm font-medium text-tf-muted no-underline font-outfit rounded-lg transition-colors duration-150"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/signup"
-              className="py-[9px] px-5 text-sm font-semibold text-[#0E0B09] bg-tf-amber no-underline rounded-[9px] font-outfit tracking-[-0.01em] transition-opacity duration-150"
-            >
-              Sign up free
-            </Link>
-          </div>
-        </nav>
-      </header>
+      <HeaderPreLogin />
 
       {/* ── Hero ────────────────────────────────────────────────────────── */}
-      <main className="relative z-[1]">
+      <main className="relative z-[1] pt-[62px]">
         <section>
           <div className="max-w-[1200px] mx-auto hero-grid">
             {/* Left: copy */}
             <div>
               {/* Eyebrow pill */}
-              <div
-                className="animate-slide-up inline-flex items-center gap-2 py-1.5 px-[14px] rounded-full border border-tf-border-amber bg-tf-amber-soft text-xs font-semibold text-tf-amber font-outfit tracking-[0.04em] uppercase mb-7"
-              >
+              <div className="animate-slide-up inline-flex items-center gap-2 py-1.5 px-[14px] rounded-full border border-tf-border-amber bg-tf-amber-soft text-xs font-semibold text-tf-amber font-outfit tracking-[0.04em] uppercase mb-7">
                 <span aria-hidden="true">✦</span>
                 Collaborative travel planning
               </div>
@@ -284,15 +254,16 @@ export default function Home() {
               {/* Headline */}
               <h1
                 className="animate-slide-up font-cormorant font-light leading-[1.04] tracking-[-0.025em] text-tf-text mb-6"
-                style={{ fontSize: "clamp(52px, 6.5vw, 86px)", animationDelay: "0.08s" }}
+                style={{
+                  fontSize: "clamp(52px, 6.5vw, 86px)",
+                  animationDelay: "0.08s",
+                }}
               >
                 Plan trips
                 <br />
                 that feel like
                 <br />
-                <em className="text-tf-amber italic">
-                  adventures.
-                </em>
+                <em className="text-tf-amber italic">adventures.</em>
               </h1>
 
               {/* Subtext */}
@@ -340,14 +311,12 @@ export default function Home() {
                           border: "2px solid var(--tf-bg)",
                         }}
                       />
-                    )
+                    ),
                   )}
                 </div>
                 <span className="text-[13px] text-tf-muted font-outfit">
                   Join{" "}
-                  <strong className="text-tf-text font-semibold">
-                    2,400+
-                  </strong>{" "}
+                  <strong className="text-tf-text font-semibold">2,400+</strong>{" "}
                   travelers planning their next adventure
                 </span>
               </div>
@@ -359,10 +328,7 @@ export default function Home() {
         </section>
 
         {/* ── Features ──────────────────────────────────────────────────── */}
-        <section
-          id="features"
-          className="border-t border-tf-border py-[80px]"
-        >
+        <section id="features" className="border-t border-tf-border py-[80px]">
           <div className="max-w-[1200px] mx-auto px-6">
             {/* Section label */}
             <div className="text-center mb-[56px]">
@@ -375,9 +341,7 @@ export default function Home() {
               >
                 Built for the way
                 <br />
-                <em className="text-tf-amber">
-                  you actually travel.
-                </em>
+                <em className="text-tf-amber">you actually travel.</em>
               </h2>
             </div>
 
@@ -409,7 +373,10 @@ export default function Home() {
             {/* Decorative line */}
             <div
               className="w-px h-[64px] mx-auto mb-10"
-              style={{ background: "linear-gradient(to bottom, transparent, var(--tf-border-amber))" }}
+              style={{
+                background:
+                  "linear-gradient(to bottom, transparent, var(--tf-border-amber))",
+              }}
             />
             <h2
               className="font-cormorant font-light leading-[1.05] tracking-[-0.025em] text-tf-text mb-[18px]"

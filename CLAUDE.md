@@ -283,6 +283,24 @@ API routes live in `apps/web/src/pages/api/`. Server-side utilities in `apps/web
 - For values not on Tailwind's default scale, use arbitrary syntax: `text-[13px]`, `rounded-[20px]`, `tracking-[-0.02em]`.
 - The only permitted exceptions are values that are **genuinely impossible** to express in Tailwind (e.g. multi-stop `radial-gradient` backgrounds, runtime-computed transforms from libraries like `@dnd-kit`). In those cases, keep only the inexpressible properties in `style={{}}` and move everything else to `className`.
 
+### Header Strategy — Single Source of Truth
+
+**All pages must use header components, not hardcoded headers:**
+- Logged-out users: import and render `<HeaderPreLogin />` from `@/components/Header/HeaderPreLogin`
+- Logged-in users: import and render `<HeaderPostLogin />` from `@/components/Header/HeaderPostLogin`
+- **Do NOT hardcode header HTML in page files** — this creates maintenance nightmares when header styles/links change.
+
+**Header components include:**
+- Logo (always)
+- Navigation links with active state highlighting
+- Hover effects on nav links
+- Mobile hamburger menu (HeaderPostLogin only)
+
+**Pages that render headers:**
+- `pages/index.tsx` → `<HeaderPreLogin />` (home/landing page)
+- `pages/contact.tsx` → conditional (HeaderPreLogin if logged out, HeaderPostLogin if logged in)
+- Protected pages (home, profile, past-trips) → `<HeaderPostLogin />` (no conditional needed; users must be logged in)
+
 ---
 
 ## When Implementing a Feature
