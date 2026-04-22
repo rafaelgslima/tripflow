@@ -1,5 +1,3 @@
 {
-  "buildCommand": "pnpm --filter @tripflow/web build",
-  "outputDirectory": "apps/web/.next",
-  "installCommand": "pnpm install --frozen-lockfile"
+  "buildCommand": "if [ \"$VERCEL_GIT_COMMIT_REF\" != \"master\" ] && [ \"$VERCEL_GIT_COMMIT_REF\" != \"production\" ]; then exit 0; fi && npm run build"
 }
