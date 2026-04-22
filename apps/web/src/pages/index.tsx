@@ -246,6 +246,12 @@ export default function Home() {
 
           <div className="flex items-center gap-1.5">
             <Link
+              href="/contact"
+              className="py-2 px-4 text-sm font-medium text-tf-muted no-underline font-outfit rounded-lg transition-colors duration-150"
+            >
+              Contact
+            </Link>
+            <Link
               href="/login"
               className="py-2 px-4 text-sm font-medium text-tf-muted no-underline font-outfit rounded-lg transition-colors duration-150"
             >
