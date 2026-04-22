@@ -91,7 +91,8 @@ types/              # shared TS types
 **Pure functions never live in hooks or components.** Any function that takes inputs, returns a value, and has no side effects must live in `utils/`. This applies even if the function is currently only used in one place — co-locating it inside a hook or component makes it invisible to other code and untestable in isolation. Examples of functions that belong in utils, not inline:
 - Date formatting / manipulation (`formatDayHeader`, `getDaysArray`, `formatDateRange` → `utils/dateUtils/`)
 - Time normalization / formatting / sorting (`normalizeTime`, `formatTime`, `sortItemsByTime`, `TIME_OPTIONS` → `utils/timeOptions/`)
-- Validation helpers, string transforms, math utilities
+- Form validation helpers (`validateContactForm`, `validateEmail`, etc. → `utils/contactFormValidation/`, `utils/validation/`)
+- String transforms, math utilities, and any other pure logic
 
 When you see an inline `const fn = () => ...` or `function fn()` inside a component or hook that has no closure dependencies, move it to `utils/`.
 

@@ -8,6 +8,12 @@ export function HeaderPreLogin() {
         <Logo />
         <div className="flex items-center gap-1.5">
           <Link
+            href="/contact"
+            className="py-2 px-4 text-sm font-medium text-tf-muted no-underline font-outfit rounded-lg"
+          >
+            Contact
+          </Link>
+          <Link
             href="/login"
             className="py-2 px-4 text-sm font-medium text-tf-muted no-underline font-outfit rounded-lg"
           >
