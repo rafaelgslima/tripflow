@@ -57,10 +57,10 @@ export function HeaderPostLogin() {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
-            <Link href="/home" className="tf-nav-link">My trips</Link>
-            <Link href="/past-trips" className="tf-nav-link">Past trips</Link>
-            <Link href="/profile" className="tf-nav-link">Profile</Link>
-            <Link href="/contact" className="tf-nav-link">Contact</Link>
+            <div className={`py-1.5 px-3 rounded-lg transition-all duration-150 ${router.pathname === "/home" ? "bg-white/10" : "hover:bg-white/10"}`}><Link href="/home" className="text-sm font-medium text-tf-text no-underline font-outfit">My trips</Link></div>
+            <div className={`py-1.5 px-3 rounded-lg transition-all duration-150 ${router.pathname === "/past-trips" ? "bg-white/10" : "hover:bg-white/10"}`}><Link href="/past-trips" className="text-sm font-medium text-tf-text no-underline font-outfit">Past trips</Link></div>
+            <div className={`py-1.5 px-3 rounded-lg transition-all duration-150 ${router.pathname === "/profile" ? "bg-white/10" : "hover:bg-white/10"}`}><Link href="/profile" className="text-sm font-medium text-tf-text no-underline font-outfit">Profile</Link></div>
+            <div className={`py-1.5 px-3 rounded-lg transition-all duration-150 ${router.pathname === "/contact" ? "bg-white/10" : "hover:bg-white/10"}`}><Link href="/contact" className="text-sm font-medium text-tf-text no-underline font-outfit">Contact</Link></div>
             <button type="button" onClick={handleLogout} className="tf-btn-logout">
               Log out
             </button>
@@ -101,34 +101,10 @@ export function HeaderPostLogin() {
 
           <div className="flex-1 flex flex-col justify-between p-8 px-6">
             <div className="flex flex-col gap-1">
-              <Link
-                href="/home"
-                onClick={handleMobileMenuClose}
-                className="block py-[14px] px-4 text-[18px] font-medium text-tf-text no-underline font-outfit rounded-xl"
-              >
-                My trips
-              </Link>
-              <Link
-                href="/past-trips"
-                onClick={handleMobileMenuClose}
-                className="block py-[14px] px-4 text-[18px] font-medium text-tf-text no-underline font-outfit rounded-xl"
-              >
-                Past trips
-              </Link>
-              <Link
-                href="/profile"
-                onClick={handleMobileMenuClose}
-                className="block py-[14px] px-4 text-[18px] font-medium text-tf-text no-underline font-outfit rounded-xl"
-              >
-                Profile
-              </Link>
-              <Link
-                href="/contact"
-                onClick={handleMobileMenuClose}
-                className="block py-[14px] px-4 text-[18px] font-medium text-tf-text no-underline font-outfit rounded-xl"
-              >
-                Contact
-              </Link>
+              <div className={`py-[14px] px-4 rounded-xl transition-all duration-150 ${router.pathname === "/home" ? "bg-white/10" : "hover:bg-white/10"}`}><Link href="/home" onClick={handleMobileMenuClose} className="block text-[18px] font-medium text-tf-text no-underline font-outfit">My trips</Link></div>
+              <div className={`py-[14px] px-4 rounded-xl transition-all duration-150 ${router.pathname === "/past-trips" ? "bg-white/10" : "hover:bg-white/10"}`}><Link href="/past-trips" onClick={handleMobileMenuClose} className="block text-[18px] font-medium text-tf-text no-underline font-outfit">Past trips</Link></div>
+              <div className={`py-[14px] px-4 rounded-xl transition-all duration-150 ${router.pathname === "/profile" ? "bg-white/10" : "hover:bg-white/10"}`}><Link href="/profile" onClick={handleMobileMenuClose} className="block text-[18px] font-medium text-tf-text no-underline font-outfit">Profile</Link></div>
+              <div className={`py-[14py] px-4 rounded-xl transition-all duration-150 ${router.pathname === "/contact" ? "bg-white/10" : "hover:bg-white/10"}`}><Link href="/contact" onClick={handleMobileMenuClose} className="block text-[18px] font-medium text-tf-text no-underline font-outfit">Contact</Link></div>
             </div>
             <button
               type="button"
