@@ -5,7 +5,6 @@ import { useSignupForm } from "./index";
 // Mock Supabase client before importing
 vi.mock("@/lib/supabase");
 
-// Import after mocking
 const { supabase } = await import("@/lib/supabase");
 const mockSignUp = supabase.auth.signUp as ReturnType<typeof vi.fn>;
 
@@ -37,7 +36,7 @@ describe("useSignupForm", () => {
       result.current.handleChange("name", "John Doe");
     });
 
-    expect(result.current.values.name).toBe("John Doe Silva");
+    expect(result.current.values.name).toBe("John Doe");
   });
 
   it("should mark field as touched when handleBlur is called", () => {
