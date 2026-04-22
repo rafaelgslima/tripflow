@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, production]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '25'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm --filter @tripflow/web lint
+
+      - name: Type check
+        run: pnpm --filter @tripflow/web type-check
+
+      - name: Unit tests
+        run: pnpm --filter @tripflow/web test:run
