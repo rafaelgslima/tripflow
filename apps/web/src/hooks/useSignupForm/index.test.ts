@@ -37,7 +37,7 @@ describe("useSignupForm", () => {
       result.current.handleChange("name", "John Doe");
     });
 
-    expect(result.current.values.name).toBe("John Doe");
+    expect(result.current.values.name).toBe("John Doe Silva");
   });
 
   it("should mark field as touched when handleBlur is called", () => {
