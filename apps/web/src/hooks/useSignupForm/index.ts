@@ -171,15 +171,15 @@ export function useSignupForm(
       });
 
       if (!response.ok) {
-        const errorData = await response.json() as { message?: string };
+        const errorData = (await response.json()) as { message?: string };
         setErrors((prev) => ({
           ...prev,
-          general: errorData.message ?? "Failed to create account. Please try again.",
+          general:
+            errorData.message ?? "Failed to create account. Please try again.",
         }));
         return;
       }
 
-      // Success!
       setIsSuccess(true);
 
       // Call optional onSubmit callback if provided
