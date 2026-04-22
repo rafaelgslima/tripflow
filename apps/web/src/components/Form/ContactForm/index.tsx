@@ -10,7 +10,7 @@ export function ContactForm() {
         <div className="mb-4 text-4xl">✓</div>
         <h2 className="font-cormorant text-3xl font-light text-tf-text mb-2">Message Sent!</h2>
         <p className="text-sm text-tf-muted mb-6">
-          Thank you for reaching out. We've received your message and will get back to you soon.
+          Thank you for reaching out. We&apos;ve received your message and will get back to you soon.
         </p>
         <div className="inline-flex items-center justify-center px-4 py-2 rounded bg-tf-amber-soft border border-tf-border-amber">
           <span className="text-xs text-tf-amber font-outfit font-medium">

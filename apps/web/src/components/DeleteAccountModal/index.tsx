@@ -72,7 +72,7 @@ export function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps)
         {/* Confirmation input */}
         <div className="mb-6">
           <label className="text-xs text-tf-muted font-outfit font-semibold uppercase tracking-wide mb-2 block">
-            Type "{CONFIRMATION_TEXT}" to confirm
+            Type &quot;{CONFIRMATION_TEXT}&quot; to confirm
           </label>
           <input
             type="text"

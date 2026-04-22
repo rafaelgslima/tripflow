@@ -47,8 +47,8 @@ export default function ContactPage() {
               Get in Touch
             </h1>
             <p className="font-outfit text-sm md:text-base text-tf-muted leading-relaxed">
-              Have an issue? A brilliant feature idea? A complaint? We'd love to hear from you.
-              Send us a message and we'll get back to you as soon as possible.
+              Have an issue? A brilliant feature idea? A complaint? We&apos;d love to hear from you.
+              Send us a message and we&apos;ll get back to you as soon as possible.
             </p>
           </div>
 

@@ -72,7 +72,7 @@ export function ShareTravelPlanButton({
     } finally {
       setIsSending(false);
     }
-  }, [friendEmail, travelPlanId]);
+  }, [friendEmail, travelPlanId, onShareCreated]);
 
   const isConfirmDisabled = result === "success" || isSending;
 
