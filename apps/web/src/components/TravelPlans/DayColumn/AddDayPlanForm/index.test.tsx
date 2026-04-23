@@ -11,7 +11,7 @@ describe("AddDayPlanForm", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /confirm/i }),
+      screen.getByRole("button", { name: /save/i }),
     ).toBeInTheDocument();
   });
 
@@ -30,9 +30,9 @@ describe("AddDayPlanForm", () => {
 
     const input = screen.getByPlaceholderText(/what's the plan\?/i);
     fireEvent.change(input, { target: { value: "Visit Museum" } });
-    fireEvent.click(screen.getByRole("button", { name: /confirm/i }));
+    fireEvent.click(screen.getByRole("button", { name: /save/i }));
 
-    expect(onConfirm).toHaveBeenCalledWith("Visit Museum");
+    expect(onConfirm).toHaveBeenCalledWith("Visit Museum", null);
   });
 
   it("should clear input after confirm", () => {
@@ -43,7 +43,7 @@ describe("AddDayPlanForm", () => {
       /what's the plan\?/i,
     ) as HTMLInputElement;
     fireEvent.change(input, { target: { value: "Visit Museum" } });
-    fireEvent.click(screen.getByRole("button", { name: /confirm/i }));
+    fireEvent.click(screen.getByRole("button", { name: /save/i }));
 
     expect(input.value).toBe("");
   });

@@ -14,8 +14,8 @@ describe("EditProfileForm", () => {
     vi.clearAllMocks();
   });
 
-  it("should render the form with initial values", () => {
-    mockUseEditProfileForm.mockReturnValueOnce({
+  it("should render the form with initial values", async () => {
+    mockUseEditProfileForm.mockReturnValue({
       values: { name: "John Doe" },
       errors: {},
       touched: {},
@@ -28,11 +28,16 @@ describe("EditProfileForm", () => {
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
 
+    // Click Edit button to enter edit mode
+    const editButton = screen.getByLabelText("Edit display name");
+    fireEvent.click(editButton);
+
+    // Now the input should be visible
     expect(screen.getByDisplayValue("John Doe")).toBeInTheDocument();
   });
 
   it("should show error message when validation fails", () => {
-    mockUseEditProfileForm.mockReturnValueOnce({
+    mockUseEditProfileForm.mockReturnValue({
       values: { name: "J" },
       errors: { name: "Name must be at least 2 characters long" },
       touched: { name: true },
@@ -45,6 +50,10 @@ describe("EditProfileForm", () => {
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
 
+    // Click Edit button to enter edit mode
+    const editButton = screen.getByLabelText("Edit display name");
+    fireEvent.click(editButton);
+
     expect(
       screen.getByText("Name must be at least 2 characters long")
     ).toBeInTheDocument();
@@ -52,7 +61,7 @@ describe("EditProfileForm", () => {
 
   it("should call handleChange on input change", async () => {
     const mockHandleChange = vi.fn();
-    mockUseEditProfileForm.mockReturnValueOnce({
+    mockUseEditProfileForm.mockReturnValue({
       values: { name: "John Doe" },
       errors: {},
       touched: {},
@@ -65,6 +74,10 @@ describe("EditProfileForm", () => {
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
 
+    // Click Edit button to enter edit mode
+    const editButton = screen.getByLabelText("Edit display name");
+    fireEvent.click(editButton);
+
     const input = screen.getByDisplayValue("John Doe");
     await userEvent.type(input, "x");
 
@@ -73,7 +86,7 @@ describe("EditProfileForm", () => {
 
   it("should call handleBlur on blur", () => {
     const mockHandleBlur = vi.fn();
-    mockUseEditProfileForm.mockReturnValueOnce({
+    mockUseEditProfileForm.mockReturnValue({
       values: { name: "John Doe" },
       errors: {},
       touched: {},
@@ -86,6 +99,10 @@ describe("EditProfileForm", () => {
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
 
+    // Click Edit button to enter edit mode
+    const editButton = screen.getByLabelText("Edit display name");
+    fireEvent.click(editButton);
+
     const input = screen.getByDisplayValue("John Doe");
     fireEvent.blur(input);
 
@@ -93,7 +110,7 @@ describe("EditProfileForm", () => {
   });
 
   it("should disable submit button while submitting", () => {
-    mockUseEditProfileForm.mockReturnValueOnce({
+    mockUseEditProfileForm.mockReturnValue({
       values: { name: "John Doe" },
       errors: {},
       touched: {},
@@ -106,13 +123,17 @@ describe("EditProfileForm", () => {
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
 
+    // Click Edit button to enter edit mode
+    const editButton = screen.getByLabelText("Edit display name");
+    fireEvent.click(editButton);
+
     const submitButton = screen.getByRole("button", { name: /saving/i });
     expect(submitButton).toBeDisabled();
   });
 
   it("should call handleSubmit when form is submitted", async () => {
     const mockHandleSubmit = vi.fn();
-    mockUseEditProfileForm.mockReturnValueOnce({
+    mockUseEditProfileForm.mockReturnValue({
       values: { name: "John Doe" },
       errors: {},
       touched: {},
@@ -125,6 +146,10 @@ describe("EditProfileForm", () => {
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
 
+    // Click Edit button to enter edit mode
+    const editButton = screen.getByLabelText("Edit display name");
+    fireEvent.click(editButton);
+
     const form = screen.getByRole("button", { name: /save/i }).closest("form");
     fireEvent.submit(form!);
 
@@ -132,9 +157,9 @@ describe("EditProfileForm", () => {
   });
 
   it("should call onNameUpdated callback when save succeeds", async () => {
-    const mockHandleSubmit = vi.fn();
+    const mockHandleSubmit = vi.fn().mockResolvedValue(undefined);
     const mockOnNameUpdated = vi.fn();
-    mockUseEditProfileForm.mockReturnValueOnce({
+    mockUseEditProfileForm.mockReturnValue({
       values: { name: "Jane Doe" },
       errors: {},
       touched: {},
@@ -153,16 +178,22 @@ describe("EditProfileForm", () => {
       />
     );
 
+    // Click Edit button to enter edit mode
+    const editButton = screen.getByLabelText("Edit display name");
+    fireEvent.click(editButton);
+
     const form = screen.getByRole("button", { name: /save/i }).closest("form");
     fireEvent.submit(form!);
 
+    // Wait for async handleSubmit to complete
+    await new Promise(resolve => setTimeout(resolve, 0));
+
     // The callback should be called with the new name
-    // (Note: In real scenario, this happens after handleSubmit completes)
     expect(mockOnNameUpdated).toHaveBeenCalledWith("Jane Doe");
   });
 
   it("should show success message on success", () => {
-    mockUseEditProfileForm.mockReturnValueOnce({
+    mockUseEditProfileForm.mockReturnValue({
       values: { name: "Jane Doe" },
       errors: {},
       touched: {},
@@ -175,11 +206,15 @@ describe("EditProfileForm", () => {
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
 
+    // Click Edit button to enter edit mode to see the success message
+    const editButton = screen.getByLabelText("Edit display name");
+    fireEvent.click(editButton);
+
     expect(screen.getByText(/profile updated successfully/i)).toBeInTheDocument();
   });
 
   it("should show general error message", () => {
-    mockUseEditProfileForm.mockReturnValueOnce({
+    mockUseEditProfileForm.mockReturnValue({
       values: { name: "John Doe" },
       errors: { general: "Failed to update profile" },
       touched: {},
@@ -191,6 +226,10 @@ describe("EditProfileForm", () => {
     });
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
+
+    // Click Edit button to enter edit mode to see the error message
+    const editButton = screen.getByLabelText("Edit display name");
+    fireEvent.click(editButton);
 
     expect(screen.getByText("Failed to update profile")).toBeInTheDocument();
   });
