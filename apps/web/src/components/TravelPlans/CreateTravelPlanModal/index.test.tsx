@@ -123,10 +123,10 @@ describe("CreateTravelPlanModal", () => {
       fireEvent.change(destinationInput, { target: { value: "Paris" } });
 
       const startDateInput = screen.getByLabelText("Start date") as HTMLInputElement;
-      fireEvent.change(startDateInput, { target: { value: "2026-03-20" } });
+      fireEvent.change(startDateInput, { target: { value: "2026-05-20" } });
 
       const endDateInput = screen.getByLabelText("End date") as HTMLInputElement;
-      fireEvent.change(endDateInput, { target: { value: "2026-03-15" } });
+      fireEvent.change(endDateInput, { target: { value: "2026-05-15" } });
 
       const confirmButton = screen.getByRole("button", { name: /create trip/i });
       fireEvent.click(confirmButton);
@@ -152,10 +152,10 @@ describe("CreateTravelPlanModal", () => {
       fireEvent.change(destinationInput, { target: { value: "Paris" } });
 
       const startDateInput = screen.getByLabelText("Start date") as HTMLInputElement;
-      fireEvent.change(startDateInput, { target: { value: "2026-03-20" } });
+      fireEvent.change(startDateInput, { target: { value: "2026-05-20" } });
 
       const endDateInput = screen.getByLabelText("End date") as HTMLInputElement;
-      fireEvent.change(endDateInput, { target: { value: "2026-03-25" } });
+      fireEvent.change(endDateInput, { target: { value: "2026-05-25" } });
 
       const confirmButton = screen.getByRole("button", { name: /create trip/i });
       fireEvent.click(confirmButton);
@@ -163,8 +163,8 @@ describe("CreateTravelPlanModal", () => {
 
     expect(mockOnConfirm).toHaveBeenCalledWith(
       "Paris",
-      new Date("2026-03-20"),
-      new Date("2026-03-25"),
+      new Date("2026-05-20"),
+      new Date("2026-05-25"),
     );
   });
 });
