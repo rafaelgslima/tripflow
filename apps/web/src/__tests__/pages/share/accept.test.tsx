@@ -70,7 +70,7 @@ describe("AcceptShareInvitePage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/invitation accepted\. redirecting/i),
+        screen.getByText(/invitation accepted.*redirecting/i),
       ).toBeInTheDocument();
     });
 

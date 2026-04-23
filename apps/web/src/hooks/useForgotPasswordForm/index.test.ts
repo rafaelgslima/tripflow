@@ -157,10 +157,9 @@ describe("useForgotPasswordForm", () => {
 
   describe("Supabase integration", () => {
     it("sends password reset email successfully", async () => {
-      vi.mocked(supabase.auth.resetPasswordForEmail).mockResolvedValueOnce({
-        data: {},
-        error: null,
-      } as any);
+      vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce(
+        new Response(null, { status: 200 })
+      ));
 
       const { result } = renderHook(() => useForgotPasswordForm());
 
@@ -176,14 +175,16 @@ describe("useForgotPasswordForm", () => {
         } as unknown as React.FormEvent);
       });
 
-      expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalledWith(
-        "user@example.com",
+      expect(vi.mocked(fetch)).toHaveBeenCalledWith(
+        "/api/auth/forgot-password",
         expect.objectContaining({
-          redirectTo: expect.stringContaining("/reset-password"),
+          method: "POST",
         }),
       );
       expect(result.current.isSuccess).toBe(true);
       expect(result.current.errors.general).toBeUndefined();
+
+      vi.unstubAllGlobals();
     });
 
     it("displays error when email sending fails", async () => {
