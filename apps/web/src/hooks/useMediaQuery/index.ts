@@ -1,20 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function useMediaQuery(query: string): boolean {
+  // Default to mobile-first (false = not desktop)
   const [matches, setMatches] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const isInitialRender = useRef(true);
 
   useEffect(() => {
-    setIsMounted(true);
     const media = window.matchMedia(query);
-    setMatches(media.matches);
 
-    const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
+    const listener = (e: MediaQueryListEvent) => {
+      setMatches(e.matches);
+    };
+
+    // Only set initial value on first mount, don't update from media query result
+    // This prevents iOS auto-zoom caused by layout shifts during hydration
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      // Don't call setMatches here - keep the mobile-first default
+    }
+
     media.addEventListener("change", listener);
     return () => media.removeEventListener("change", listener);
   }, [query]);
 
-  // During hydration, return the safe default (false = mobile-first)
-  // After mounting, return the actual media query result
-  return isMounted ? matches : false;
+  return matches;
 }
