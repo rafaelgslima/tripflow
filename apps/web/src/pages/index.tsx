@@ -53,8 +53,7 @@ function AppMockup() {
           top: "20%",
           left: "50%",
           transform: "translateX(-50%)",
-          width: "380px",
-          maxWidth: "100vw",
+          width: "min(380px, 100vw)",
           height: "380px",
           background:
             "radial-gradient(ellipse at center, rgba(232,162,58,0.18) 0%, transparent 65%)",
@@ -225,8 +224,7 @@ export default function Home() {
           top: 0,
           left: "50%",
           transform: "translateX(-50%)",
-          width: "900px",
-          maxWidth: "100vw",
+          width: "min(900px, 100vw)",
           height: "500px",
           background:
             "radial-gradient(ellipse at 50% 0%, rgba(232,162,58,0.07) 0%, transparent 60%)",
