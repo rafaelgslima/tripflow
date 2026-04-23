@@ -47,7 +47,7 @@ describe("SessionTimeoutWarning", () => {
         onLogout={onLogout}
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: /logout now/i }));
+    fireEvent.click(screen.getByRole("button", { name: /log out/i }));
     expect(onLogout).toHaveBeenCalled();
   });
 });
