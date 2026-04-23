@@ -1,16 +1,17 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import { EditProfileForm } from "./index";
 
-jest.mock("@/hooks/useEditProfileForm");
+vi.mock("@/hooks/useEditProfileForm");
 
 import { useEditProfileForm } from "@/hooks/useEditProfileForm";
 
-const mockUseEditProfileForm = useEditProfileForm as jest.MockedFunction<typeof useEditProfileForm>;
+const mockUseEditProfileForm = vi.mocked(useEditProfileForm);
 
 describe("EditProfileForm", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should render the form with initial values", () => {
@@ -20,9 +21,9 @@ describe("EditProfileForm", () => {
       touched: {},
       isSubmitting: false,
       isSuccess: false,
-      handleChange: jest.fn(),
-      handleBlur: jest.fn(),
-      handleSubmit: jest.fn(),
+      handleChange: vi.fn(),
+      handleBlur: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
@@ -37,9 +38,9 @@ describe("EditProfileForm", () => {
       touched: { name: true },
       isSubmitting: false,
       isSuccess: false,
-      handleChange: jest.fn(),
-      handleBlur: jest.fn(),
-      handleSubmit: jest.fn(),
+      handleChange: vi.fn(),
+      handleBlur: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
@@ -50,7 +51,7 @@ describe("EditProfileForm", () => {
   });
 
   it("should call handleChange on input change", async () => {
-    const mockHandleChange = jest.fn();
+    const mockHandleChange = vi.fn();
     mockUseEditProfileForm.mockReturnValueOnce({
       values: { name: "John Doe" },
       errors: {},
@@ -58,8 +59,8 @@ describe("EditProfileForm", () => {
       isSubmitting: false,
       isSuccess: false,
       handleChange: mockHandleChange,
-      handleBlur: jest.fn(),
-      handleSubmit: jest.fn(),
+      handleBlur: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
@@ -71,16 +72,16 @@ describe("EditProfileForm", () => {
   });
 
   it("should call handleBlur on blur", () => {
-    const mockHandleBlur = jest.fn();
+    const mockHandleBlur = vi.fn();
     mockUseEditProfileForm.mockReturnValueOnce({
       values: { name: "John Doe" },
       errors: {},
       touched: {},
       isSubmitting: false,
       isSuccess: false,
-      handleChange: jest.fn(),
+      handleChange: vi.fn(),
       handleBlur: mockHandleBlur,
-      handleSubmit: jest.fn(),
+      handleSubmit: vi.fn(),
     });
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
@@ -98,9 +99,9 @@ describe("EditProfileForm", () => {
       touched: {},
       isSubmitting: true,
       isSuccess: false,
-      handleChange: jest.fn(),
-      handleBlur: jest.fn(),
-      handleSubmit: jest.fn(),
+      handleChange: vi.fn(),
+      handleBlur: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
@@ -110,15 +111,15 @@ describe("EditProfileForm", () => {
   });
 
   it("should call handleSubmit when form is submitted", async () => {
-    const mockHandleSubmit = jest.fn();
+    const mockHandleSubmit = vi.fn();
     mockUseEditProfileForm.mockReturnValueOnce({
       values: { name: "John Doe" },
       errors: {},
       touched: {},
       isSubmitting: false,
       isSuccess: false,
-      handleChange: jest.fn(),
-      handleBlur: jest.fn(),
+      handleChange: vi.fn(),
+      handleBlur: vi.fn(),
       handleSubmit: mockHandleSubmit,
     });
 
@@ -131,16 +132,16 @@ describe("EditProfileForm", () => {
   });
 
   it("should call onNameUpdated callback when save succeeds", async () => {
-    const mockHandleSubmit = jest.fn();
-    const mockOnNameUpdated = jest.fn();
+    const mockHandleSubmit = vi.fn();
+    const mockOnNameUpdated = vi.fn();
     mockUseEditProfileForm.mockReturnValueOnce({
       values: { name: "Jane Doe" },
       errors: {},
       touched: {},
       isSubmitting: false,
       isSuccess: false,
-      handleChange: jest.fn(),
-      handleBlur: jest.fn(),
+      handleChange: vi.fn(),
+      handleBlur: vi.fn(),
       handleSubmit: mockHandleSubmit,
     });
 
@@ -167,9 +168,9 @@ describe("EditProfileForm", () => {
       touched: {},
       isSubmitting: false,
       isSuccess: true,
-      handleChange: jest.fn(),
-      handleBlur: jest.fn(),
-      handleSubmit: jest.fn(),
+      handleChange: vi.fn(),
+      handleBlur: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);
@@ -184,9 +185,9 @@ describe("EditProfileForm", () => {
       touched: {},
       isSubmitting: false,
       isSuccess: false,
-      handleChange: jest.fn(),
-      handleBlur: jest.fn(),
-      handleSubmit: jest.fn(),
+      handleChange: vi.fn(),
+      handleBlur: vi.fn(),
+      handleSubmit: vi.fn(),
     });
 
     render(<EditProfileForm name="John Doe" email="john@example.com" />);

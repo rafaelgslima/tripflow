@@ -1,12 +1,13 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import { CreateTravelPlanModal } from "./index";
 
 describe("CreateTravelPlanModal", () => {
-  const mockOnClose = jest.fn();
-  const mockOnConfirm = jest.fn();
+  const mockOnClose = vi.fn();
+  const mockOnConfirm = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should not render when isOpen is false", () => {
