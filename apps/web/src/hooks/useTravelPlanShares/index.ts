@@ -22,7 +22,12 @@ export function useTravelPlanShares(
         return;
       }
 
-      const [data, { data: { user: currentUser } }] = await Promise.all([
+      const [
+        data,
+        {
+          data: { user: currentUser },
+        },
+      ] = await Promise.all([
         fetchTravelPlanShares(travelPlanId, accessToken),
         supabase.auth.getUser(),
       ]);
@@ -33,7 +38,7 @@ export function useTravelPlanShares(
       );
       setShares(filtered);
     } catch {
-      setError("Failed to load share status.");
+      setError("Failed to load share status");
     } finally {
       setIsLoading(false);
     }
