@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia(query).matches;
-  });
+  const [matches, setMatches] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     const media = window.matchMedia(query);
     setMatches(media.matches);
 
@@ -15,5 +14,7 @@ export function useMediaQuery(query: string): boolean {
     return () => media.removeEventListener("change", listener);
   }, [query]);
 
-  return matches;
+  // During hydration, return the safe default (false = mobile-first)
+  // After mounting, return the actual media query result
+  return isMounted ? matches : false;
 }

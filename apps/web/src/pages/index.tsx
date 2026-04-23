@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import {
-  MdCalendarToday,
-  MdPeople,
-  MdEdit,
-} from "react-icons/md";
+import { MdCalendarToday, MdPeople, MdEdit } from "react-icons/md";
 import { supabase } from "@/lib/supabase";
 import { HeaderPreLogin } from "@/components/Header/HeaderPreLogin";
 
@@ -240,7 +236,7 @@ export default function Home() {
       <HeaderPreLogin />
 
       {/* ── Hero ────────────────────────────────────────────────────────── */}
-      <main className="relative z-[1] pt-[62px]">
+      <main className="relative z-[1] pt-[10px]">
         <section>
           <div className="max-w-[1200px] mx-auto hero-grid">
             {/* Left: copy */}

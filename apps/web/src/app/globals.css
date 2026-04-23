@@ -4,21 +4,25 @@
 
 /* ── Design tokens ───────────────────────────────────────────────────── */
 :root {
-  --tf-bg:          #0E0B09;
-  --tf-bg-2:        #181310;
-  --tf-bg-3:        #221D19;
-  --tf-bg-card:     #1C1714;
-  --tf-border:      rgba(255, 255, 255, 0.07);
-  --tf-border-amber:rgba(232, 162, 58, 0.22);
-  --tf-text:        #F0EAE2;
-  --tf-muted:       #877870;
-  --tf-amber:       #E8A23A;
-  --tf-amber-soft:  rgba(232, 162, 58, 0.12);
-  --tf-amber-glow:  rgba(232, 162, 58, 0.06);
+  --tf-bg: #0e0b09;
+  --tf-bg-2: #181310;
+  --tf-bg-3: #221d19;
+  --tf-bg-card: #1c1714;
+  --tf-border: rgba(255, 255, 255, 0.07);
+  --tf-border-amber: rgba(232, 162, 58, 0.22);
+  --tf-text: #f0eae2;
+  --tf-muted: #877870;
+  --tf-amber: #e8a23a;
+  --tf-amber-soft: rgba(232, 162, 58, 0.12);
+  --tf-amber-glow: rgba(232, 162, 58, 0.06);
 }
 
 /* ── Base ────────────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 body {
   background-color: var(--tf-bg);
@@ -41,29 +45,57 @@ body {
 
 /* ── Reveal animations ───────────────────────────────────────────────── */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px)   rotate(2.5deg); }
-  50%       { transform: translateY(-14px) rotate(2.5deg); }
+  0%,
+  100% {
+    transform: translateY(0px) rotate(2.5deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(2.5deg);
+  }
 }
 
 @keyframes floatSub {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-8px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
-.animate-slide-up { animation: slideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-fade-in  { animation: fadeIn  0.9s ease both; }
-.animate-float    { animation: float    7s ease-in-out infinite; }
-.animate-float-sub{ animation: floatSub 5s ease-in-out 1s infinite; }
+.animate-slide-up {
+  animation: slideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.animate-fade-in {
+  animation: fadeIn 0.9s ease both;
+}
+.animate-float {
+  animation: float 7s ease-in-out infinite;
+}
+.animate-float-sub {
+  animation: floatSub 5s ease-in-out 1s infinite;
+}
 
 /* ── Layout helpers ──────────────────────────────────────────────────── */
 .hero-grid {
@@ -71,14 +103,14 @@ body {
   grid-template-columns: 1fr;
   gap: 56px;
   align-items: center;
-  padding: 100px 24px 80px;
+  padding: 40px 24px 80px;
 }
 
 @media (min-width: 1024px) {
   .hero-grid {
     grid-template-columns: 1fr 1fr;
     gap: 80px;
-    padding: 120px 24px 100px;
+    padding: 30px 24px 100px;
   }
 }
 
@@ -115,7 +147,9 @@ body {
   font-family: var(--font-outfit, system-ui), sans-serif;
   font-size: 14px;
   outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
   -webkit-appearance: none;
   appearance: none;
   color-scheme: dark;
@@ -124,10 +158,19 @@ body {
   border-color: rgba(232, 162, 58, 0.4);
   box-shadow: 0 0 0 3px rgba(232, 162, 58, 0.08);
 }
-.tf-input::placeholder { color: var(--tf-muted); }
-.tf-input:disabled    { opacity: 0.5; cursor: not-allowed; }
-.tf-input--error      { border-color: rgba(239, 68, 68, 0.4) !important; }
-.tf-input--error:focus{ box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08) !important; }
+.tf-input::placeholder {
+  color: var(--tf-muted);
+}
+.tf-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.tf-input--error {
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+.tf-input--error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08) !important;
+}
 
 .tf-label {
   display: block;
@@ -148,7 +191,7 @@ body {
   width: 100%;
   padding: 12px 20px;
   background: var(--tf-amber);
-  color: #0E0B09;
+  color: #0e0b09;
   border: none;
   border-radius: 10px;
   font-family: var(--font-outfit, system-ui), sans-serif;
@@ -158,8 +201,13 @@ body {
   transition: opacity 0.15s;
   letter-spacing: -0.01em;
 }
-.tf-btn-primary:hover   { opacity: 0.9; }
-.tf-btn-primary:disabled{ opacity: 0.5; cursor: not-allowed; }
+.tf-btn-primary:hover {
+  opacity: 0.9;
+}
+.tf-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 .tf-btn-ghost {
   display: inline-flex;
@@ -175,9 +223,14 @@ body {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
 }
-.tf-btn-ghost:hover { color: var(--tf-text); border-color: rgba(255,255,255,0.15); }
+.tf-btn-ghost:hover {
+  color: var(--tf-text);
+  border-color: rgba(255, 255, 255, 0.15);
+}
 
 .tf-btn-danger {
   display: inline-flex;
@@ -186,7 +239,7 @@ body {
   gap: 8px;
   padding: 11px 20px;
   background: rgba(239, 68, 68, 0.12);
-  color: #FCA5A5;
+  color: #fca5a5;
   border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: 10px;
   font-family: var(--font-outfit, system-ui), sans-serif;
@@ -195,7 +248,9 @@ body {
   cursor: pointer;
   transition: background 0.15s;
 }
-.tf-btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+.tf-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
 
 .tf-alert-error {
   background: rgba(239, 68, 68, 0.08);
@@ -203,7 +258,7 @@ body {
   border-radius: 10px;
   padding: 12px 16px;
   font-size: 13px;
-  color: #FCA5A5;
+  color: #fca5a5;
   font-family: var(--font-outfit, system-ui), sans-serif;
 }
 
@@ -213,7 +268,7 @@ body {
   border-radius: 10px;
   padding: 12px 16px;
   font-size: 13px;
-  color: #86EFAC;
+  color: #86efac;
   font-family: var(--font-outfit, system-ui), sans-serif;
 }
 
@@ -232,12 +287,16 @@ body {
   cursor: pointer;
   margin-left: 8px;
   opacity: 0.75;
-  transition: opacity 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
+  transition:
+    opacity 0.15s,
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
 }
 .tf-btn-logout:hover {
   opacity: 1;
   background: rgba(239, 68, 68, 0.1);
-  color: #FCA5A5;
+  color: #fca5a5;
   border-color: rgba(239, 68, 68, 0.3);
 }
 
@@ -255,5 +314,7 @@ body {
 
 /* ── Utility ─────────────────────────────────────────────────────────── */
 @layer utilities {
-  .text-balance { text-wrap: balance; }
+  .text-balance {
+    text-wrap: balance;
+  }
 }

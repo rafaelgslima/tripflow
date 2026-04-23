@@ -3,7 +3,7 @@ import { SignupForm } from "@/components/Form/SignupForm";
 
 export default function SignUpPage() {
   return (
-    <div className="min-h-screen bg-tf-bg flex flex-col items-center justify-center p-6 relative">
+    <div className="min-h-screen bg-tf-bg flex flex-col items-center justify-start md:justify-center pt-8 md:pt-0 p-6 relative">
       <div className="grain" aria-hidden="true" />
       <div
         aria-hidden="true"

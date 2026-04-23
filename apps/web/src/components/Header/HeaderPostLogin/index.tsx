@@ -84,7 +84,7 @@ export function HeaderPostLogin() {
           role="dialog"
           aria-modal="true"
           aria-label="Mobile navigation menu"
-          className="md:hidden flex flex-col fixed inset-0 z-50 bg-tf-bg"
+          className="md:hidden flex flex-col fixed inset-0 z-50 bg-tf-bg overflow-y-auto"
         >
           {/* Mobile header */}
           <div className="h-[62px] flex items-center justify-between border-b border-tf-border px-6">
