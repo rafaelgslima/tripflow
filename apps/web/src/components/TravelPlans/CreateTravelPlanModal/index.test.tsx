@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { CreateTravelPlanModal } from "./index";
 
@@ -118,17 +118,19 @@ describe("CreateTravelPlanModal", () => {
       />,
     );
 
-    const destinationInput = screen.getByPlaceholderText(/paris, tokyo/i);
-    fireEvent.change(destinationInput, { target: { value: "Paris" } });
+    act(() => {
+      const destinationInput = screen.getByPlaceholderText(/paris, tokyo/i);
+      fireEvent.change(destinationInput, { target: { value: "Paris" } });
 
-    const startDateInput = screen.getByLabelText("Start date") as HTMLInputElement;
-    fireEvent.change(startDateInput, { target: { value: "2026-03-20" } });
+      const startDateInput = screen.getByLabelText("Start date") as HTMLInputElement;
+      fireEvent.change(startDateInput, { target: { value: "2026-03-20" } });
 
-    const endDateInput = screen.getByLabelText("End date") as HTMLInputElement;
-    fireEvent.change(endDateInput, { target: { value: "2026-03-15" } });
+      const endDateInput = screen.getByLabelText("End date") as HTMLInputElement;
+      fireEvent.change(endDateInput, { target: { value: "2026-03-15" } });
 
-    const confirmButton = screen.getByRole("button", { name: /create trip/i });
-    fireEvent.click(confirmButton);
+      const confirmButton = screen.getByRole("button", { name: /create trip/i });
+      fireEvent.click(confirmButton);
+    });
 
     expect(
       screen.getByText("End date must be after start date"),
@@ -145,17 +147,19 @@ describe("CreateTravelPlanModal", () => {
       />,
     );
 
-    const destinationInput = screen.getByPlaceholderText(/paris, tokyo/i);
-    fireEvent.change(destinationInput, { target: { value: "Paris" } });
+    act(() => {
+      const destinationInput = screen.getByPlaceholderText(/paris, tokyo/i);
+      fireEvent.change(destinationInput, { target: { value: "Paris" } });
 
-    const startDateInput = screen.getByLabelText("Start date") as HTMLInputElement;
-    fireEvent.change(startDateInput, { target: { value: "2026-03-20" } });
+      const startDateInput = screen.getByLabelText("Start date") as HTMLInputElement;
+      fireEvent.change(startDateInput, { target: { value: "2026-03-20" } });
 
-    const endDateInput = screen.getByLabelText("End date") as HTMLInputElement;
-    fireEvent.change(endDateInput, { target: { value: "2026-03-25" } });
+      const endDateInput = screen.getByLabelText("End date") as HTMLInputElement;
+      fireEvent.change(endDateInput, { target: { value: "2026-03-25" } });
 
-    const confirmButton = screen.getByRole("button", { name: /create trip/i });
-    fireEvent.click(confirmButton);
+      const confirmButton = screen.getByRole("button", { name: /create trip/i });
+      fireEvent.click(confirmButton);
+    });
 
     expect(mockOnConfirm).toHaveBeenCalledWith(
       "Paris",
