@@ -26,14 +26,14 @@ describe("TravelPlans", () => {
 
     render(<TravelPlans />);
 
-    expect(screen.getByText("Plan Your Dream Adventures")).toBeInTheDocument();
+    expect(screen.getByText("My trips")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Create and organize your travel itineraries in one place",
+        "Your travel itineraries, all in one place",
       ),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /create new trip plan/i }),
+      screen.getByRole("button", { name: /new trip/i }),
     ).toBeInTheDocument();
   });
 
@@ -51,12 +51,12 @@ describe("TravelPlans", () => {
     render(<TravelPlans />);
 
     const createButton = screen.getByRole("button", {
-      name: /create new trip plan/i,
+      name: /new trip/i,
     });
     fireEvent.click(createButton);
 
     expect(
-      screen.getByRole("heading", { name: /create new trip plan/i }),
+      screen.getByRole("heading", { name: /plan a new trip/i }),
     ).toBeInTheDocument();
   });
 
@@ -92,7 +92,7 @@ describe("TravelPlans", () => {
     render(<TravelPlans />);
 
     expect(screen.getByTestId("travel-plans-loading")).toBeInTheDocument();
-    expect(screen.getByText(/loading travel plans/i)).toBeInTheDocument();
+    expect(screen.getByText(/loading your trips/i)).toBeInTheDocument();
   });
 
   it("should show load error when travel plans cannot be retrieved", async () => {

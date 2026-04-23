@@ -34,7 +34,7 @@ describe("SignupForm", () => {
 
     expect(screen.getByLabelText(/full name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^password\s*\*/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^password\s*$/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
     expect(screen.getByRole("checkbox")).toBeInTheDocument();
     expect(
