@@ -1,11 +1,12 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import { useEditProfileForm } from "./index";
 
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
 describe("useEditProfileForm", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should initialize with empty name and no errors", () => {
