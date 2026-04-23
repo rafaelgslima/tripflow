@@ -1,27 +1,32 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import { useSessionTimeoutWarning } from "./index";
 import * as useSessionTimeoutModule from "@/hooks/useSessionTimeout";
 
-jest.mock("@/hooks/useSessionTimeout");
+vi.mock("@/hooks/useSessionTimeout");
 
 describe("useSessionTimeoutWarning", () => {
-  let mockResetTimer: jest.Mock;
-  let mockOnLogout: jest.Mock;
+  let mockResetTimer: ReturnType<typeof vi.fn>;
+  let mockOnLogout: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.useFakeTimers();
-    mockResetTimer = jest.fn();
-    mockOnLogout = jest.fn().mockResolvedValue(undefined);
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+    mockResetTimer = vi.fn();
+    mockOnLogout = vi.fn().mockResolvedValue(undefined);
 
-    (useSessionTimeoutModule.useSessionTimeout as jest.Mock).mockReturnValue({
+    vi.mocked(useSessionTimeoutModule.useSessionTimeout).mockReturnValue({
       resetTimer: mockResetTimer,
-    });
+    } as any);
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
+    vi.useRealTimers();
+  });
+
+  afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
   });
 
   it("should initialize with warning hidden", () => {
@@ -40,7 +45,7 @@ describe("useSessionTimeoutWarning", () => {
   it("should show warning when onWarning callback is triggered", () => {
     let capturedOnWarning: (() => void) | null = null;
 
-    (useSessionTimeoutModule.useSessionTimeout as jest.Mock).mockImplementation(
+    vi.mocked(useSessionTimeoutModule.useSessionTimeout).mockImplementation(
       ({ onWarning }) => {
         capturedOnWarning = onWarning;
         return { resetTimer: mockResetTimer };
@@ -66,7 +71,7 @@ describe("useSessionTimeoutWarning", () => {
   it("should countdown remaining seconds when warning is shown", () => {
     let capturedOnWarning: (() => void) | null = null;
 
-    (useSessionTimeoutModule.useSessionTimeout as jest.Mock).mockImplementation(
+    vi.mocked(useSessionTimeoutModule.useSessionTimeout).mockImplementation(
       ({ onWarning }) => {
         capturedOnWarning = onWarning;
         return { resetTimer: mockResetTimer };
@@ -88,13 +93,13 @@ describe("useSessionTimeoutWarning", () => {
     expect(result.current.remainingSeconds).toBe(120);
 
     act(() => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     expect(result.current.remainingSeconds).toBe(119);
 
     act(() => {
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
     });
 
     expect(result.current.remainingSeconds).toBe(117);
@@ -103,7 +108,7 @@ describe("useSessionTimeoutWarning", () => {
   it("should extend session and hide warning when handleExtendSession is called", () => {
     let capturedOnWarning: (() => void) | null = null;
 
-    (useSessionTimeoutModule.useSessionTimeout as jest.Mock).mockImplementation(
+    vi.mocked(useSessionTimeoutModule.useSessionTimeout).mockImplementation(
       ({ onWarning }) => {
         capturedOnWarning = onWarning;
         return { resetTimer: mockResetTimer };
@@ -135,7 +140,7 @@ describe("useSessionTimeoutWarning", () => {
   it("should call onLogout and hide warning when handleLogoutNow is called", async () => {
     let capturedOnWarning: (() => void) | null = null;
 
-    (useSessionTimeoutModule.useSessionTimeout as jest.Mock).mockImplementation(
+    vi.mocked(useSessionTimeoutModule.useSessionTimeout).mockImplementation(
       ({ onWarning }) => {
         capturedOnWarning = onWarning;
         return { resetTimer: mockResetTimer };
@@ -168,7 +173,7 @@ describe("useSessionTimeoutWarning", () => {
     let capturedOnWarning: (() => void) | null = null;
     let capturedOnTimeout: (() => void) | null = null;
 
-    (useSessionTimeoutModule.useSessionTimeout as jest.Mock).mockImplementation(
+    vi.mocked(useSessionTimeoutModule.useSessionTimeout).mockImplementation(
       ({ onWarning, onTimeout }) => {
         capturedOnWarning = onWarning;
         capturedOnTimeout = onTimeout;
@@ -200,7 +205,7 @@ describe("useSessionTimeoutWarning", () => {
   it("should cleanup countdown interval on unmount", () => {
     let capturedOnWarning: (() => void) | null = null;
 
-    (useSessionTimeoutModule.useSessionTimeout as jest.Mock).mockImplementation(
+    vi.mocked(useSessionTimeoutModule.useSessionTimeout).mockImplementation(
       ({ onWarning }) => {
         capturedOnWarning = onWarning;
         return { resetTimer: mockResetTimer };
@@ -219,7 +224,7 @@ describe("useSessionTimeoutWarning", () => {
       capturedOnWarning?.();
     });
 
-    const clearIntervalSpy = jest.spyOn(global, "clearInterval");
+    const clearIntervalSpy = vi.spyOn(global, "clearInterval");
 
     unmount();
 

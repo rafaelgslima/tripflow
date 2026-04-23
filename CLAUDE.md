@@ -244,13 +244,22 @@ Auth operations that need `APP_BASE_URL` (for email redirect URLs) must go throu
 2. Run them — confirm they fail for the expected reason.
 3. Implement the minimum to make them pass.
 4. Refactor; keep tests green.
+5. **Run full test suite before marking done**: `pnpm --filter @tripflow/web test:run`
 
 Every component, hook, and utility must have a test. Do not create UI without tests. If asked to implement without tests, propose the tests first.
+
+**Critical:** Implementation is NOT complete until **all tests pass**. GitHub Actions CI will block merge if tests fail — catch failures locally first.
 
 **What to test:**
 - Frontend: component rendering/interactions, hooks, utils, API client logic.
 - Backend: service logic, route behavior, permission checks, invite flows.
 - Include negative tests for unauthorized access.
+
+**Test Framework & Mocking:**
+- Use **Vitest** (not Jest) for all tests
+- Mock with Vitest: `vi.mock()`, `vi.spyOn()`, `vi.fn()` — never use Jest APIs
+- Provide `.env.local` with test values for Supabase and other services
+- All mocks must work with Vitest syntax
 
 ---
 

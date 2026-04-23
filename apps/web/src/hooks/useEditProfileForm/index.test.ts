@@ -1,11 +1,16 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
+import { vi, describe, it, expect, beforeEach } from "vitest";
 import { useEditProfileForm } from "./index";
 
-global.fetch = jest.fn();
+vi.mock("@/utils/getSupabaseAccessToken", () => ({
+  getSupabaseAccessToken: vi.fn().mockResolvedValue("mock-token"),
+}));
+
+globalThis.fetch = vi.fn() as any;
 
 describe("useEditProfileForm", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should initialize with empty name and no errors", () => {
@@ -32,6 +37,9 @@ describe("useEditProfileForm", () => {
 
     act(() => {
       result.current.handleChange("name", "J");
+    });
+
+    act(() => {
       result.current.handleBlur("name");
     });
 
@@ -44,6 +52,9 @@ describe("useEditProfileForm", () => {
 
     act(() => {
       result.current.handleChange("name", "a".repeat(101));
+    });
+
+    act(() => {
       result.current.handleBlur("name");
     });
 
@@ -55,6 +66,9 @@ describe("useEditProfileForm", () => {
 
     act(() => {
       result.current.handleChange("name", "");
+    });
+
+    act(() => {
       result.current.handleBlur("name");
     });
 
@@ -66,6 +80,9 @@ describe("useEditProfileForm", () => {
 
     act(() => {
       result.current.handleChange("name", "J");
+    });
+
+    act(() => {
       result.current.handleBlur("name");
     });
 
@@ -79,7 +96,7 @@ describe("useEditProfileForm", () => {
   });
 
   it("should submit valid form", async () => {
-    const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+    const mockFetch = globalThis.fetch as any;
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -102,13 +119,16 @@ describe("useEditProfileForm", () => {
 
     expect(mockFetch).toHaveBeenCalledWith("/api/auth/update-profile", {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer mock-token",
+      },
       body: JSON.stringify({ name: "Jane Doe" }),
     });
   });
 
   it("should handle submission errors", async () => {
-    const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+    const mockFetch = globalThis.fetch as any;
     mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 400,
@@ -132,7 +152,7 @@ describe("useEditProfileForm", () => {
   });
 
   it("should prevent submission with validation errors", async () => {
-    const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
+    const mockFetch = globalThis.fetch as any;
 
     const { result } = renderHook(() => useEditProfileForm("John Doe"));
 

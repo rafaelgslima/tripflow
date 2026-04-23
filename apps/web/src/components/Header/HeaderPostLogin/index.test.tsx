@@ -50,7 +50,7 @@ describe("HeaderPostLogin", () => {
   it("renders Home, Profile and Log out actions", () => {
     render(<HeaderPostLogin />);
 
-    expect(screen.getByRole("link", { name: "Home" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "My trips" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Profile" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Log out" })).toBeInTheDocument();
   });
@@ -66,7 +66,7 @@ describe("HeaderPostLogin", () => {
     });
     expect(dialog).toBeInTheDocument();
     expect(
-      within(dialog).getByRole("link", { name: "Home" }),
+      within(dialog).getByRole("link", { name: "My trips" }),
     ).toBeInTheDocument();
     expect(
       within(dialog).getByRole("link", { name: "Profile" }),

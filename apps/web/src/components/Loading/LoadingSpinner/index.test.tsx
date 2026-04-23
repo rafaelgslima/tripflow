@@ -12,19 +12,22 @@ describe("LoadingSpinner", () => {
   it("applies small size class", () => {
     const { container } = render(<LoadingSpinner size="sm" />);
     const svg = container.querySelector("svg");
-    expect(svg).toHaveClass("h-4", "w-4");
+    expect(svg).toHaveAttribute("width", "16");
+    expect(svg).toHaveAttribute("height", "16");
   });
 
   it("applies medium size class by default", () => {
     const { container } = render(<LoadingSpinner />);
     const svg = container.querySelector("svg");
-    expect(svg).toHaveClass("h-5", "w-5");
+    expect(svg).toHaveAttribute("width", "20");
+    expect(svg).toHaveAttribute("height", "20");
   });
 
   it("applies large size class", () => {
     const { container } = render(<LoadingSpinner size="lg" />);
     const svg = container.querySelector("svg");
-    expect(svg).toHaveClass("h-8", "w-8");
+    expect(svg).toHaveAttribute("width", "32");
+    expect(svg).toHaveAttribute("height", "32");
   });
 
   it("applies custom className", () => {

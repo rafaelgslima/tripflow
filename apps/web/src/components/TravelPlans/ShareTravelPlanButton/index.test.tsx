@@ -38,18 +38,18 @@ describe("ShareTravelPlanButton", () => {
     expect(
       screen.getByRole("dialog", { name: /share travel plan/i }),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText(/friend email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/friend.*email/i)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /close modal/i }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /after sharing the plan with a friend, the friend will be able to view and edit the plan/i,
+        /after sharing, your friend will be able to view and edit this plan/i,
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /confirm/i }),
+      screen.getByRole("button", { name: /send invite/i }),
     ).toBeInTheDocument();
   });
 
@@ -99,7 +99,7 @@ describe("ShareTravelPlanButton", () => {
       screen.getByRole("button", { name: /share this plan with a friend/i }),
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /confirm/i }));
+    fireEvent.click(screen.getByRole("button", { name: /send invite/i }));
 
     expect(screen.getByText(/email is required/i)).toBeInTheDocument();
     expect(
@@ -121,11 +121,11 @@ describe("ShareTravelPlanButton", () => {
       screen.getByRole("button", { name: /share this plan with a friend/i }),
     );
 
-    fireEvent.change(screen.getByLabelText(/friend email/i), {
+    fireEvent.change(screen.getByLabelText(/friend.*email/i), {
       target: { value: "friend@example.com" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /confirm/i }));
+    fireEvent.click(screen.getByRole("button", { name: /send invite/i }));
 
     await waitFor(() => {
       expect(
@@ -141,7 +141,7 @@ describe("ShareTravelPlanButton", () => {
       "token-123",
     );
 
-    expect(screen.getByRole("button", { name: /confirm/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /send invite/i })).toBeDisabled();
   });
 
   it("shows an error message after confirming when send fails", async () => {
@@ -155,11 +155,11 @@ describe("ShareTravelPlanButton", () => {
       screen.getByRole("button", { name: /share this plan with a friend/i }),
     );
 
-    fireEvent.change(screen.getByLabelText(/friend email/i), {
+    fireEvent.change(screen.getByLabelText(/friend.*email/i), {
       target: { value: "fail@example.com" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /confirm/i }));
+    fireEvent.click(screen.getByRole("button", { name: /send invite/i }));
 
     await waitFor(() => {
       expect(
@@ -181,11 +181,11 @@ describe("ShareTravelPlanButton", () => {
       screen.getByRole("button", { name: /share this plan with a friend/i }),
     );
 
-    fireEvent.change(screen.getByLabelText(/friend email/i), {
+    fireEvent.change(screen.getByLabelText(/friend.*email/i), {
       target: { value: "friend@example.com" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /confirm/i }));
+    fireEvent.click(screen.getByRole("button", { name: /send invite/i }));
 
     await waitFor(() => {
       expect(

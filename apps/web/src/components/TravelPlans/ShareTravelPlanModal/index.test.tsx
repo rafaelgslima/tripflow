@@ -39,10 +39,10 @@ describe("ShareTravelPlanModal", () => {
     expect(
       screen.getByRole("dialog", { name: /share travel plan/i }),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText(/friend email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/friend.*email/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /confirm/i }),
+      screen.getByRole("button", { name: /send invite/i }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /close modal/i }),
@@ -64,7 +64,7 @@ describe("ShareTravelPlanModal", () => {
       />,
     );
 
-    fireEvent.change(screen.getByLabelText(/friend email/i), {
+    fireEvent.change(screen.getByLabelText(/friend.*email/i), {
       target: { value: "friend@example.com" },
     });
 
@@ -107,7 +107,7 @@ describe("ShareTravelPlanModal", () => {
       />,
     );
 
-    const confirmButton = screen.getByRole("button", { name: /confirm/i });
+    const confirmButton = screen.getByRole("button", { name: /send invite/i });
     expect(confirmButton).toBeDisabled();
 
     fireEvent.click(confirmButton);
