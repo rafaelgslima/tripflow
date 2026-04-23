@@ -1,12 +1,22 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { TravelPlans } from "./index";
+
+// Mock Supabase before any imports that use it
+vi.mock("@/lib/supabase", () => ({
+  supabase: {
+    auth: {
+      getUser: vi.fn(),
+    },
+  },
+}));
 
 const useTravelPlansMock = vi.fn();
 
 vi.mock("@/hooks/useTravelPlans", () => ({
   useTravelPlans: () => useTravelPlansMock(),
 }));
+
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { TravelPlans } from "./index";
 
 describe("TravelPlans", () => {
   beforeEach(() => {

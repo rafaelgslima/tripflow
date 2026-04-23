@@ -1,5 +1,15 @@
-import { render, screen } from "@testing-library/react";
 import { vi } from "vitest";
+
+// Mock Supabase before any imports that use it
+vi.mock("@/lib/supabase", () => ({
+  supabase: {
+    auth: {
+      getUser: vi.fn(),
+    },
+  },
+}));
+
+import { render, screen } from "@testing-library/react";
 import { TravelPlansList } from "./index";
 import type { TravelPlan } from "@/components/TravelPlans/types";
 

@@ -1,9 +1,19 @@
-import { renderHook, act, waitFor } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
-import { useSessionTimeoutWarning } from "./index";
-import * as useSessionTimeoutModule from "@/hooks/useSessionTimeout";
+
+// Mock Supabase before any imports that use it
+vi.mock("@/lib/supabase", () => ({
+  supabase: {
+    auth: {
+      getUser: vi.fn(),
+    },
+  },
+}));
 
 vi.mock("@/hooks/useSessionTimeout");
+
+import { renderHook, act, waitFor } from "@testing-library/react";
+import { useSessionTimeoutWarning } from "./index";
+import * as useSessionTimeoutModule from "@/hooks/useSessionTimeout";
 
 describe("useSessionTimeoutWarning", () => {
   let mockResetTimer: ReturnType<typeof vi.fn>;
