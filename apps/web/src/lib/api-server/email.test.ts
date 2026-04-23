@@ -4,59 +4,57 @@ import { sendTravelPlanInvite } from "./email";
 
 const ACCEPT_URL = "http://localhost:3000/share/accept?token=abc123";
 
+const mockSendMail = vi.fn();
+
+vi.mock("nodemailer", () => ({
+  default: {
+    createTransport: vi.fn(() => ({
+      sendMail: mockSendMail,
+    })),
+  },
+}));
+
 beforeEach(() => {
-  vi.stubGlobal("fetch", vi.fn());
-  process.env.SENDGRID_API_KEY = "SG.test-key";
-  process.env.EMAIL_FROM = "sender@example.com";
+  mockSendMail.mockResolvedValue({ messageId: "test-id" });
+  process.env.GMAIL_USER = "app@example.com";
+  process.env.GMAIL_APP_PASSWORD = "test-password";
 });
 
 afterEach(() => {
-  vi.unstubAllGlobals();
-  delete process.env.SENDGRID_API_KEY;
-  delete process.env.EMAIL_FROM;
+  vi.clearAllMocks();
+  delete process.env.GMAIL_USER;
+  delete process.env.GMAIL_APP_PASSWORD;
 });
 
 describe("sendTravelPlanInvite", () => {
   it("sends a POST request to SendGrid with the correct payload", async () => {
-    vi.mocked(fetch).mockResolvedValue(new Response(null, { status: 202 }));
-
     await sendTravelPlanInvite({
       toEmail: "friend@example.com",
       invitedByEmail: "owner@example.com",
       acceptUrl: ACCEPT_URL,
     });
 
-    expect(fetch).toHaveBeenCalledOnce();
-    const [url, options] = vi.mocked(fetch).mock.calls[0] as [string, RequestInit];
-
-    expect(url).toBe("https://api.sendgrid.com/v3/mail/send");
-    expect(options.method).toBe("POST");
-    expect((options.headers as Record<string, string>)["Authorization"]).toBe(
-      "Bearer SG.test-key",
-    );
-
-    const body = JSON.parse(options.body as string);
-    expect(body.personalizations[0].to[0].email).toBe("friend@example.com");
-    expect(body.from.email).toBe("sender@example.com");
-    expect(body.subject).toContain("owner@example.com");
-    expect(body.content).toHaveLength(2);
+    expect(mockSendMail).toHaveBeenCalledOnce();
+    const callArgs = mockSendMail.mock.calls[0][0];
+    expect(callArgs.to).toBe("friend@example.com");
+    expect(callArgs.subject).toContain("owner@example.com");
+    expect(callArgs.text).toBeDefined();
+    expect(callArgs.html).toBeDefined();
   });
 
   it("uses 'Someone' as the sender name when invitedByEmail is null", async () => {
-    vi.mocked(fetch).mockResolvedValue(new Response(null, { status: 202 }));
-
     await sendTravelPlanInvite({
       toEmail: "friend@example.com",
       invitedByEmail: null,
       acceptUrl: ACCEPT_URL,
     });
 
-    const body = JSON.parse(vi.mocked(fetch).mock.calls[0][1]!.body as string);
-    expect(body.subject).toContain("Someone");
+    const callArgs = mockSendMail.mock.calls[0][0];
+    expect(callArgs.subject).toContain("Someone");
   });
 
   it("skips sending and logs when SENDGRID_API_KEY is not set", async () => {
-    delete process.env.SENDGRID_API_KEY;
+    delete process.env.GMAIL_USER;
     const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
 
     await sendTravelPlanInvite({
@@ -65,13 +63,13 @@ describe("sendTravelPlanInvite", () => {
       acceptUrl: ACCEPT_URL,
     });
 
-    expect(fetch).not.toHaveBeenCalled();
+    expect(mockSendMail).not.toHaveBeenCalled();
     expect(infoSpy).toHaveBeenCalledWith(expect.stringContaining("not configured"));
     infoSpy.mockRestore();
   });
 
   it("skips sending when EMAIL_FROM is not set", async () => {
-    delete process.env.EMAIL_FROM;
+    delete process.env.GMAIL_APP_PASSWORD;
 
     await sendTravelPlanInvite({
       toEmail: "friend@example.com",
@@ -79,13 +77,11 @@ describe("sendTravelPlanInvite", () => {
       acceptUrl: ACCEPT_URL,
     });
 
-    expect(fetch).not.toHaveBeenCalled();
+    expect(mockSendMail).not.toHaveBeenCalled();
   });
 
   it("throws when SendGrid returns a non-OK status", async () => {
-    vi.mocked(fetch).mockResolvedValue(
-      new Response("Unauthorized", { status: 401 }),
-    );
+    mockSendMail.mockRejectedValue(new Error("SendGrid 401"));
 
     await expect(
       sendTravelPlanInvite({
