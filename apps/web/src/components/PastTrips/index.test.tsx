@@ -85,8 +85,8 @@ describe("PastTrips", () => {
     });
 
     render(<PastTrips />);
-    expect(screen.getByText("No past trips yet.")).toBeInTheDocument();
-    expect(screen.getByText("Once a trip ends, it'll appear here.")).toBeInTheDocument();
+    expect(screen.getByText("Your archive is empty")).toBeInTheDocument();
+    expect(screen.getByText(/When a trip ends, it becomes part of your travel history/)).toBeInTheDocument();
   });
 
   it("renders TravelPlansList with readOnly=true when plans exist", () => {
