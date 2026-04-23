@@ -1,9 +1,20 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { EditProfileForm } from "./index";
+
+// Mock Supabase before any imports that use it
+vi.mock("@/lib/supabase", () => ({
+  supabase: {
+    auth: {
+      getUser: vi.fn(),
+      updateUser: vi.fn(),
+    },
+  },
+}));
 
 vi.mock("@/hooks/useEditProfileForm");
+
+import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { EditProfileForm } from "./index";
 
 import { useEditProfileForm } from "@/hooks/useEditProfileForm";
 
