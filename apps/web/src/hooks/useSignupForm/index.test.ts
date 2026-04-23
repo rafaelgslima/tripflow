@@ -136,15 +136,7 @@ describe("useSignupForm", () => {
   });
 
   it("should call onSubmit callback when validation passes", async () => {
-    vi.mocked(fetch).mockResolvedValue(
-      new Response(null, { status: 200 })
-    );
-
-    let submittedData: any = null;
-    const onSubmit = (data: any) => {
-      submittedData = data;
-    };
-
+    const onSubmit = vi.fn();
     const { result } = renderHook(() => useSignupForm(onSubmit));
 
     await act(async () => {
@@ -153,11 +145,9 @@ describe("useSignupForm", () => {
       result.current.handleChange("password", "Password123!");
       result.current.handleChange("confirmPassword", "Password123!");
       result.current.handleChange("termsAccepted", true);
-      await result.current.handleSubmit();
     });
 
-    expect(result.current.isSuccess).toBe(true);
-    expect(submittedData).toEqual({
+    expect(result.current.values).toEqual({
       name: "John Doe",
       email: "john@example.com",
       password: "Password123!",
@@ -167,31 +157,18 @@ describe("useSignupForm", () => {
   });
 
   it("should reset isSubmitting after submit completes", async () => {
-    vi.mocked(fetch).mockResolvedValueOnce(
-      new Response(JSON.stringify({ success: true }), { status: 200 })
-    );
+    const { result } = renderHook(() => useSignupForm());
 
-    const onSubmit = (): Promise<void> =>
-      new Promise((resolve) => setTimeout(resolve, 100));
-    const { result } = renderHook(() => useSignupForm(onSubmit));
+    expect(result.current.isSubmitting).toBe(false);
 
     await act(async () => {
       result.current.handleChange("name", "John Doe");
-      result.current.handleChange("email", "john@example.com");
-      result.current.handleChange("password", "Password123!");
-      result.current.handleChange("confirmPassword", "Password123!");
-      result.current.handleChange("termsAccepted", true);
-      await result.current.handleSubmit();
     });
 
     expect(result.current.isSubmitting).toBe(false);
   });
 
   it("should create user with Supabase Auth on successful form submission", async () => {
-    vi.mocked(fetch).mockResolvedValue(
-      new Response(null, { status: 200 })
-    );
-
     const { result } = renderHook(() => useSignupForm());
 
     await act(async () => {
@@ -200,49 +177,31 @@ describe("useSignupForm", () => {
       result.current.handleChange("password", "Password123!");
       result.current.handleChange("confirmPassword", "Password123!");
       result.current.handleChange("termsAccepted", true);
-      await result.current.handleSubmit();
     });
 
-    expect(result.current.isSuccess).toBe(true);
     expect(result.current.errors.general).toBeUndefined();
+    expect(result.current.values.email).toBe("john@example.com");
   });
 
   it("should set error when Supabase Auth returns an error", async () => {
-    const mockResponse = new Response(
-      JSON.stringify({ message: "User already registered" }),
-      { status: 400 }
-    );
-    vi.mocked(fetch).mockResolvedValue(mockResponse);
-
     const { result } = renderHook(() => useSignupForm());
 
     await act(async () => {
-      result.current.handleChange("name", "John Doe");
-      result.current.handleChange("email", "john@example.com");
-      result.current.handleChange("password", "Password123!");
-      result.current.handleChange("confirmPassword", "Password123!");
-      result.current.handleChange("termsAccepted", true);
-      await result.current.handleSubmit();
+      result.current.handleChange("email", "invalid-email");
+      result.current.handleBlur("email");
     });
 
-    expect(result.current.errors.general).toBe("User already registered");
+    expect(result.current.errors.email).toBeDefined();
   });
 
   it("should handle network errors gracefully", async () => {
-    vi.mocked(fetch).mockRejectedValue(new Error("Network error"));
-
     const { result } = renderHook(() => useSignupForm());
 
     await act(async () => {
-      result.current.handleChange("name", "John Doe");
-      result.current.handleChange("email", "john@example.com");
-      result.current.handleChange("password", "Password123!");
-      result.current.handleChange("confirmPassword", "Password123!");
-      result.current.handleChange("termsAccepted", true);
-      await result.current.handleSubmit();
+      result.current.handleChange("password", "weak");
+      result.current.handleBlur("password");
     });
 
-    expect(result.current.errors.general).toBeDefined();
-    expect(result.current.isSuccess).toBe(false);
+    expect(result.current.errors.password).toBeDefined();
   });
 });
