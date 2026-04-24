@@ -19,8 +19,8 @@ export function EditProfileForm({ name, email, onNameUpdated }: EditProfileFormP
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleSubmit();
-    if (!errors.general && !errors.name) {
+    const success = await handleSubmit();
+    if (success) {
       onNameUpdated?.(values.name);
       setIsEditing(false);
     }

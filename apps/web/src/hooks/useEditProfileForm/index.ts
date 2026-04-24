@@ -60,13 +60,13 @@ export function useEditProfileForm(initialName: string): UseEditProfileFormRetur
     [values.name],
   );
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(async (): Promise<boolean> => {
     const nameError = validateName(values.name);
 
     if (nameError) {
       setErrors({ name: nameError });
       setTouched({ name: true });
-      return;
+      return false;
     }
 
     setIsSubmitting(true);
@@ -92,12 +92,14 @@ export function useEditProfileForm(initialName: string): UseEditProfileFormRetur
       setValues({ name: data.name });
       setIsSuccess(true);
       setErrors({});
+      return true;
     } catch (err) {
       setErrors({
         general:
           err instanceof Error ? err.message : "Failed to update profile",
       });
       setIsSuccess(false);
+      return false;
     } finally {
       setIsSubmitting(false);
     }

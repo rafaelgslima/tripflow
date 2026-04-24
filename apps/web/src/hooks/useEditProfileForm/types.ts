@@ -19,5 +19,5 @@ export interface UseEditProfileFormReturn {
   isSuccess: boolean;
   handleChange: (field: keyof EditProfileFormValues, value: string) => void;
   handleBlur: (field: keyof EditProfileFormValues) => void;
-  handleSubmit: () => Promise<void>;
+  handleSubmit: () => Promise<boolean>;
 }

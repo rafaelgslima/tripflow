@@ -168,7 +168,7 @@ describe("EditProfileForm", () => {
   });
 
   it("should call onNameUpdated callback when save succeeds", async () => {
-    const mockHandleSubmit = vi.fn().mockResolvedValue(undefined);
+    const mockHandleSubmit = vi.fn().mockResolvedValue(true);
     const mockOnNameUpdated = vi.fn();
     mockUseEditProfileForm.mockReturnValue({
       values: { name: "Jane Doe" },
