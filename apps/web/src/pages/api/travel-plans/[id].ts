@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getAuthenticatedUser } from "@/lib/api-server/auth";
 import { getSupabaseAdminClient } from "@/lib/api-server/supabase";
+import { logAuditEvent } from "@/lib/api-server/audit";
 import {
   sendError,
   methodNotAllowed,
@@ -30,6 +31,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse): Promise<
   if (ownedPlan) {
     // Owner: delete the entire plan (cascades to items and shares)
     await supabase.from("travel_plan").delete().eq("id", travelPlanId);
+    await logAuditEvent(user.userId, "plan.deleted", { travel_plan_id: travelPlanId });
     res.status(204).end();
     return;
   }
@@ -52,6 +54,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse): Promise<
       .eq("travel_plan_id", travelPlanId)
       .eq("invited_user_id", user.userId)
       .eq("status", "accepted");
+    await logAuditEvent(user.userId, "share.removed", { travel_plan_id: travelPlanId });
     res.status(204).end();
     return;
   }

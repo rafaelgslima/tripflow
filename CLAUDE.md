@@ -224,7 +224,7 @@ Auth operations that need `APP_BASE_URL` (for email redirect URLs) must go throu
 
 ---
 
-## Security
+## Security & Compliance
 
 - Never commit secrets. Supabase service role key: backend only. Frontend uses only public keys.
 - RLS on all user-facing tables.
@@ -235,6 +235,7 @@ Auth operations that need `APP_BASE_URL` (for email redirect URLs) must go throu
 - Add negative tests for unauthorized access on each protected endpoint.
 - Minimize PII. Redact secrets/tokens from logs.
 - Pin dependency versions, commit lockfiles. Run vulnerability + secret scanning in CI.
+- **Consent Management**: All external services requiring user consent (analytics, tracking, etc.) must be added to the Klaro config (`@/lib/klaro-config.ts`). Define service name, title, description, purposes, and callback. Users must explicitly opt-in via the consent modal.
 
 ---
 

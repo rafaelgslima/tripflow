@@ -53,8 +53,13 @@ describe("SignupForm", () => {
   it("should render links to terms of service and privacy policy", () => {
     render(<SignupForm />);
 
-    expect(screen.getByText(/terms of service/i)).toBeInTheDocument();
-    expect(screen.getByText(/privacy policy/i)).toBeInTheDocument();
+    const tosLink = screen.getByRole("link", { name: /terms of service/i });
+    const privacyLink = screen.getByRole("link", { name: /privacy policy/i });
+
+    expect(tosLink).toBeInTheDocument();
+    expect(tosLink).toHaveAttribute("href", "/terms-of-service");
+    expect(privacyLink).toBeInTheDocument();
+    expect(privacyLink).toHaveAttribute("href", "/privacy-policy");
   });
 
   it("should render sign in link", () => {

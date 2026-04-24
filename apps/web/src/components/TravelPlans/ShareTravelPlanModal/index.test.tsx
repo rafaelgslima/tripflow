@@ -131,4 +131,25 @@ describe("ShareTravelPlanModal", () => {
     expect(screen.getByText(/email is required/i)).toBeInTheDocument();
     expect(screen.getByText(/try again later/i)).toBeInTheDocument();
   });
+
+  it("displays privacy notice about email usage", () => {
+    render(
+      <ShareTravelPlanModal
+        isOpen={true}
+        friendEmail=""
+        friendEmailError={null}
+        message={null}
+        isConfirmDisabled={false}
+        onClose={vi.fn()}
+        onConfirm={vi.fn()}
+        onFriendEmailChange={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByText(/they.*ll receive one invite email/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/address is used only/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /privacy policy/i })).toBeInTheDocument();
+  });
 });

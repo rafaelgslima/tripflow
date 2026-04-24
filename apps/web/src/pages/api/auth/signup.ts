@@ -5,6 +5,8 @@ import {
   methodNotAllowed,
   sendError,
 } from "@/lib/api-server/errors";
+import { getSupabaseAdminClient } from "@/lib/api-server/supabase";
+import { logAuditEvent } from "@/lib/api-server/audit";
 
 export default async function handler(
   req: NextApiRequest,
@@ -51,6 +53,21 @@ export default async function handler(
     if (!data.user) {
       throw new Error("Failed to create account.");
     }
+
+    const serviceSupabase = getSupabaseAdminClient();
+    const { error: updateError } = await serviceSupabase
+      .from("profile")
+      .update({
+        terms_accepted_at: new Date().toISOString(),
+        privacy_policy_version: "1.0",
+      })
+      .eq("user_id", data.user.id);
+
+    if (updateError) {
+      console.error("[signup] Failed to update profile with consent:", updateError);
+    }
+
+    await logAuditEvent(data.user.id, "account.created");
 
     res.status(201).json({ userId: data.user.id });
   } catch (error) {

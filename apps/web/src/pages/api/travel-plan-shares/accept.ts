@@ -2,6 +2,7 @@ import { createHash } from "crypto";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getAuthenticatedUser } from "@/lib/api-server/auth";
 import { getSupabaseAdminClient } from "@/lib/api-server/supabase";
+import { logAuditEvent } from "@/lib/api-server/audit";
 import {
   sendError,
   methodNotAllowed,
@@ -65,6 +66,10 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse): Promise<vo
     .maybeSingle();
 
   if (updateError || !updated) throw new InternalError("Failed to accept share invite.");
+
+  await logAuditEvent(user.userId, "share.accepted", {
+    travel_plan_id: String(updated["travel_plan_id"]),
+  });
 
   res.status(200).json({
     travel_plan_id: String(updated["travel_plan_id"]),

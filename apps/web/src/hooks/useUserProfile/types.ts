@@ -2,9 +2,7 @@ export interface UserProfile {
   id: string;
   name: string;
   email: string;
-  avatar_url: string | null;
-  country: string | null;
-  city: string | null;
+  restrict_logging?: boolean;
 }
 
 export interface UseUserProfileReturn {

@@ -70,6 +70,21 @@ export function ShareTravelPlanModal({
                   {friendEmailError}
                 </p>
               ) : null}
+
+              <p className="text-[12px] text-tf-muted font-outfit mt-2.5 flex items-start gap-2">
+                <span className="text-[14px] mt-px shrink-0">ℹ️</span>
+                <span>
+                  They&apos;ll receive one invite email. Their address is used only to send this invite and is stored while the invitation is pending or accepted.{" "}
+                  <a
+                    href="/privacy-policy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-tf-amber font-medium underline"
+                  >
+                    Privacy Policy
+                  </a>
+                </span>
+              </p>
             </div>
 
             {/* Message */}

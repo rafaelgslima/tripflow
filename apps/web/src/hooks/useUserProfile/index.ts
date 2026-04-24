@@ -22,7 +22,7 @@ export function useUserProfile(userId?: string): UseUserProfileReturn {
 
         const { data, error: fetchError } = await supabase
           .from("profile")
-          .select("id, name, email, avatar_url, country, city")
+          .select("id, name, email, restrict_logging")
           .eq("id", userId)
           .single();
 

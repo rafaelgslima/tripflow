@@ -128,6 +128,15 @@ export function ContactForm() {
       >
         {isSubmitting ? 'Sending...' : 'Send Message'}
       </button>
+
+      {/* Privacy Note */}
+      <p className="text-xs text-tf-muted pt-2">
+        By submitting this form you consent to being contacted about your inquiry. You can manage this preference in your{' '}
+        <a href="/profile" className="text-tf-amber hover:underline">
+          profile
+        </a>
+        .
+      </p>
     </form>
   );
 }

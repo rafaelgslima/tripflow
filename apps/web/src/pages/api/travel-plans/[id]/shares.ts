@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "crypto";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getAuthenticatedUser } from "@/lib/api-server/auth";
 import { getSupabaseAdminClient } from "@/lib/api-server/supabase";
+import { logAuditEvent } from "@/lib/api-server/audit";
 import {
   sendError,
   methodNotAllowed,
@@ -172,6 +173,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse): Promise<vo
       "Invite created but failed to send the invitation email. Please try again.",
     );
   }
+
+  await logAuditEvent(user.userId, "share.sent", { invited_email });
 
   res.status(201).json({
     travel_plan_id: travelPlanId,

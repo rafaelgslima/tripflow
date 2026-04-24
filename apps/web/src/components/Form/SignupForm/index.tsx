@@ -269,9 +269,23 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
           <label htmlFor="terms" className="text-[13px] text-tf-muted font-outfit cursor-pointer leading-[1.5]">
             <span id="terms-description">
               I agree to the{" "}
-              <a href="#" className="text-tf-amber no-underline font-medium">Terms of Service</a>
+              <a
+                href="/terms-of-service"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-tf-amber no-underline font-medium hover:underline"
+              >
+                Terms of Service
+              </a>
               {" "}and{" "}
-              <a href="#" className="text-tf-amber no-underline font-medium">Privacy Policy</a>
+              <a
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-tf-amber no-underline font-medium hover:underline"
+              >
+                Privacy Policy
+              </a>
             </span>
           </label>
           {touched.termsAccepted && errors.termsAccepted && (

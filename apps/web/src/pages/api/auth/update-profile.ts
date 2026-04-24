@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { getAuthenticatedUser, extractBearerToken } from "@/lib/api-server/auth";
 import { getSupabaseAdminClient } from "@/lib/api-server/supabase";
+import { logAuditEvent } from "@/lib/api-server/audit";
 import {
   ValidationError,
   UnauthorizedError,
@@ -68,6 +69,8 @@ export default async function handler(
       console.warn("[update-profile] No rows updated - profile may not exist");
       throw new ValidationError("Profile not found. Please try again.");
     }
+
+    await logAuditEvent(user.userId, "profile.updated");
 
     res.status(200).json({
       name: trimmedName,

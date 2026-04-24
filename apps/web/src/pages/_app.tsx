@@ -1,6 +1,8 @@
 import type { AppProps } from "next/app";
 import { Cormorant_Garamond, Outfit, Poppins } from "next/font/google";
 import "@/app/globals.css";
+import "klaro/dist/klaro.css";
+import { useKlaroConsent } from "@/hooks/useKlaroConsent";
 
 const cormorant = Cormorant_Garamond({
   weight: ["300", "400", "600"],
@@ -25,6 +27,8 @@ const poppins = Poppins({
 });
 
 export default function App({ Component, pageProps }: AppProps) {
+  useKlaroConsent();
+
   return (
     <div className={`${cormorant.variable} ${outfit.variable} ${poppins.variable} font-outfit`}>
       <Component {...pageProps} />
