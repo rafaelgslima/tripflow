@@ -258,7 +258,7 @@ export function DayColumn({
 
   // Desktop Column View
   return (
-    <div className="shrink-0 min-w-[245px] border border-tf-border rounded-[14px] p-4 bg-tf-bg-2 flex flex-col gap-3" style={{ flex: "0 0 245px" }}>
+    <div className="shrink-0 min-w-[245px] border border-tf-border rounded-[14px] p-4 bg-tf-bg-2 flex flex-col gap-3">
       {/* Day Header */}
       <div className="pb-3 border-b border-tf-border">
         <div className="font-outfit font-semibold text-[11px] text-tf-amber tracking-[0.1em] uppercase mb-[2px]">

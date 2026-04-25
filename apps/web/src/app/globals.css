@@ -88,8 +88,38 @@ body {
   }
 }
 
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes scrollIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-scroll-in {
+  animation: scrollIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 .animate-slide-up {
   animation: slideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+[data-scroll-animate] {
+  opacity: 0;
+  transform: translateY(28px);
 }
 .animate-fade-in {
   animation: fadeIn 0.9s ease both;

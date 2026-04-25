@@ -10,13 +10,13 @@ export default function PrivacyPolicyPage() {
     <div className="min-h-screen bg-tf-bg">
       {!isLoggedIn && <HeaderPreLogin />}
       <div className="max-w-3xl mx-auto px-6 py-12 md:py-16">
-        <h1 className="text-4xl font-cormorant font-bold text-tf-text mb-2">
+        <h1 className="text-[30px] font-lora font-bold text-tf-text mb-2">
           Privacy Policy
         </h1>
 
         <div className="prose prose-invert max-w-none space-y-8 text-[15px] leading-relaxed text-tf-text">
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               1. Introduction
             </h2>
             <p>
@@ -25,7 +25,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               2. Information We Collect
             </h2>
             <p>We collect information you provide directly and information collected automatically:</p>
@@ -52,7 +52,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               3. How We Use Your Information
             </h2>
             <p>We use your information for the following purposes:</p>
@@ -71,7 +71,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               4. Legal Basis for Processing (GDPR Article 6 & LGPD Article 7)
             </h2>
             <p>
@@ -100,7 +100,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               5. Data Sharing with Collaborators
             </h2>
             <p>
@@ -115,7 +115,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               6. Third-Party Services & Data Processors
             </h2>
             <p>
@@ -227,7 +227,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               7. Data Storage Location & International Transfers
             </h2>
             <p>
@@ -254,7 +254,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               8. Security of Your Information
             </h2>
             <p>
@@ -273,7 +273,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               8. Data Retention
             </h2>
             <p>
@@ -289,7 +289,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               9. Your Privacy Rights (GDPR & LGPD)
             </h2>
             <p>
@@ -358,7 +358,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               10. Cookies & Tokens
             </h2>
             <p>
@@ -390,7 +390,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               11. Changes to This Privacy Policy
             </h2>
             <p>
@@ -399,7 +399,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               12. Contact Us
             </h2>
             <p>
@@ -419,7 +419,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-cormorant font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
               13. Security Breach Notification
             </h2>
             <p>

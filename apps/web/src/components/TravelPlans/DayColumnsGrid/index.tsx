@@ -147,7 +147,7 @@ export function DayColumnsGrid({ travelPlanId, days, isMobile, readOnly = false 
       <div className="flex flex-col gap-2">{readOnlyColumns}</div>
     ) : (
       <div className="overflow-x-auto">
-        <div className="flex gap-3" style={{ minWidth: "100%" }}>
+        <div className="flex gap-3 w-full">
           {readOnlyColumns}
         </div>
       </div>
@@ -226,7 +226,7 @@ export function DayColumnsGrid({ travelPlanId, days, isMobile, readOnly = false 
         <div className="flex flex-col gap-2">{columns}</div>
       ) : (
         <div className="overflow-x-auto">
-          <div className="flex gap-3" style={{ minWidth: "100%" }}>
+          <div className="flex gap-3 w-full">
             {columns}
           </div>
         </div>

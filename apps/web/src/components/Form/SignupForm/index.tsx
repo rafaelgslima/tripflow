@@ -46,7 +46,7 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
   };
 
   return (
-    <form className="flex flex-col gap-5" onSubmit={onSubmit} noValidate>
+    <form className="flex flex-col gap-5 mt-16" onSubmit={onSubmit} noValidate>
       <div role="group" aria-labelledby="signup-form-title" className="flex flex-col gap-4">
         {/* Name */}
         <div>

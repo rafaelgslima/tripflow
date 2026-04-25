@@ -43,7 +43,7 @@ export default function ContactPage() {
         <div className="w-full max-w-[500px]">
           {/* Header Section */}
           <div className="mb-8 text-center">
-            <h1 className="font-cormorant text-5xl md:text-6xl font-light tracking-tight text-tf-text mb-3">
+            <h1 className="font-lora text-[30px] font-light tracking-tight text-tf-text mb-3">
               Get in Touch
             </h1>
             <p className="font-outfit text-sm md:text-base text-tf-muted leading-relaxed">

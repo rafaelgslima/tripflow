@@ -44,7 +44,7 @@ export function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps)
         <div className="flex items-start gap-3 mb-6">
           <MdWarning className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" />
           <div>
-            <h2 className="text-lg font-semibold text-tf-text font-cormorant mb-1">
+            <h2 className="text-lg font-semibold text-tf-text font-lora mb-1">
               Delete Account?
             </h2>
             <p className="text-xs text-red-400 font-outfit font-semibold uppercase tracking-wide">

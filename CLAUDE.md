@@ -287,11 +287,25 @@ API routes live in `apps/web/src/pages/api/`. Server-side utilities in `apps/web
 
 ### Styling — Tailwind only, no inline CSS
 
-**Never use React `style={{ }}` props.** All styling must use Tailwind CSS classes.
+**NEVER use React `style={{ }}` props.** All styling MUST use Tailwind CSS classes. This is a hard rule.
 
-- Use the named design tokens in `tailwind.config.ts` for theme values: `bg-tf-bg`, `text-tf-text`, `text-tf-amber`, `border-tf-border`, `font-cormorant`, `font-outfit`, etc.
-- For values not on Tailwind's default scale, use arbitrary syntax: `text-[13px]`, `rounded-[20px]`, `tracking-[-0.02em]`.
-- The only permitted exceptions are values that are **genuinely impossible** to express in Tailwind (e.g. multi-stop `radial-gradient` backgrounds, runtime-computed transforms from libraries like `@dnd-kit`). In those cases, keep only the inexpressible properties in `style={{}}` and move everything else to `className`.
+**Before using `style={{}}` ask:** Can this be done with Tailwind? If yes, use Tailwind. If no, then ask again.
+
+Common replacements:
+- `style={{ fontSize: "30px" }}` → `text-[30px]`
+- `style={{ marginBottom: 0 }}` → `mb-0`
+- `style={{ lineHeight: 1.7 }}` → `leading-[1.7]`
+- `style={{ width: "100%" }}` → `w-full`
+- `style={{ color: "rgba(...)" }}` → `text-[rgba(...)]`
+
+The **only permitted exceptions** are values that are genuinely impossible to express in Tailwind:
+- Multi-stop `radial-gradient` / `conic-gradient` backgrounds
+- Runtime-computed transforms from libraries like `@dnd-kit`
+- Custom `animation` definitions (not animation utilities)
+- Dynamic `animationDelay` values for staggered animations
+- `clamp()` responsive sizing (e.g. `fontSize: "clamp(36px, 5vw, 54px)"`)
+
+Even then, move everything possible to `className` and keep only the inexpressible properties in `style={{}}`.
 
 ### Header Strategy — Single Source of Truth
 

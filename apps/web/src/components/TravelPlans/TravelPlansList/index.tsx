@@ -29,7 +29,7 @@ export function TravelPlansList({ plans, onDeletePlan, readOnly = false }: Trave
             <div className="mb-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="font-cormorant text-[28px] font-normal text-tf-text tracking-[-0.02em] mb-1 leading-[1.1]">
+                  <h3 className="font-lora text-[28px] font-normal text-tf-text tracking-[-0.01em] mb-1 leading-[1.1]">
                     {plan.destination}
                   </h3>
                   <p className="text-[13px] text-tf-muted font-outfit">

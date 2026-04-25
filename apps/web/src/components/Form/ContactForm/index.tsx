@@ -8,7 +8,7 @@ export function ContactForm() {
     return (
       <div className="text-center py-8">
         <div className="mb-4 text-4xl">✓</div>
-        <h2 className="font-cormorant text-3xl font-light text-tf-text mb-2">Message Sent!</h2>
+        <h2 className="font-lora text-3xl font-light text-tf-text mb-2">Message Sent!</h2>
         <p className="text-sm text-tf-muted mb-6">
           Thank you for reaching out. We&apos;ve received your message and will get back to you soon.
         </p>

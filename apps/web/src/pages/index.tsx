@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MdCalendarToday, MdPeople, MdEdit } from "react-icons/md";
 import { supabase } from "@/lib/supabase";
 import { HeaderPreLogin } from "@/components/Header/HeaderPreLogin";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 /* ── Icons ────────────────────────────────────────────────────────────── */
 function CalendarIcon() {
@@ -183,8 +184,7 @@ function FeatureCard({ icon, title, description, featured }: FeatureCardProps) {
         {title}
       </h3>
       <p
-        className="text-sm font-outfit text-tf-muted"
-        style={{ lineHeight: 1.65 }}
+        className="text-sm font-outfit text-tf-muted leading-[1.65]"
       >
         {description}
       </p>
@@ -196,6 +196,7 @@ function FeatureCard({ icon, title, description, featured }: FeatureCardProps) {
 export default function Home() {
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
+  useScrollAnimation();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -247,7 +248,7 @@ export default function Home() {
 
               {/* Headline */}
               <h1
-                className="animate-slide-up font-cormorant font-light leading-[1.04] tracking-[-0.025em] text-tf-text mb-6"
+                className="animate-slide-up font-lora font-light leading-[1.04] tracking-[-0.025em] text-tf-text mb-6"
                 style={{
                   fontSize: "clamp(52px, 6.5vw, 86px)",
                   animationDelay: "0.08s",
@@ -262,8 +263,8 @@ export default function Home() {
 
               {/* Subtext */}
               <p
-                className="animate-slide-up text-[17px] text-tf-muted max-w-[440px] mb-10 font-outfit"
-                style={{ lineHeight: 1.7, animationDelay: "0.18s" }}
+                className="animate-slide-up text-[17px] text-tf-muted max-w-[440px] mb-10 font-outfit leading-[1.7]"
+                style={{ animationDelay: "0.18s" }}
               >
                 Create day-by-day itineraries, invite your travel crew, and
                 coordinate every detail together — from anywhere.
@@ -287,33 +288,6 @@ export default function Home() {
                   See how it works →
                 </Link>
               </div>
-
-              {/* Social proof */}
-              <div
-                className="animate-slide-up flex items-center gap-3 mt-[44px]"
-                style={{ animationDelay: "0.38s" }}
-              >
-                <div className="flex items-center">
-                  {["#F59E0B", "#60A5FA", "#34D399", "#F472B6"].map(
-                    (color, i) => (
-                      <div
-                        key={i}
-                        className="w-[28px] h-[28px] rounded-full shrink-0"
-                        style={{
-                          background: color,
-                          marginLeft: i > 0 ? "-8px" : "0",
-                          border: "2px solid var(--tf-bg)",
-                        }}
-                      />
-                    ),
-                  )}
-                </div>
-                <span className="text-[13px] text-tf-muted font-outfit">
-                  Join{" "}
-                  <strong className="text-tf-text font-semibold">2,400+</strong>{" "}
-                  travelers planning their next adventure
-                </span>
-              </div>
             </div>
 
             {/* Right: App mockup */}
@@ -321,17 +295,98 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ── Simplicity Promise ────────────────────────────────────────── */}
+        <section
+          className="py-[80px] border-t border-tf-border"
+          data-scroll-section
+        >
+          <div className="max-w-[640px] mx-auto px-6 text-center">
+            {/* Eyebrow */}
+            <div
+              className="text-[11px] font-bold tracking-[0.14em] uppercase text-tf-amber font-outfit mb-4"
+              data-scroll-animate
+            >
+              Seriously simple
+            </div>
+
+            {/* Headline */}
+            <h2
+              className="font-lora font-light leading-[1.08] tracking-[-0.025em] text-tf-text mb-5"
+              style={{ fontSize: "clamp(36px, 4vw, 52px)" }}
+              data-scroll-animate
+            >
+              Just your name
+              <br />
+              <em className="text-tf-amber">and email.</em>
+            </h2>
+
+            {/* Body text */}
+            <p
+              className="text-[16px] text-tf-muted mb-8 font-outfit leading-[1.7]"
+              data-scroll-animate
+            >
+              No endless forms. No unnecessary data collection. In 30 seconds,
+              you're planning your next adventure. That's it.
+            </p>
+
+            {/* Bullet points */}
+            <div
+              className="space-y-4 inline-block text-left"
+              data-scroll-animate
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                  style={{
+                    background: "rgba(232,162,58,0.15)",
+                    color: "#E8A23A",
+                  }}
+                >
+                  <span className="text-xs font-bold">✓</span>
+                </div>
+                <p className="text-[14px] text-tf-muted font-outfit leading-relaxed">
+                  <strong className="text-tf-text">Privacy first.</strong> Your
+                  data is yours.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div
+                  className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                  style={{
+                    background: "rgba(232,162,58,0.15)",
+                    color: "#E8A23A",
+                  }}
+                >
+                  <span className="text-xs font-bold">✓</span>
+                </div>
+                <p className="text-[14px] text-tf-muted font-outfit leading-relaxed">
+                  <strong className="text-tf-text">Always free.</strong> No
+                  credit card required. Plan unlimited trips.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── Features ──────────────────────────────────────────────────── */}
-        <section id="features" className="border-t border-tf-border py-[80px]">
+        <section
+          id="features"
+          className="border-t border-tf-border py-[80px]"
+          data-scroll-section
+        >
           <div className="max-w-[1200px] mx-auto px-6">
             {/* Section label */}
-            <div className="text-center mb-[56px]">
-              <div className="text-[11px] font-bold tracking-[0.14em] uppercase text-tf-amber font-outfit mb-4">
+            <div className="text-center mb-[56px]" data-scroll-animate>
+              <div
+                className="text-[11px] font-bold tracking-[0.14em] uppercase text-tf-amber font-outfit mb-4"
+                data-scroll-animate
+              >
                 Everything you need
               </div>
               <h2
-                className="font-cormorant font-light leading-[1.1] tracking-[-0.025em] text-tf-text"
+                className="font-lora font-light leading-[1.1] tracking-[-0.025em] text-tf-text"
                 style={{ fontSize: "clamp(36px, 4vw, 54px)" }}
+                data-scroll-animate
               >
                 Built for the way
                 <br />
@@ -341,48 +396,59 @@ export default function Home() {
 
             {/* Cards */}
             <div className="features-grid">
-              <FeatureCard
-                icon={<CalendarIcon />}
-                title="Day-by-day itineraries"
-                description="Organize every trip with detailed daily schedules. Add activities, meals, and sights with specific times to keep everyone on track."
-              />
-              <FeatureCard
-                icon={<UsersIcon />}
-                title="Invite your crew"
-                description="Share plans with friends and family in seconds. Send an email invite and they're in — collaborating on the itinerary instantly."
-                featured
-              />
-              <FeatureCard
-                icon={<EditIcon />}
-                title="Edit together, anytime"
-                description="Every collaborator can add ideas, rearrange activities, and keep the itinerary in sync — whether you're in the same room or across the world."
-              />
+              <div data-scroll-animate>
+                <FeatureCard
+                  icon={<CalendarIcon />}
+                  title="Day-by-day itineraries"
+                  description="Organize every trip with detailed daily schedules. Add activities, meals, and sights with specific times to keep everyone on track."
+                />
+              </div>
+              <div data-scroll-animate>
+                <FeatureCard
+                  icon={<UsersIcon />}
+                  title="Invite your crew"
+                  description="Share plans with friends and family in seconds. Send an email invite and they're in — collaborating on the itinerary instantly."
+                  featured
+                />
+              </div>
+              <div data-scroll-animate>
+                <FeatureCard
+                  icon={<EditIcon />}
+                  title="Edit together, anytime"
+                  description="Every collaborator can add ideas, rearrange activities, and keep the itinerary in sync — whether you're in the same room or across the world."
+                />
+              </div>
             </div>
           </div>
         </section>
 
         {/* ── CTA ───────────────────────────────────────────────────────── */}
-        <section className="py-[80px] pb-[100px]">
+        <section
+          className="py-[80px] border-t border-tf-border"
+          data-scroll-section
+        >
           <div className="max-w-[640px] mx-auto px-6 text-center">
             {/* Decorative line */}
             <div
-              className="w-px h-[64px] mx-auto mb-10"
+              className="w-px  mx-auto"
               style={{
                 background:
                   "linear-gradient(to bottom, transparent, var(--tf-border-amber))",
               }}
+              data-scroll-animate
             />
             <h2
-              className="font-cormorant font-light leading-[1.05] tracking-[-0.025em] text-tf-text mb-[18px]"
+              className="font-lora font-light leading-[1.05] tracking-[-0.025em] text-tf-text mb-[18px]"
               style={{ fontSize: "clamp(40px, 5vw, 66px)" }}
+              data-scroll-animate
             >
               Ready for your next
               <br />
               <em className="text-tf-amber">adventure?</em>
             </h2>
             <p
-              className="text-[16px] text-tf-muted mb-9 font-outfit"
-              style={{ lineHeight: 1.65 }}
+              className="text-[16px] text-tf-muted mb-9 font-outfit leading-[1.65]"
+              data-scroll-animate
             >
               Create your first trip in under a minute.
               <br />
@@ -391,6 +457,7 @@ export default function Home() {
             <Link
               href="/signup"
               className="py-[15px] px-10 text-[15px] font-semibold text-[#0E0B09] bg-tf-amber no-underline rounded-[10px] font-outfit tracking-[-0.01em] shadow-[0_4px_32px_rgba(232,162,58,0.28)] inline-block"
+              data-scroll-animate
             >
               Create your first trip →
             </Link>

@@ -41,8 +41,7 @@ export function TravelPlans({ statusFilter }: TravelPlansProps = {}) {
       <div className="flex items-end justify-between flex-wrap gap-4">
         <div>
           <h2
-            className="font-cormorant font-light tracking-[-0.025em] text-tf-text leading-[1.1] mb-1.5"
-            style={{ fontSize: "clamp(36px, 4vw, 52px)" }}
+            className="font-lora font-light tracking-[-0.01em] text-tf-text leading-[1.1] mb-1.5 text-[30px]"
           >
             My trips
           </h2>

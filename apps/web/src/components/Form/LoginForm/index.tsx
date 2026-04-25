@@ -51,7 +51,7 @@ export function LoginForm(_props: LoginFormProps) {
         {/* Password */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label htmlFor="password" className="tf-label" style={{ marginBottom: 0 }}>Password</label>
+            <label htmlFor="password" className="tf-label mb-0">Password</label>
             <Link
               href="/forgot-password"
               className="text-xs font-medium text-tf-amber no-underline font-outfit"
