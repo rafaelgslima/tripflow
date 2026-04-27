@@ -41,7 +41,7 @@ export default function AcceptShareInvitePage() {
   if (!token) {
     return pageWrapper(
       <>
-        <h1 className="font-lora text-[28px] font-light text-tf-text mb-[10px] text-center">
+        <h1 className="font-outfit text-[28px] font-light text-tf-text mb-[10px] text-center">
           Invalid invite link
         </h1>
         <p className="text-sm text-tf-muted font-outfit text-center">
@@ -53,7 +53,7 @@ export default function AcceptShareInvitePage() {
 
   return pageWrapper(
     <>
-      <h1 className="font-lora text-[28px] font-light text-tf-text mb-5 text-center">
+      <h1 className="font-outfit text-[28px] font-light text-tf-text mb-5 text-center">
         Accept invitation
       </h1>
 

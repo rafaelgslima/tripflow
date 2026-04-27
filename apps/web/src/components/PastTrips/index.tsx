@@ -22,7 +22,7 @@ export function PastTrips({}: PastTripsProps = {}) {
       {/* Header */}
       <div>
         <h2
-          className="font-lora font-light tracking-[-0.025em] text-tf-text leading-[1.1] mb-1.5 text-[30px]"
+          className="font-outfit font-normal tracking-[-0.025em] text-tf-text leading-[1.1] mb-1.5 text-[30px]"
         >
           Past trips
         </h2>
@@ -52,7 +52,7 @@ export function PastTrips({}: PastTripsProps = {}) {
           </div>
 
           {/* Heading with visual distinction */}
-          <h3 className="font-lora font-light tracking-[-0.025em] text-tf-text leading-[1.1] mb-3" style={{ fontSize: "clamp(24px, 5vw, 32px)" }}>
+          <h3 className="font-outfit font-normal tracking-[-0.025em] text-tf-text leading-[1.1] mb-3" style={{ fontSize: "clamp(24px, 5vw, 32px)" }}>
             Your archive is empty
           </h3>
 

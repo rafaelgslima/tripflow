@@ -41,8 +41,6 @@ export default {
         sans:         ["var(--font-outfit)", "system-ui", "sans-serif"],
         outfit:       ["var(--font-outfit)", "system-ui", "sans-serif"],
         cormorant:    ["var(--font-cormorant)", "Georgia", "serif"],
-        merriweather: ["var(--font-merriweather)", "Georgia", "serif"],
-        lora:         ["var(--font-lora)", "Georgia", "serif"],
       },
     },
   },

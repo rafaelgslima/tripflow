@@ -248,7 +248,7 @@ export default function Home() {
 
               {/* Headline */}
               <h1
-                className="animate-slide-up font-lora font-light leading-[1.04] tracking-[-0.025em] text-tf-text mb-6"
+                className="animate-slide-up font-outfit font-normal leading-[1.04] tracking-[-0.025em] text-tf-text mb-6"
                 style={{
                   fontSize: "clamp(52px, 6.5vw, 86px)",
                   animationDelay: "0.08s",
@@ -311,7 +311,7 @@ export default function Home() {
 
             {/* Headline */}
             <h2
-              className="font-lora font-light leading-[1.08] tracking-[-0.025em] text-tf-text mb-5"
+              className="font-outfit font-normal leading-[1.08] tracking-[-0.025em] text-tf-text mb-5"
               style={{ fontSize: "clamp(36px, 4vw, 52px)" }}
               data-scroll-animate
             >
@@ -326,7 +326,7 @@ export default function Home() {
               data-scroll-animate
             >
               No endless forms. No unnecessary data collection. In 30 seconds,
-              you're planning your next adventure. That's it.
+              you&apos;re planning your next adventure. That&apos;s it.
             </p>
 
             {/* Bullet points */}
@@ -384,7 +384,7 @@ export default function Home() {
                 Everything you need
               </div>
               <h2
-                className="font-lora font-light leading-[1.1] tracking-[-0.025em] text-tf-text"
+                className="font-outfit font-normal leading-[1.1] tracking-[-0.025em] text-tf-text"
                 style={{ fontSize: "clamp(36px, 4vw, 54px)" }}
                 data-scroll-animate
               >
@@ -438,7 +438,7 @@ export default function Home() {
               data-scroll-animate
             />
             <h2
-              className="font-lora font-light leading-[1.05] tracking-[-0.025em] text-tf-text mb-[18px]"
+              className="font-outfit font-normal leading-[1.05] tracking-[-0.025em] text-tf-text mb-[18px]"
               style={{ fontSize: "clamp(40px, 5vw, 66px)" }}
               data-scroll-animate
             >

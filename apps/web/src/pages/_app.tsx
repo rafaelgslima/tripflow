@@ -1,5 +1,5 @@
 import type { AppProps } from "next/app";
-import { Cormorant_Garamond, Outfit, Poppins, Merriweather, Lora } from "next/font/google";
+import { Cormorant_Garamond, Outfit, Poppins } from "next/font/google";
 import "@/app/globals.css";
 import "klaro/dist/klaro.css";
 import { useKlaroConsent } from "@/hooks/useKlaroConsent";
@@ -26,27 +26,11 @@ const poppins = Poppins({
   display: "swap",
 });
 
-const merriweather = Merriweather({
-  weight: ["300", "400", "700"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-  variable: "--font-merriweather",
-  display: "swap",
-});
-
-const lora = Lora({
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-  variable: "--font-lora",
-  display: "swap",
-});
-
 export default function App({ Component, pageProps }: AppProps) {
   useKlaroConsent();
 
   return (
-    <div className={`${cormorant.variable} ${outfit.variable} ${poppins.variable} ${merriweather.variable} ${lora.variable} font-outfit`}>
+    <div className={`${cormorant.variable} ${outfit.variable} ${poppins.variable} font-outfit`}>
       <Component {...pageProps} />
     </div>
   );

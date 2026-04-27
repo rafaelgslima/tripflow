@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useContactForm } from '@/hooks/useContactForm';
 
 export function ContactForm() {
@@ -8,7 +9,7 @@ export function ContactForm() {
     return (
       <div className="text-center py-8">
         <div className="mb-4 text-4xl">✓</div>
-        <h2 className="font-lora text-3xl font-light text-tf-text mb-2">Message Sent!</h2>
+        <h2 className="font-outfit text-3xl font-light text-tf-text mb-2">Message Sent!</h2>
         <p className="text-sm text-tf-muted mb-6">
           Thank you for reaching out. We&apos;ve received your message and will get back to you soon.
         </p>
@@ -132,9 +133,9 @@ export function ContactForm() {
       {/* Privacy Note */}
       <p className="text-xs text-tf-muted pt-2">
         By submitting this form you consent to being contacted about your inquiry. You can manage this preference in your{' '}
-        <a href="/profile" className="text-tf-amber hover:underline">
+        <Link href="/profile" className="text-tf-amber hover:underline">
           profile
-        </a>
+        </Link>
         .
       </p>
     </form>

@@ -26,7 +26,7 @@ export function DeleteTravelPlanModal({
           <div className="relative bg-tf-card border border-tf-border rounded-[20px] p-8 max-w-[440px] w-full z-50">
             {/* Header */}
             <div className="flex items-start justify-between gap-4 mb-3">
-              <h3 className="font-lora text-[28px] font-normal text-tf-text tracking-[-0.02em] leading-[1.1]">
+              <h3 className="font-outfit text-[28px] font-normal text-tf-text tracking-[-0.02em] leading-[1.1]">
                 Delete travel plan
               </h3>
               <button

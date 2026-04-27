@@ -11,7 +11,7 @@ export function AuthPageHeader({ title, subtitle }: AuthPageHeaderProps) {
           <Logo />
         </div>
       </div>
-      <h2 className="font-lora text-[30px] font-light leading-[1.1] tracking-[-0.02em] text-tf-text mb-2">
+      <h2 className="font-outfit text-[30px] font-light leading-[1.1] tracking-[-0.02em] text-tf-text mb-2">
         {title}
       </h2>
       <p className="text-sm text-tf-muted font-outfit leading-[1.5]">

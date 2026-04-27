@@ -80,7 +80,7 @@ export function CreateTravelPlanModal({
             {/* Header */}
             <div className="flex items-start justify-between gap-4 mb-7">
               <div>
-                <h3 className="font-lora text-[32px] font-normal text-tf-text tracking-[-0.02em] leading-[1.1] mb-1">
+                <h3 className="font-outfit text-[32px] font-normal text-tf-text tracking-[-0.02em] leading-[1.1] mb-1">
                   Plan a new trip
                 </h3>
                 <p className="text-[13px] text-tf-muted font-outfit">

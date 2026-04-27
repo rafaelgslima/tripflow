@@ -114,7 +114,7 @@ export default function ProfilePage() {
         {/* Page title */}
         <div className="mb-8">
           <h1
-            className="font-lora font-light tracking-[-0.02em] text-tf-text leading-[1.1] mb-2 text-[30px]"
+            className="font-outfit font-normal tracking-[-0.02em] text-tf-text leading-[1.1] mb-2 text-[30px]"
           >
             Your profile
           </h1>

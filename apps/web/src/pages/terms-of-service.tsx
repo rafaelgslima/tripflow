@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { HeaderPreLogin } from "@/components/Header/HeaderPreLogin";
 import { useRouter } from "next/router";
 
@@ -10,13 +11,13 @@ export default function TermsOfServicePage() {
     <div className="min-h-screen bg-tf-bg">
       {!isLoggedIn && <HeaderPreLogin />}
       <div className="max-w-3xl mx-auto px-6 py-12 md:py-16">
-        <h1 className="text-[30px] font-lora font-bold text-tf-text mb-2">
+        <h1 className="text-[30px] font-outfit font-bold text-tf-text mb-2">
           Terms of Service
         </h1>
 
         <div className="prose prose-invert max-w-none space-y-8 text-[15px] leading-relaxed text-tf-text">
           <section>
-            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-outfit font-bold text-tf-text mb-4">
               1. Acceptance of Terms
             </h2>
             <p>
@@ -25,16 +26,16 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-outfit font-bold text-tf-text mb-4">
               2. Age Eligibility
             </h2>
             <p>
-              This service is intended for users 18 years of age or older. By using TripFlow, you represent and warrant that you are at least 18 years old. If you are under 18 years old, you are not permitted to use this service. We do not knowingly collect personal information from individuals under 18 years of age. If we become aware that we have collected information from someone under 18, we will take appropriate steps to delete such information and terminate the user's account.
+              This service is intended for users 18 years of age or older. By using TripFlow, you represent and warrant that you are at least 18 years old. If you are under 18 years old, you are not permitted to use this service. We do not knowingly collect personal information from individuals under 18 years of age. If we become aware that we have collected information from someone under 18, we will take appropriate steps to delete such information and terminate the user&apos;s account.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-outfit font-bold text-tf-text mb-4">
               3. Use License
             </h2>
             <p>
@@ -50,7 +51,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-outfit font-bold text-tf-text mb-4">
               4. Collaboration & Sharing
             </h2>
             <p>
@@ -65,7 +66,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-outfit font-bold text-tf-text mb-4">
               5. User Conduct
             </h2>
             <p>You agree not to use TripFlow to:</p>
@@ -79,7 +80,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-outfit font-bold text-tf-text mb-4">
               6. Account Responsibility
             </h2>
             <p>
@@ -88,7 +89,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-outfit font-bold text-tf-text mb-4">
               7. Data Ownership & Deletion
             </h2>
             <p>
@@ -102,7 +103,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-outfit font-bold text-tf-text mb-4">
               8. Limitation of Liability
             </h2>
             <p>
@@ -117,7 +118,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-outfit font-bold text-tf-text mb-4">
               9. Modifications to Service
             </h2>
             <p>
@@ -126,7 +127,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-outfit font-bold text-tf-text mb-4">
               10. Governing Law
             </h2>
             <p>
@@ -135,7 +136,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-outfit font-bold text-tf-text mb-4">
               11. GDPR & LGPD Compliance
             </h2>
             <p>
@@ -154,18 +155,18 @@ export default function TermsOfServicePage() {
             </ul>
             <p className="mt-4">
               For more details on your rights and how we protect your data, please review our{" "}
-              <a
+              <Link
                 href="/privacy-policy"
                 className="text-tf-amber font-medium no-underline hover:underline"
               >
                 Privacy Policy
-              </a>
+              </Link>
               .
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-lora font-bold text-tf-text mb-4">
+            <h2 className="text-2xl font-outfit font-bold text-tf-text mb-4">
               12. Contact Us
             </h2>
             <p>
