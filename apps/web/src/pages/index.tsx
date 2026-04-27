@@ -5,6 +5,7 @@ import { MdCalendarToday, MdPeople, MdEdit } from "react-icons/md";
 import { supabase } from "@/lib/supabase";
 import { HeaderPreLogin } from "@/components/Header/HeaderPreLogin";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import Image from "next/image";
 
 /* ── Icons ────────────────────────────────────────────────────────────── */
 function CalendarIcon() {
@@ -17,149 +18,6 @@ function UsersIcon() {
 
 function EditIcon() {
   return <MdEdit size={22} />;
-}
-
-/* ── App mockup ───────────────────────────────────────────────────────── */
-interface MockItemProps {
-  time: string;
-  text: string;
-  active?: boolean;
-}
-
-function MockItem({ time, text, active }: MockItemProps) {
-  return (
-    <div
-      className={`flex items-center gap-[10px] py-[7px] px-2.5 rounded-lg transition-colors duration-150 border ${active ? "bg-tf-amber-soft border-tf-border-amber" : "bg-transparent border-transparent"}`}
-    >
-      <span className="text-[11px] font-semibold text-tf-amber font-outfit tracking-[0.02em] w-[36px] shrink-0">
-        {time}
-      </span>
-      <span
-        className={`text-xs font-outfit ${active ? "text-tf-text" : "text-tf-muted"}`}
-      >
-        {text}
-      </span>
-    </div>
-  );
-}
-
-function AppMockup() {
-  return (
-    <div className="mockup-wrap relative py-5 pb-10">
-      {/* Ambient glow behind card */}
-      <div
-        aria-hidden="true"
-        className="absolute pointer-events-none z-0"
-        style={{
-          top: "20%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "min(380px, 100vw)",
-          height: "380px",
-          background:
-            "radial-gradient(ellipse at center, rgba(232,162,58,0.18) 0%, transparent 65%)",
-        }}
-      />
-
-      {/* Main itinerary card */}
-      <div
-        className="animate-float relative z-[1] bg-tf-card rounded-[20px] p-6 max-w-[340px] ml-auto"
-        style={{
-          border: "1px solid rgba(255,255,255,0.09)",
-          boxShadow:
-            "0 0 0 1px rgba(255,255,255,0.04), 0 24px 64px rgba(0,0,0,0.55), 0 8px 16px rgba(0,0,0,0.3)",
-        }}
-      >
-        {/* Card header */}
-        <div className="flex items-start justify-between mb-5">
-          <div>
-            <div className="text-[15px] font-semibold text-tf-text font-outfit tracking-[-0.01em]">
-              Paris Trip
-            </div>
-            <div className="text-xs text-tf-muted mt-[2px] font-outfit">
-              Mar 15 – Mar 22 · 2026
-            </div>
-          </div>
-          {/* Collaborator avatars */}
-          <div className="flex ml-2">
-            {["#F59E0B", "#60A5FA", "#34D399"].map((color, i) => (
-              <div
-                key={i}
-                className="w-[28px] h-[28px] rounded-full shrink-0"
-                style={{
-                  background: color,
-                  marginLeft: i > 0 ? "-8px" : "0",
-                  border: "2px solid var(--tf-bg-card)",
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Day 1 */}
-        <div className="mb-4">
-          <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-tf-amber font-outfit mb-2 pl-[10px]">
-            Day 1 — Mar 15
-          </div>
-          <MockItem time="09:00" text="Eiffel Tower visit" />
-          <MockItem time="12:30" text="Lunch at Le Marais" />
-          <MockItem time="15:00" text="Louvre Museum" active />
-        </div>
-
-        {/* Divider */}
-        <div className="h-px bg-tf-border my-4" />
-
-        {/* Day 2 */}
-        <div className="mb-4">
-          <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-tf-amber font-outfit mb-2 pl-[10px]">
-            Day 2 — Mar 16
-          </div>
-          <MockItem time="10:00" text="Montmartre walk" />
-          <MockItem time="14:00" text="Seine River cruise" />
-        </div>
-
-        {/* Add button */}
-        <button
-          className="w-full py-[9px] rounded-[10px] text-tf-muted text-xs font-medium font-outfit cursor-default tracking-[0.01em]"
-          style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px dashed rgba(255,255,255,0.1)",
-          }}
-        >
-          + Add activity
-        </button>
-      </div>
-
-      {/* Floating collaboration notice */}
-      <div className="animate-float-sub absolute bottom-[10px] left-0 z-[2] bg-tf-bg-3 border border-tf-border-amber rounded-xl py-2.5 px-3.5 shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex items-center gap-[10px] min-w-[220px]">
-        <div
-          className="w-[8px] h-[8px] rounded-full bg-green-400 shrink-0"
-          style={{ boxShadow: "0 0 8px rgba(74,222,128,0.5)" }}
-        />
-        <div>
-          <div className="text-xs text-tf-text font-outfit font-medium">
-            Sofia joined the trip
-          </div>
-          <div className="text-[11px] text-tf-muted font-outfit">
-            2 minutes ago
-          </div>
-        </div>
-      </div>
-
-      {/* Floating date badge */}
-      <div className="absolute top-[8px] right-0 z-[2] bg-tf-amber rounded-[10px] py-2 px-3.5 shadow-[0_4px_16px_rgba(232,162,58,0.35)] flex flex-col items-center">
-        <div
-          className="text-[10px] font-bold tracking-[0.08em] uppercase font-outfit"
-          style={{ color: "rgba(13,11,10,0.65)" }}
-        >
-          Mar
-        </div>
-        <div className="text-[24px] font-bold leading-none text-[#0E0B09] font-outfit">
-          15
-        </div>
-      </div>
-    </div>
-  );
 }
 
 /* ── Feature card ─────────────────────────────────────────────────────── */
@@ -290,8 +148,27 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right: App mockup */}
-            <AppMockup />
+            {/* Right: Plan image */}
+            <div className="hidden md:block animate-float relative rounded-[24px] overflow-hidden border border-tf-border shadow-[0_24px_64px_rgba(0,0,0,0.55)]">
+              <Image
+                src="/travel-plan-desktop.png"
+                alt="TripFlow travel plan interface"
+                width={1200}
+                height={675}
+                className="w-full h-auto block"
+                priority
+              />
+            </div>
+            <div className="md:hidden animate-float relative rounded-[20px] overflow-hidden border border-tf-border shadow-[0_24px_64px_rgba(0,0,0,0.55)]">
+              <Image
+                src="/travel-plan-mobile.png"
+                alt="TripFlow travel plan interface on mobile"
+                width={360}
+                height={640}
+                className="w-full h-auto block"
+                priority
+              />
+            </div>
           </div>
         </section>
 
