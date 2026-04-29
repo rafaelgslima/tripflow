@@ -18,14 +18,13 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@supabase/supabase-js": "^2.47.10",
-    "@types/nodemailer": "^8.0.0",
     "axios": "^1.7.9",
     "klaro": "^0.7.21",
     "next": "^15.1.6",
-    "nodemailer": "^8.0.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-icons": "^5.6.0"
+    "react-icons": "^5.6.0",
+    "resend": "^6.12.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",

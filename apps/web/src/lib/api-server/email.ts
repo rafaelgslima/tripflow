@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 function buildHtml(invitedByEmail: string | null, acceptUrl: string): string {
   const inviter = invitedByEmail ?? "Someone";
@@ -67,35 +67,27 @@ export async function sendTravelPlanInvite({
   invitedByEmail: string | null;
   acceptUrl: string;
 }): Promise<void> {
-  const gmailUser = process.env.GMAIL_USER;
-  const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
+  const resendApiKey = process.env.RESEND_API_KEY;
 
-  if (!gmailUser || !gmailAppPassword) {
+  if (!resendApiKey) {
     console.info(
-      `[email] Gmail not configured (GMAIL_USER or GMAIL_APP_PASSWORD missing) — skipping send. to=${toEmail} accept_url=${acceptUrl}`,
+      `[email] Resend not configured (RESEND_API_KEY missing) — skipping send. to=${toEmail} accept_url=${acceptUrl}`,
     );
     return;
   }
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: gmailUser,
-      pass: gmailAppPassword,
-    },
-  });
-
+  const resend = new Resend(resendApiKey);
   const inviter = invitedByEmail ?? "Someone";
 
-  await transporter.sendMail({
-    from: `"Planutrip" <${gmailUser}>`,
+  await resend.emails.send({
+    from: "Planutrip <contact@planutrip.com>",
     to: toEmail,
     subject: `${inviter} invited you to a Planutrip travel plan`,
     text: buildPlain(invitedByEmail, acceptUrl),
     html: buildHtml(invitedByEmail, acceptUrl),
   });
 
-  console.info(`[email] Invite sent via Gmail SMTP to=${toEmail}`);
+  console.info(`[email] Invite sent via Resend to=${toEmail}`);
 }
 
 export async function sendContactEmail({
@@ -109,23 +101,16 @@ export async function sendContactEmail({
   subject: string;
   message: string;
 }): Promise<void> {
-  const gmailUser = process.env.GMAIL_USER;
-  const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
+  const resendApiKey = process.env.RESEND_API_KEY;
 
-  if (!gmailUser || !gmailAppPassword) {
+  if (!resendApiKey) {
     console.info(
-      `[email] Gmail not configured (GMAIL_USER or GMAIL_APP_PASSWORD missing) — skipping contact send. from=${email}`,
+      `[email] Resend not configured (RESEND_API_KEY missing) — skipping contact send. from=${email}`,
     );
     return;
   }
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: gmailUser,
-      pass: gmailAppPassword,
-    },
-  });
+  const resend = new Resend(resendApiKey);
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -165,16 +150,16 @@ export async function sendContactEmail({
 
   const text = `Planutrip Contact Form Submission\n\nSubject: ${subject}\nFrom: ${name} (${email})\n\nMessage:\n${message}`;
 
-  await transporter.sendMail({
-    from: `"Planutrip Contact" <${gmailUser}>`,
-    to: gmailUser,
+  await resend.emails.send({
+    from: "Planutrip <contact@planutrip.com>",
+    to: "contact@planutrip.com",
     replyTo: email,
     subject: `[Planutrip Contact] ${subject}`,
     text,
     html,
   });
 
-  console.info(`[email] Contact message sent from=${email} to=${gmailUser}`);
+  console.info(`[email] Contact message sent from=${email}`);
 }
 
 export async function sendAccountDeletedConfirmation({
@@ -182,23 +167,16 @@ export async function sendAccountDeletedConfirmation({
 }: {
   toEmail: string;
 }): Promise<void> {
-  const gmailUser = process.env.GMAIL_USER;
-  const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
+  const resendApiKey = process.env.RESEND_API_KEY;
 
-  if (!gmailUser || !gmailAppPassword) {
+  if (!resendApiKey) {
     console.info(
-      `[email] Gmail not configured (GMAIL_USER or GMAIL_APP_PASSWORD missing) — skipping account deleted email. to=${toEmail}`,
+      `[email] Resend not configured (RESEND_API_KEY missing) — skipping account deleted email. to=${toEmail}`,
     );
     return;
   }
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: gmailUser,
-      pass: gmailAppPassword,
-    },
-  });
+  const resend = new Resend(resendApiKey);
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -237,8 +215,8 @@ export async function sendAccountDeletedConfirmation({
 
   const text = `Your Planutrip account has been deleted\n\nYour account and all associated data have been permanently deleted as requested. This includes your travel plans, itineraries, and collaboration invitations.\n\nIf you have any questions, please contact us at support@planutrip.app`;
 
-  await transporter.sendMail({
-    from: `"Planutrip" <${gmailUser}>`,
+  await resend.emails.send({
+    from: "Planutrip <contact@planutrip.com>",
     to: toEmail,
     subject: "Your Planutrip account has been deleted",
     text,
@@ -259,22 +237,14 @@ export async function sendBreachNotificationEmail({
   affectedData: string[];
   remediationSteps: string;
 }): Promise<void> {
-  const gmailUser = process.env.GMAIL_USER;
-  const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
+  const resendApiKey = process.env.RESEND_API_KEY;
 
-  if (!gmailUser || !gmailAppPassword) {
-    console.info("[email] Gmail credentials not configured, skipping breach notification");
+  if (!resendApiKey) {
+    console.info("[email] Resend not configured, skipping breach notification");
     return;
   }
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: gmailUser,
-      pass: gmailAppPassword,
-    },
-  });
-
+  const resend = new Resend(resendApiKey);
   const affectedDataList = affectedData.map((item) => `• ${item}`).join("\n");
 
   const text = `IMPORTANT SECURITY NOTICE
@@ -383,8 +353,8 @@ The Planutrip Security Team`;
 </html>
   `;
 
-  await transporter.sendMail({
-    from: `"Planutrip Security" <${gmailUser}>`,
+  await resend.emails.send({
+    from: "Planutrip <contact@planutrip.com>",
     to: toEmail,
     subject: "⚠️ Important: Security Notice from Planutrip",
     text,
