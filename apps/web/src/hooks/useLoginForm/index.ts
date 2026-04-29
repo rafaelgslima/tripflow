@@ -8,7 +8,7 @@ import type {
   UseLoginFormReturn,
 } from "./types";
 
-const REMEMBERED_EMAIL_KEY = "tripflow_remembered_email";
+const REMEMBERED_EMAIL_KEY = "planutrip_remembered_email";
 
 export function useLoginForm(): UseLoginFormReturn {
   const router = useRouter();

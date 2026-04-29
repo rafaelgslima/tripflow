@@ -1,4 +1,4 @@
-# TripFlow — Project Instructions
+# Planutrip — Project Instructions
 
 Monorepo for a collaborative travel planning app: **Supabase (Postgres/Auth)** + **Python FastAPI backend** + **Next.js (TypeScript) frontend**. Mobile (React Native) comes later, using the same backend and database.
 
@@ -245,7 +245,7 @@ Auth operations that need `APP_BASE_URL` (for email redirect URLs) must go throu
 2. Run them — confirm they fail for the expected reason.
 3. Implement the minimum to make them pass.
 4. Refactor; keep tests green.
-5. **Run full test suite before marking done**: `pnpm --filter @tripflow/web test:run`
+5. **Run full test suite before marking done**: `pnpm --filter @planutrip/web test:run`
 
 Every component, hook, and utility must have a test. Do not create UI without tests. If asked to implement without tests, propose the tests first.
 

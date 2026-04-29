@@ -1,4 +1,4 @@
--- TripFlow Row Level Security (RLS) Policies
+-- Planutrip Row Level Security (RLS) Policies
 -- Ensures users can only access their own data and shared travel plans
 
 -- ============================================================================

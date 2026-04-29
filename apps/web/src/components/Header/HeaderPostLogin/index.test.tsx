@@ -41,10 +41,10 @@ describe("HeaderPostLogin", () => {
     vi.clearAllMocks();
   });
 
-  it("renders the TripFlow logo", () => {
+  it("renders the Planutrip logo", () => {
     render(<HeaderPostLogin />);
 
-    expect(screen.getByRole("link", { name: /tripflow/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /planutrip/i })).toBeInTheDocument();
   });
 
   it("renders Home, Profile and Log out actions", () => {

@@ -48,7 +48,7 @@ export default function ProfilePage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "tripflow-data-export.json";
+      a.download = "planutrip-data-export.json";
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -168,7 +168,7 @@ export default function ProfilePage() {
                 Your Data
               </h3>
               <p className="text-xs text-tf-muted font-outfit mb-4">
-                Download a copy of all your personal data stored by TripFlow.
+                Download a copy of all your personal data stored by Planutrip.
               </p>
               <button
                 type="button"

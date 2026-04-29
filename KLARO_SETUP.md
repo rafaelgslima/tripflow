@@ -1,6 +1,6 @@
 # Klaro Consent Management Setup Guide
 
-This guide explains how to use Klaro for GDPR/LGPD-compliant cookie and consent management in TripFlow.
+This guide explains how to use Klaro for GDPR/LGPD-compliant cookie and consent management in Planutrip.
 
 ## What is Klaro?
 
@@ -12,7 +12,7 @@ Klaro is a **free, open-source consent management platform** that:
 
 ## Current Setup
 
-✅ Klaro is already integrated into TripFlow:
+✅ Klaro is already integrated into Planutrip:
 - CDN script loaded in `_document.tsx`
 - Configuration in `src/lib/klaro-config.ts`
 - Hook initialized in `_app.tsx`
@@ -37,7 +37,7 @@ Add a new service object to the `services` array:
 {
   name: 'google-analytics',
   title: 'Google Analytics',
-  description: 'Analytics to understand how users interact with TripFlow',
+  description: 'Analytics to understand how users interact with Planutrip',
   default: false,  // Don't enable by default (user must opt-in)
   purposes: ['analytics'],
   cookies: [/_ga/],  // Regex matching GA cookies

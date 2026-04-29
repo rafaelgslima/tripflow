@@ -25,7 +25,7 @@ export const klaroConfig = {
     {
       name: 'google-analytics',
       title: 'Google Analytics',
-      description: 'Analytics to help us understand how you use TripFlow',
+      description: 'Analytics to help us understand how you use Planutrip',
       default: false,
       purposes: ['analytics'],
       cookies: [/_ga/],
@@ -42,7 +42,7 @@ export const klaroConfig = {
     {
       name: 'contact-form',
       title: 'Contact Form Communications',
-      description: 'Allows TripFlow to respond to your contact form inquiries via email',
+      description: 'Allows Planutrip to respond to your contact form inquiries via email',
       default: true,
       purposes: ['functional'],
       required: false,

@@ -1,8 +1,8 @@
-# TripFlow Database Schema
+# Planutrip Database Schema
 
 ## Overview
 
-This document describes the database schema for TripFlow's collaborative travel planning application.
+This document describes the database schema for Planutrip's collaborative travel planning application.
 
 ## Tables
 

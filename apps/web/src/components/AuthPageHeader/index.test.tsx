@@ -21,7 +21,7 @@ describe("AuthPageHeader", () => {
     render(
       <AuthPageHeader title="Welcome back" subtitle="Sign in to continue" />,
     );
-    expect(screen.getByText("TripFlow")).toBeInTheDocument();
+    expect(screen.getByText("Planutrip")).toBeInTheDocument();
   });
 
   it("renders the back button", () => {

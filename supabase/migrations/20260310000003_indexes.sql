@@ -1,4 +1,4 @@
--- TripFlow Performance Indexes
+-- Planutrip Performance Indexes
 -- Optimizes common query patterns
 
 -- ============================================================================

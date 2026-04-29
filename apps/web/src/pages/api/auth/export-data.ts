@@ -124,7 +124,7 @@ export default async function handler(
 
     res.setHeader(
       "Content-Disposition",
-      'attachment; filename="tripflow-data-export.json"',
+      'attachment; filename="planutrip-data-export.json"',
     );
     res.setHeader("Content-Type", "application/json");
     res.status(200).json(exportData);

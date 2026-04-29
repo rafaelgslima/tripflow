@@ -1,4 +1,4 @@
--- TripFlow Initial Schema Migration
+-- Planutrip Initial Schema Migration
 -- Creates core tables: profile, travel_plan, itinerary_item, travel_plan_share
 
 -- Enable UUID extension (pgcrypto provides gen_random_uuid)

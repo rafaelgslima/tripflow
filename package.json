@@ -1,9 +1,9 @@
 {
-  "name": "tripflow",
+  "name": "planutrip",
   "private": true,
   "scripts": {
-    "build": "pnpm --filter @tripflow/web build",
-    "dev": "pnpm --filter @tripflow/web dev"
+    "build": "pnpm --filter @planutrip/web build",
+    "dev": "pnpm --filter @planutrip/web dev"
   },
   "devDependencies": {
     "next": "^15.1.6"

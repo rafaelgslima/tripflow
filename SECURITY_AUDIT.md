@@ -1,4 +1,4 @@
-# Security Audit Report - TripFlow Authentication System
+# Security Audit Report - Planutrip Authentication System
 **Date:** March 12, 2026
 **Scope:** Frontend Authentication Implementation
 
@@ -101,7 +101,7 @@
 ### ✅ SECURE - Remember Me Feature
 - **Location:** `useLoginForm/index.ts`
 - **Data Stored:** Only email address
-- **Key:** `tripflow_remembered_email`
+- **Key:** `planutrip_remembered_email`
 - **Finding:** No sensitive data (passwords, tokens) stored
 - **Implementation:** Properly cleared when unchecked
 - **Risk Level:** None
@@ -296,7 +296,7 @@ if (!session) {
 
 ## Conclusion
 
-**The TripFlow authentication system is secure and follows industry best practices.** There are no critical vulnerabilities that would expose user data or compromise authentication. The identified recommendations are mostly related to operational improvements and defense-in-depth measures.
+**The Planutrip authentication system is secure and follows industry best practices.** There are no critical vulnerabilities that would expose user data or compromise authentication. The identified recommendations are mostly related to operational improvements and defense-in-depth measures.
 
 **Security Score: 9.5/10**
 

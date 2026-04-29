@@ -2,7 +2,7 @@
 
 ## Overview
 
-TripFlow implements automatic session timeout after **20 minutes** with a **2-minute warning** before expiration. This document explains how the system works and how to configure it.
+Planutrip implements automatic session timeout after **20 minutes** with a **2-minute warning** before expiration. This document explains how the system works and how to configure it.
 
 ---
 

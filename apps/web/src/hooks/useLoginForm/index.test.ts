@@ -65,7 +65,7 @@ describe("useLoginForm", () => {
 
     it("initializes with remembered email from localStorage", () => {
       localStorage.setItem(
-        "tripflow_remembered_email",
+        "planutrip_remembered_email",
         "remembered@example.com",
       );
       const { result } = renderHook(() => useLoginForm());
@@ -118,13 +118,13 @@ describe("useLoginForm", () => {
         } as React.ChangeEvent<HTMLInputElement>);
       });
 
-      expect(localStorage.getItem("tripflow_remembered_email")).toBe(
+      expect(localStorage.getItem("planutrip_remembered_email")).toBe(
         "user@example.com",
       );
     });
 
     it("removes email from localStorage when rememberMe is unchecked", () => {
-      localStorage.setItem("tripflow_remembered_email", "user@example.com");
+      localStorage.setItem("planutrip_remembered_email", "user@example.com");
       const { result } = renderHook(() => useLoginForm());
 
       act(() => {
@@ -133,7 +133,7 @@ describe("useLoginForm", () => {
         } as React.ChangeEvent<HTMLInputElement>);
       });
 
-      expect(localStorage.getItem("tripflow_remembered_email")).toBeNull();
+      expect(localStorage.getItem("planutrip_remembered_email")).toBeNull();
     });
 
     it("updates localStorage when email changes and rememberMe is checked", () => {
@@ -151,7 +151,7 @@ describe("useLoginForm", () => {
         } as React.ChangeEvent<HTMLInputElement>);
       });
 
-      expect(localStorage.getItem("tripflow_remembered_email")).toBe(
+      expect(localStorage.getItem("planutrip_remembered_email")).toBe(
         "new@example.com",
       );
     });

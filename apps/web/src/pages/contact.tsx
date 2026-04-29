@@ -30,10 +30,10 @@ export default function ContactPage() {
   return (
     <>
       <Head>
-        <title>Get in Touch | TripFlow</title>
+        <title>Get in Touch | Planutrip</title>
         <meta
           name="description"
-          content="Share feedback, report issues, or suggest features for TripFlow"
+          content="Share feedback, report issues, or suggest features for Planutrip"
         />
       </Head>
 

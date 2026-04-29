@@ -152,7 +152,7 @@ export default function Home() {
             <div className="hidden md:block animate-float relative rounded-[24px] overflow-hidden border border-tf-border shadow-[0_24px_64px_rgba(0,0,0,0.55)]">
               <Image
                 src="/travel-plan-desktop.png"
-                alt="TripFlow travel plan interface"
+                alt="Planutrip travel plan interface"
                 width={1200}
                 height={675}
                 className="w-full h-auto block"
@@ -162,7 +162,7 @@ export default function Home() {
             <div className="md:hidden animate-float relative rounded-[20px] overflow-hidden border border-tf-border shadow-[0_24px_64px_rgba(0,0,0,0.55)]">
               <Image
                 src="/travel-plan-mobile.png"
-                alt="TripFlow travel plan interface on mobile"
+                alt="Planutrip travel plan interface on mobile"
                 width={360}
                 height={640}
                 className="w-full h-auto block"
@@ -345,7 +345,7 @@ export default function Home() {
       {/* ── Footer ──────────────────────────────────────────────────────── */}
       <footer className="border-t border-tf-border py-7 px-6 text-center">
         <p className="text-[13px] text-tf-muted font-outfit">
-          © {new Date().getFullYear()} TripFlow. All rights reserved.
+          © {new Date().getFullYear()} Planutrip. All rights reserved.
         </p>
       </footer>
     </div>

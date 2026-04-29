@@ -109,7 +109,7 @@ describe("GET /api/auth/export-data", () => {
     expect(resStatus).toHaveBeenCalledWith(200);
     expect(resSetHeader).toHaveBeenCalledWith(
       "Content-Disposition",
-      expect.stringContaining("tripflow-data-export.json")
+      expect.stringContaining("planutrip-data-export.json")
     );
     expect(resJson).toHaveBeenCalledWith(
       expect.objectContaining({

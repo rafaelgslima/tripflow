@@ -12,14 +12,14 @@ function buildHtml(invitedByEmail: string | null, acceptUrl: string): string {
              style="background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.1);overflow:hidden;">
         <tr>
           <td style="background:#E8A23A;padding:24px 32px;">
-            <span style="color:#0E0B09;font-size:22px;font-weight:700;letter-spacing:-.5px;">TripFlow</span>
+            <span style="color:#0E0B09;font-size:22px;font-weight:700;letter-spacing:-.5px;">Planutrip</span>
           </td>
         </tr>
         <tr>
           <td style="padding:32px;">
             <h1 style="margin:0 0 12px;font-size:20px;color:#111827;">You've been invited to a travel plan!</h1>
             <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
-              <strong>${inviter}</strong> wants to share a travel plan with you on TripFlow.
+              <strong>${inviter}</strong> wants to share a travel plan with you on Planutrip.
               Click the button below to accept the invitation and start collaborating.
             </p>
             <a href="${acceptUrl}"
@@ -51,7 +51,7 @@ function buildHtml(invitedByEmail: string | null, acceptUrl: string): string {
 function buildPlain(invitedByEmail: string | null, acceptUrl: string): string {
   const inviter = invitedByEmail ?? "Someone";
   return (
-    `${inviter} wants to share a travel plan with you on TripFlow.\n\n` +
+    `${inviter} wants to share a travel plan with you on Planutrip.\n\n` +
     `Accept the invitation here:\n${acceptUrl}\n\n` +
     `This link expires in 48 hours.\n` +
     `If you weren't expecting this, you can safely ignore this email.`
@@ -88,9 +88,9 @@ export async function sendTravelPlanInvite({
   const inviter = invitedByEmail ?? "Someone";
 
   await transporter.sendMail({
-    from: `"TripFlow" <${gmailUser}>`,
+    from: `"Planutrip" <${gmailUser}>`,
     to: toEmail,
-    subject: `${inviter} invited you to a TripFlow travel plan`,
+    subject: `${inviter} invited you to a Planutrip travel plan`,
     text: buildPlain(invitedByEmail, acceptUrl),
     html: buildHtml(invitedByEmail, acceptUrl),
   });
@@ -137,7 +137,7 @@ export async function sendContactEmail({
              style="background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.1);overflow:hidden;">
         <tr>
           <td style="background:#E8A23A;padding:24px 32px;">
-            <span style="color:#0E0B09;font-size:22px;font-weight:700;letter-spacing:-.5px;">TripFlow Contact</span>
+            <span style="color:#0E0B09;font-size:22px;font-weight:700;letter-spacing:-.5px;">Planutrip Contact</span>
           </td>
         </tr>
         <tr>
@@ -163,13 +163,13 @@ export async function sendContactEmail({
 </body>
 </html>`;
 
-  const text = `TripFlow Contact Form Submission\n\nSubject: ${subject}\nFrom: ${name} (${email})\n\nMessage:\n${message}`;
+  const text = `Planutrip Contact Form Submission\n\nSubject: ${subject}\nFrom: ${name} (${email})\n\nMessage:\n${message}`;
 
   await transporter.sendMail({
-    from: `"TripFlow Contact" <${gmailUser}>`,
+    from: `"Planutrip Contact" <${gmailUser}>`,
     to: gmailUser,
     replyTo: email,
-    subject: `[TripFlow Contact] ${subject}`,
+    subject: `[Planutrip Contact] ${subject}`,
     text,
     html,
   });
@@ -210,14 +210,14 @@ export async function sendAccountDeletedConfirmation({
              style="background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.1);overflow:hidden;">
         <tr>
           <td style="background:#E8A23A;padding:24px 32px;">
-            <span style="color:#0E0B09;font-size:22px;font-weight:700;letter-spacing:-.5px;">TripFlow</span>
+            <span style="color:#0E0B09;font-size:22px;font-weight:700;letter-spacing:-.5px;">Planutrip</span>
           </td>
         </tr>
         <tr>
           <td style="padding:32px;">
             <h1 style="margin:0 0 12px;font-size:20px;color:#111827;">Your account has been deleted</h1>
             <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
-              Your TripFlow account and all associated data have been permanently deleted as requested.
+              Your Planutrip account and all associated data have been permanently deleted as requested.
               This includes your travel plans, itineraries, and collaboration invitations.
             </p>
             <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
@@ -235,12 +235,12 @@ export async function sendAccountDeletedConfirmation({
 </body>
 </html>`;
 
-  const text = `Your TripFlow account has been deleted\n\nYour account and all associated data have been permanently deleted as requested. This includes your travel plans, itineraries, and collaboration invitations.\n\nIf you have any questions, please contact us at support@tripflow.app`;
+  const text = `Your Planutrip account has been deleted\n\nYour account and all associated data have been permanently deleted as requested. This includes your travel plans, itineraries, and collaboration invitations.\n\nIf you have any questions, please contact us at support@planutrip.app`;
 
   await transporter.sendMail({
-    from: `"TripFlow" <${gmailUser}>`,
+    from: `"Planutrip" <${gmailUser}>`,
     to: toEmail,
-    subject: "Your TripFlow account has been deleted",
+    subject: "Your Planutrip account has been deleted",
     text,
     html,
   });
@@ -279,7 +279,7 @@ export async function sendBreachNotificationEmail({
 
   const text = `IMPORTANT SECURITY NOTICE
 
-Dear TripFlow User,
+Dear Planutrip User,
 
 We are writing to inform you that we have detected unauthorized access to our systems. As a precautionary measure and in compliance with data protection regulations, we are notifying you of this incident.
 
@@ -293,7 +293,7 @@ WHAT WE HAVE DONE:
 ${remediationSteps}
 
 WHAT YOU SHOULD DO:
-1. Change your TripFlow password immediately if you haven't already
+1. Change your Planutrip password immediately if you haven't already
 2. Monitor your email for any suspicious activity
 3. Be cautious of phishing attempts
 4. Contact us immediately if you notice any unauthorized activity
@@ -304,11 +304,11 @@ GDPR COMPLIANCE:
 As per GDPR Article 33, you are being notified within 72 hours of our discovery of this incident. If you reside in Brazil, this notification also complies with LGPD Article 33.
 
 If you have any questions or concerns, please contact our privacy team immediately at:
-privacy@tripflow.app
+privacy@planutrip.app
 
 Thank you for your patience and trust.
 
-The TripFlow Security Team`;
+The Planutrip Security Team`;
 
   const html = `
 <!DOCTYPE html>
@@ -335,7 +335,7 @@ The TripFlow Security Team`;
       <h1 style="margin: 0; font-size: 24px;">⚠️ Important Security Notice</h1>
     </div>
     <div class="content">
-      <p>Dear TripFlow User,</p>
+      <p>Dear Planutrip User,</p>
       <p>We are writing to inform you that we have detected unauthorized access to our systems. As a precautionary measure and in compliance with data protection regulations, we are notifying you of this incident.</p>
 
       <div class="section">
@@ -360,7 +360,7 @@ The TripFlow Security Team`;
       <div class="section">
         <h3>What You Should Do:</h3>
         <ol>
-          <li>Change your TripFlow password immediately if you haven't already</li>
+          <li>Change your Planutrip password immediately if you haven't already</li>
           <li>Monitor your email for any suspicious activity</li>
           <li>Be cautious of phishing attempts</li>
           <li>Contact us immediately if you notice any unauthorized activity</li>
@@ -373,10 +373,10 @@ The TripFlow Security Team`;
       </div>
 
       <p style="margin-top: 30px;">If you have any questions or concerns, please contact our privacy team immediately at:</p>
-      <p style="text-align: center; font-size: 16px;"><a href="mailto:privacy@tripflow.app"><strong>privacy@tripflow.app</strong></a></p>
+      <p style="text-align: center; font-size: 16px;"><a href="mailto:privacy@planutrip.app"><strong>privacy@planutrip.app</strong></a></p>
 
       <p>We take your privacy and security very seriously. Thank you for your patience and trust.</p>
-      <p style="text-align: center; margin-top: 40px; color: #999; font-size: 12px;">The TripFlow Security Team</p>
+      <p style="text-align: center; margin-top: 40px; color: #999; font-size: 12px;">The Planutrip Security Team</p>
     </div>
   </div>
 </body>
@@ -384,9 +384,9 @@ The TripFlow Security Team`;
   `;
 
   await transporter.sendMail({
-    from: `"TripFlow Security" <${gmailUser}>`,
+    from: `"Planutrip Security" <${gmailUser}>`,
     to: toEmail,
-    subject: "⚠️ Important: Security Notice from TripFlow",
+    subject: "⚠️ Important: Security Notice from Planutrip",
     text,
     html,
   });

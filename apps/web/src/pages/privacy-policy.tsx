@@ -20,7 +20,7 @@ export default function PrivacyPolicyPage() {
               1. Introduction
             </h2>
             <p>
-              TripFlow (&quot;we,&quot; &quot;us,&quot; &quot;our,&quot; or &quot;Company&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our application.
+              Planutrip (&quot;we,&quot; &quot;us,&quot; &quot;our,&quot; or &quot;Company&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our application.
             </p>
           </section>
 
@@ -62,7 +62,7 @@ export default function PrivacyPolicyPage() {
               <li>To send you invitation emails on your behalf</li>
               <li>To authenticate your identity and verify security claims</li>
               <li>To provide customer support and respond to your inquiries</li>
-              <li>To improve the functionality and performance of TripFlow</li>
+              <li>To improve the functionality and performance of Planutrip</li>
               <li>To ensure security and prevent fraud or misuse</li>
             </ul>
             <p className="mt-4 font-semibold">
@@ -81,7 +81,7 @@ export default function PrivacyPolicyPage() {
               <div>
                 <strong>Contract Performance (Article 6(1)(b) GDPR, Article 7.I LGPD):</strong>
                 <p className="text-tf-text mt-1">
-                  We process your name, email, and travel plans to provide the TripFlow service and enable collaboration features.
+                  We process your name, email, and travel plans to provide the Planutrip service and enable collaboration features.
                 </p>
               </div>
               <div>
@@ -119,7 +119,7 @@ export default function PrivacyPolicyPage() {
               6. Third-Party Services & Data Processors
             </h2>
             <p>
-              TripFlow uses the following third-party services to operate the platform. These services are Data Processors under GDPR and LGPD, meaning they process personal data on our behalf under a contractual Data Processing Agreement (DPA).
+              Planutrip uses the following third-party services to operate the platform. These services are Data Processors under GDPR and LGPD, meaning they process personal data on our behalf under a contractual Data Processing Agreement (DPA).
             </p>
 
             <h3 className="text-lg font-semibold text-tf-text mt-6 mb-3">
@@ -199,7 +199,7 @@ export default function PrivacyPolicyPage() {
             </h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>
-                <strong>Purpose:</strong> Optional analytics to understand how you use TripFlow
+                <strong>Purpose:</strong> Optional analytics to understand how you use Planutrip
               </li>
               <li>
                 <strong>Opt-In Required:</strong> Google Analytics is disabled by default and requires your explicit consent via the Klaro consent banner
@@ -244,10 +244,10 @@ export default function PrivacyPolicyPage() {
             <p className="mt-4">
               You have the right to object to international transfers. Contact{" "}
               <a
-                href="mailto:privacy@tripflow.app"
+                href="mailto:privacy@planutrip.app"
                 className="text-tf-amber font-medium no-underline hover:underline"
               >
-                privacy@tripflow.app
+                privacy@planutrip.app
               </a>{" "}
               if you have concerns about your data being transferred abroad.
             </p>
@@ -318,10 +318,10 @@ export default function PrivacyPolicyPage() {
             <p className="mt-4">
               To exercise any of these rights, contact us at{" "}
               <a
-                href="mailto:privacy@tripflow.app"
+                href="mailto:privacy@planutrip.app"
                 className="text-tf-amber font-medium no-underline hover:underline"
               >
-                privacy@tripflow.app
+                privacy@planutrip.app
               </a>
               . We will respond within 30 days (GDPR) or 15 days (LGPD).
             </p>
@@ -362,7 +362,7 @@ export default function PrivacyPolicyPage() {
               10. Cookies & Tokens
             </h2>
             <p>
-              TripFlow uses authentication tokens (JWT) to maintain your logged-in session. These tokens:
+              Planutrip uses authentication tokens (JWT) to maintain your logged-in session. These tokens:
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>Are stored securely in your browser&apos;s local storage or memory</li>
@@ -394,7 +394,7 @@ export default function PrivacyPolicyPage() {
               11. Changes to This Privacy Policy
             </h2>
             <p>
-              We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. We will notify you of any significant changes via email or by posting a notice on our application. Your continued use of TripFlow following such notification constitutes your acceptance of the updated Privacy Policy.
+              We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. We will notify you of any significant changes via email or by posting a notice on our application. Your continued use of Planutrip following such notification constitutes your acceptance of the updated Privacy Policy.
             </p>
           </section>
 
@@ -409,10 +409,10 @@ export default function PrivacyPolicyPage() {
               <p>
                 Email:{" "}
                 <a
-                  href="mailto:privacy@tripflow.app"
+                  href="mailto:privacy@planutrip.app"
                   className="text-tf-amber font-medium no-underline hover:underline"
                 >
-                  privacy@tripflow.app
+                  privacy@planutrip.app
                 </a>
               </p>
             </div>
@@ -443,7 +443,7 @@ export default function PrivacyPolicyPage() {
                 <ul className="list-disc list-inside space-y-1 ml-4 mt-2">
                   <li>Date and timeframe of the breach</li>
                   <li>Specific data that may have been affected</li>
-                  <li>Steps TripFlow has taken to mitigate the incident</li>
+                  <li>Steps Planutrip has taken to mitigate the incident</li>
                   <li>Recommended actions you should take (e.g., password change)</li>
                   <li>Contact information for our privacy team</li>
                 </ul>
@@ -458,10 +458,10 @@ export default function PrivacyPolicyPage() {
               <li>
                 <strong>Questions:</strong> If you have concerns about a breach notification, contact our privacy team at{" "}
                 <a
-                  href="mailto:privacy@tripflow.app"
+                  href="mailto:privacy@planutrip.app"
                   className="text-tf-amber font-medium no-underline hover:underline"
                 >
-                  privacy@tripflow.app
+                  privacy@planutrip.app
                 </a>
               </li>
             </ul>

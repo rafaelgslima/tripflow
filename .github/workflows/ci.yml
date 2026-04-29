@@ -26,16 +26,16 @@ jobs:
         run: pnpm install
 
       - name: Lint
-        run: pnpm --filter @tripflow/web lint
+        run: pnpm --filter @planutrip/web lint
 
       - name: Type check
-        run: pnpm --filter @tripflow/web type-check
+        run: pnpm --filter @planutrip/web type-check
 
       - name: Unit tests
-        run: pnpm --filter @tripflow/web test:run
+        run: pnpm --filter @planutrip/web test:run
 
       - name: Generate coverage report
-        run: pnpm --filter @tripflow/web test:coverage
+        run: pnpm --filter @planutrip/web test:coverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
