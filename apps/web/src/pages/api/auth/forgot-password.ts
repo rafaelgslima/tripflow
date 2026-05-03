@@ -29,6 +29,7 @@ export default async function handler(
     );
 
     const appBaseUrl = process.env.APP_BASE_URL ?? "http://localhost:3000";
+    console.log("DEBUG APP_BASE_URL:", appBaseUrl);
     const redirectTo = `${appBaseUrl.replace(/\/$/, "")}/reset-password`;
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
