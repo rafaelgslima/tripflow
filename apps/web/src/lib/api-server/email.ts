@@ -226,6 +226,92 @@ export async function sendAccountDeletedConfirmation({
   console.info(`[email] Account deletion confirmation sent to=${toEmail}`);
 }
 
+export function buildPasswordResetHtml(resetUrl: string): string {
+  const privacyPolicyUrl = `${process.env.APP_BASE_URL ?? "http://localhost:3000"}/privacy-policy`;
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 0;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0"
+             style="background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.1);overflow:hidden;">
+        <tr>
+          <td style="background:#E8A23A;padding:24px 32px;">
+            <span style="color:#0E0B09;font-size:22px;font-weight:700;letter-spacing:-.5px;">Planutrip</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;">
+            <h1 style="margin:0 0 12px;font-size:20px;color:#111827;">Reset your password</h1>
+            <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
+              We received a request to reset your Planutrip password.
+              Click the button below to create a new password.
+            </p>
+            <a href="${resetUrl}"
+               style="display:inline-block;padding:12px 28px;background:#E8A23A;color:#0E0B09;
+                      font-size:15px;font-weight:600;text-decoration:none;border-radius:6px;">
+              Reset password
+            </a>
+            <p style="margin:24px 0 0;font-size:13px;color:#6b7280;line-height:1.5;">
+              This link expires in 48 hours. If you didn't request a password reset, you can safely ignore this email.
+            </p>
+            <hr style="margin:24px 0;border:none;border-top:1px solid #e5e7eb;">
+            <p style="margin:0 0 16px;font-size:12px;color:#9ca3af;">
+              For your security, we never share passwords via email.
+              <br><a href="${privacyPolicyUrl}" style="color:#E8A23A;text-decoration:underline;">View our Privacy Policy</a>
+            </p>
+            <p style="margin:0;font-size:12px;color:#9ca3af;">
+              If the button doesn't work, copy and paste this URL into your browser:<br>
+              <a href="${resetUrl}" style="color:#E8A23A;word-break:break-all;">${resetUrl}</a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`.trim();
+}
+
+function buildPasswordResetPlain(resetUrl: string): string {
+  return (
+    `Reset your password\n\n` +
+    `Click here to reset your password:\n${resetUrl}\n\n` +
+    `This link expires in 48 hours.\n` +
+    `If you didn't request a password reset, you can safely ignore this email.`
+  );
+}
+
+export async function sendPasswordResetEmail({
+  toEmail,
+  resetUrl,
+}: {
+  toEmail: string;
+  resetUrl: string;
+}): Promise<void> {
+  const resendApiKey = process.env.RESEND_API_KEY;
+
+  if (!resendApiKey) {
+    console.info(
+      `[email] Resend not configured (RESEND_API_KEY missing) — skipping password reset send. to=${toEmail}`,
+    );
+    return;
+  }
+
+  const resend = new Resend(resendApiKey);
+
+  await resend.emails.send({
+    from: "Planutrip <contact@planutrip.com>",
+    to: toEmail,
+    subject: "Reset your Planutrip password",
+    text: buildPasswordResetPlain(resetUrl),
+    html: buildPasswordResetHtml(resetUrl),
+  });
+
+  console.info(`[email] Password reset email sent via Resend to=${toEmail}`);
+}
+
 export async function sendBreachNotificationEmail({
   toEmail,
   breachDate,

@@ -36,7 +36,8 @@ export default async function handler(
     });
 
     if (error) {
-      throw new ValidationError(error.message);
+      console.error("Supabase error:", error);
+      throw new ValidationError(error.message || JSON.stringify(error));
     }
 
     res.status(200).json({ success: true });
