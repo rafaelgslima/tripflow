@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createHmac } from "crypto";
-import { resend } from "@/lib/api-server/email";
+import { Resend } from "resend";
 
 interface SendEmailRequest {
   token: string;
@@ -89,8 +89,16 @@ export default async function handler(
     // Add more email types as needed (email_change, etc.)
 
     // Send email via Resend
+    const resendApiKey = process.env.RESEND_API_KEY;
+    if (!resendApiKey) {
+      console.error("RESEND_API_KEY not configured");
+      res.status(500).json({ success: false });
+      return;
+    }
+
+    const resend = new Resend(resendApiKey);
     const subject = getEmailSubject(type);
-    const html = getEmailHtml(type, confirmationUrl, email);
+    const html = getEmailHtml(type, confirmationUrl);
 
     console.log("DEBUG [send-email-hook] sending email via Resend");
     await resend.emails.send({
@@ -125,7 +133,6 @@ function getEmailSubject(type: string): string {
 function getEmailHtml(
   type: string,
   confirmationUrl: string,
-  emailData: SendEmailRequest["email"],
 ): string {
   const privacyPolicyUrl = `${process.env.APP_BASE_URL ?? "http://localhost:3000"}/privacy-policy`;
 
