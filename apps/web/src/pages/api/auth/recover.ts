@@ -29,16 +29,11 @@ export default async function handler(
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
-    // Map email action types to verifyOtp types
-    let verifyType: "signup" | "recovery" | "invite" | "email_change" | "email" = type as any;
-    if (type === "signup") {
-      verifyType = "email";
-    }
-
+    // verifyOtp supports: signup, magiclink, recovery, invite, email_change
     const { data, error } = await supabaseAdmin.auth.verifyOtp({
       email: email as string,
       token: token_hash as string,
-      type: verifyType,
+      type: type as "signup" | "magiclink" | "recovery" | "invite" | "email_change",
     });
 
     if (error || !data.session) {
