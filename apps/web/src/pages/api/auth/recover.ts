@@ -16,7 +16,7 @@ export default async function handler(
   }
 
   try {
-    const { token_hash, type, next, email } = req.query;
+    const { token_hash, type, next, email, token } = req.query;
 
     if (!token_hash || !type || !email) {
       res.status(400).json({ success: false, message: "Missing token, type, or email" });
@@ -29,10 +29,13 @@ export default async function handler(
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
+    // For signup/magiclink, use raw token; for recovery, use token_hash
+    const verifyToken = (type === "signup" || type === "magiclink") ? (token as string) : (token_hash as string);
+
     // verifyOtp supports: signup, magiclink, recovery, invite, email_change
     const { data, error } = await supabaseAdmin.auth.verifyOtp({
       email: email as string,
-      token: token_hash as string,
+      token: verifyToken,
       type: type as "signup" | "magiclink" | "recovery" | "invite" | "email_change",
     });
 

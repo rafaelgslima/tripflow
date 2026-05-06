@@ -39,7 +39,11 @@ export default async function handler(
     }
 
     // Build custom recovery link using our own endpoint for token verification
-    const recoveryUrl = `${appBaseUrl}/api/auth/recover?token_hash=${email_data.token_hash}&type=${emailActionType}&next=${encodeURIComponent(redirectUrl)}&email=${encodeURIComponent(toEmail)}`;
+    // For signup/magiclink, pass raw token; for recovery, pass token_hash
+    const tokenParam = (emailActionType === "signup" || emailActionType === "magiclink")
+      ? `token=${encodeURIComponent(email_data.token)}`
+      : `token_hash=${encodeURIComponent(email_data.token_hash)}`;
+    const recoveryUrl = `${appBaseUrl}/api/auth/recover?${tokenParam}&type=${emailActionType}&next=${encodeURIComponent(redirectUrl)}&email=${encodeURIComponent(toEmail)}`;
 
     // Generate HTML email
     let html = getEmailHtml(emailActionType, recoveryUrl);
