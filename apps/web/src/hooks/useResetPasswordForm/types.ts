@@ -18,6 +18,8 @@ export interface UseResetPasswordFormReturn {
   };
   isSubmitting: boolean;
   isSuccess: boolean;
+  isSessionLoading: boolean;
+  hasValidSession: boolean;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleBlur: (field: keyof ResetPasswordFormValues) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;

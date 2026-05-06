@@ -1,4 +1,4 @@
-import { useState, useCallback, type FormEvent } from "react";
+import { useState, useCallback, useEffect, type FormEvent } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabase";
 import { validatePassword } from "@/utils/validation";
@@ -21,6 +21,27 @@ export function useResetPasswordForm(): UseResetPasswordFormReturn {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isSessionLoading, setIsSessionLoading] = useState(true);
+  const [hasValidSession, setHasValidSession] = useState(false);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          setHasValidSession(true);
+        } else {
+          setErrors({ general: "Recovery link expired or invalid. Please request a new password reset." });
+        }
+      } catch (err) {
+        setErrors({ general: "Failed to verify recovery session." });
+      } finally {
+        setIsSessionLoading(false);
+      }
+    };
+
+    checkSession();
+  }, []);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,6 +100,11 @@ export function useResetPasswordForm(): UseResetPasswordFormReturn {
     async (e: FormEvent) => {
       e.preventDefault();
 
+      if (!hasValidSession) {
+        setErrors({ general: "No valid recovery session. Please request a new password reset." });
+        return;
+      }
+
       // Validate all fields
       const passwordError = validatePassword(values.password);
       const confirmPasswordError =
@@ -127,7 +153,7 @@ export function useResetPasswordForm(): UseResetPasswordFormReturn {
         setIsSubmitting(false);
       }
     },
-    [values.password, values.confirmPassword, router],
+    [values.password, values.confirmPassword, router, hasValidSession],
   );
 
   return {
@@ -136,6 +162,8 @@ export function useResetPasswordForm(): UseResetPasswordFormReturn {
     touched,
     isSubmitting,
     isSuccess,
+    isSessionLoading,
+    hasValidSession,
     handleChange,
     handleBlur,
     handleSubmit,

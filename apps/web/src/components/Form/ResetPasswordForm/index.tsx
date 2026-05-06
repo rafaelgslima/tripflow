@@ -10,10 +10,31 @@ export function ResetPasswordForm(_props: ResetPasswordFormProps) {
     touched,
     isSubmitting,
     isSuccess,
+    isSessionLoading,
+    hasValidSession,
     handleChange,
     handleBlur,
     handleSubmit,
   } = useResetPasswordForm();
+
+  if (isSessionLoading) {
+    return (
+      <div className="flex flex-col gap-5">
+        <p className="text-center text-tf-muted">Verifying recovery link…</p>
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (!hasValidSession) {
+    return (
+      <div className="flex flex-col gap-5">
+        <div className="tf-alert-error" role="alert">
+          {errors.general || "Recovery link expired or invalid. Please request a new password reset."}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
