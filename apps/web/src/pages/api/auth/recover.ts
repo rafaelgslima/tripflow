@@ -36,7 +36,6 @@ export default async function handler(
     });
 
     if (error || !data.session) {
-      console.error("DEBUG [recover] token verification failed:", error);
       const redirectUrl = next || process.env.APP_BASE_URL || "http://localhost:3000";
       const errorUrl = `${redirectUrl}#error=invalid_token&error_description=Recovery link is invalid or expired`;
       res.setHeader("Location", errorUrl);
@@ -54,7 +53,6 @@ export default async function handler(
     res.status(302).end();
     return;
   } catch (error) {
-    console.error("DEBUG [recover] error:", error);
     const next = req.query.next as string || process.env.APP_BASE_URL || "http://localhost:3000";
     const errorUrl = `${next}#error=server_error&error_description=An error occurred during recovery`;
     res.setHeader("Location", errorUrl);

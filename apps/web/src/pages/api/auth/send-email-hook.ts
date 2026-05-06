@@ -28,28 +28,18 @@ export default async function handler(
     const emailActionType = email_data.email_action_type;
     const appBaseUrl = process.env.APP_BASE_URL ?? "http://localhost:3000";
 
-    console.log("DEBUG [send-email-hook] toEmail:", toEmail);
-    console.log("DEBUG [send-email-hook] emailActionType:", emailActionType);
-    console.log("DEBUG [send-email-hook] token:", email_data.token);
-    console.log("DEBUG [send-email-hook] site_url:", email_data.site_url);
-    console.log("DEBUG [send-email-hook] full email_data:", JSON.stringify(email_data, null, 2));
-
     // Determine redirect URL based on email action type
     let redirectUrl = email_data.redirect_to || appBaseUrl;
     if (emailActionType === "recovery") {
       // Password reset - redirect to /reset-password
       redirectUrl = `${appBaseUrl.replace(/\/$/, "")}/reset-password`;
-      console.log("DEBUG [send-email-hook] recovery email - redirecting to:", redirectUrl);
     } else if (emailActionType === "signup" || emailActionType === "email_change") {
       // Signup/email change - redirect to /login
       redirectUrl = `${appBaseUrl.replace(/\/$/, "")}/login`;
-      console.log("DEBUG [send-email-hook] signup/email change - redirecting to:", redirectUrl);
     }
 
     // Build custom recovery link using our own endpoint for token verification
-    // This avoids authentication issues with Supabase's public endpoints
     const recoveryUrl = `${appBaseUrl}/api/auth/recover?token_hash=${email_data.token_hash}&type=${emailActionType}&next=${encodeURIComponent(redirectUrl)}&email=${encodeURIComponent(toEmail)}`;
-    console.log("DEBUG [send-email-hook] recovery URL:", recoveryUrl);
 
     // Generate HTML email
     let html = getEmailHtml(emailActionType, recoveryUrl);
@@ -58,14 +48,12 @@ export default async function handler(
     // Send email via Resend
     const resendApiKey = process.env.RESEND_API_KEY;
     if (!resendApiKey) {
-      console.error("RESEND_API_KEY not configured");
       res.status(500).json({ success: false });
       return;
     }
 
     const resend = new Resend(resendApiKey);
 
-    console.log("DEBUG [send-email-hook] sending email via Resend");
     await resend.emails.send({
       from: "Planutrip <contact@planutrip.com>",
       to: toEmail,
@@ -73,10 +61,8 @@ export default async function handler(
       html,
     });
 
-    console.log("DEBUG [send-email-hook] email sent successfully");
     res.status(200).json({ success: true });
   } catch (error) {
-    console.error("DEBUG [send-email-hook] error:", error);
     res.status(500).json({ success: false });
   }
 }
