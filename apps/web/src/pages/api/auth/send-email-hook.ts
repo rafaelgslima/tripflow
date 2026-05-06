@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { createHmac } from "crypto";
 import { Resend } from "resend";
 
 interface SendEmailRequest {
@@ -29,32 +28,6 @@ export default async function handler(
   }
 
   try {
-    // Verify the hook secret
-    const secret = process.env.SUPABASE_HOOK_SECRET;
-    if (!secret) {
-      console.error("SUPABASE_HOOK_SECRET not configured");
-      res.status(500).json({ success: false });
-      return;
-    }
-
-    const signature = req.headers["x-supabase-signature"] as string;
-    if (!signature) {
-      console.error("Missing signature header");
-      res.status(401).json({ success: false });
-      return;
-    }
-
-    // Verify signature
-    const body = JSON.stringify(req.body);
-    const hash = createHmac("sha256", secret).update(body).digest("base64");
-    const expectedSignature = `v0=${hash}`;
-
-    if (signature !== expectedSignature) {
-      console.error("Invalid signature");
-      res.status(401).json({ success: false });
-      return;
-    }
-
     const { type, email } = req.body as SendEmailRequest;
     const appBaseUrl = process.env.APP_BASE_URL ?? "http://localhost:3000";
     let confirmationUrl = email.confirmation_url || "";
