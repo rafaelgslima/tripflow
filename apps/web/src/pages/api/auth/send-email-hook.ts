@@ -46,10 +46,9 @@ export default async function handler(
       console.log("DEBUG [send-email-hook] signup/email change - redirecting to:", redirectUrl);
     }
 
-    // Build Supabase recovery link with modified redirect using token_hash
-    // Format: https://supabase.co/auth/confirm?token_hash=...&type=recovery&next=...
-    const baseUrl = email_data.site_url.replace('/auth/v1', '');
-    const recoveryUrl = `${baseUrl}/auth/confirm?token_hash=${email_data.token_hash}&type=${emailActionType}&next=${encodeURIComponent(redirectUrl)}`;
+    // Build custom recovery link using our own endpoint for token verification
+    // This avoids authentication issues with Supabase's public endpoints
+    const recoveryUrl = `${appBaseUrl}/api/auth/recover?token_hash=${email_data.token_hash}&type=${emailActionType}&next=${encodeURIComponent(redirectUrl)}&email=${encodeURIComponent(toEmail)}`;
     console.log("DEBUG [send-email-hook] recovery URL:", recoveryUrl);
 
     // Generate HTML email
