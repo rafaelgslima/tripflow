@@ -47,7 +47,8 @@ export default async function handler(
     }
 
     // Build Supabase recovery link with modified redirect_to
-    const recoveryUrl = `${email_data.site_url}/recover?token=${email_data.token}&type=${emailActionType}&redirect_to=${encodeURIComponent(redirectUrl)}`;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    const recoveryUrl = `${email_data.site_url}/recover?token=${email_data.token}&type=${emailActionType}&redirect_to=${encodeURIComponent(redirectUrl)}&apikey=${encodeURIComponent(anonKey)}`;
     console.log("DEBUG [send-email-hook] recovery URL:", recoveryUrl);
 
     // Generate HTML email
