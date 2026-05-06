@@ -35,15 +35,26 @@ export default async function handler(
 
       console.log("DEBUG [recover] recovery type:", { type, email, tokenLength: String(verifyToken).length });
 
-      const { data, error } = await supabaseAdmin.auth.verifyOtp({
-        email: email as string,
-        token: verifyToken,
-        type: type as "recovery" | "invite" | "email_change",
-      });
+      let data: any = null;
+      let error: any = null;
 
-      console.log("DEBUG [recover] verifyOtp result:", { error: error?.message, hasSession: !!data.session });
+      try {
+        const result = await supabaseAdmin.auth.verifyOtp({
+          email: email as string,
+          token: verifyToken,
+          type: type as "recovery" | "invite" | "email_change",
+        });
+        data = result.data;
+        error = result.error;
 
-      if (error || !data.session) {
+        console.log("DEBUG [recover] verifyOtp result:", { error: error?.message, hasSession: !!data?.session });
+      } catch (e) {
+        console.log("DEBUG [recover] exception during verifyOtp:", e);
+        error = e;
+      }
+
+      if (error || !data?.session) {
+        console.log("DEBUG [recover] verification failed, error:", error);
         const redirectUrl = next || process.env.APP_BASE_URL || "http://localhost:3000";
         const errorUrl = `${redirectUrl}#error=invalid_token&error_description=Recovery link is invalid or expired`;
         res.setHeader("Location", errorUrl);
