@@ -36,7 +36,10 @@ export default async function handler(
     });
 
     if (error) {
-      console.error("Supabase error:", error);
+      console.error("DEBUG [forgot-password] Full error:", JSON.stringify(error, null, 2));
+      console.error("DEBUG [forgot-password] Error status:", (error as any).status);
+      console.error("DEBUG [forgot-password] Error code:", (error as any).code);
+      console.error("DEBUG [forgot-password] Error message:", error.message);
       throw new ValidationError(error.message || JSON.stringify(error));
     }
 

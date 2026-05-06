@@ -2,15 +2,19 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { Resend } from "resend";
 
 interface SendEmailRequest {
-  token: string;
+  token?: string;
   type: string;
   email: {
     to: string;
+    subject?: string;
+    html?: string;
+    text?: string;
     otp?: string;
     confirmation_url?: string;
     email_change_token_new?: string;
     email_change_email_new?: string;
     new_email_change_token?: string;
+    [key: string]: any;
   };
 }
 
@@ -30,36 +34,39 @@ export default async function handler(
   try {
     const { type, email } = req.body as SendEmailRequest;
     const appBaseUrl = process.env.APP_BASE_URL ?? "http://localhost:3000";
-    let confirmationUrl = email.confirmation_url || "";
 
     console.log("DEBUG [send-email-hook] type:", type);
     console.log("DEBUG [send-email-hook] to:", email.to);
 
-    // Modify redirect URL based on email type
-    if (type === "recovery") {
-      // Password reset email
-      const resetUrl = `${appBaseUrl.replace(/\/$/, "")}/reset-password`;
-      confirmationUrl = confirmationUrl.replace(
-        /&redirect_to=[^&]*/,
-        `&redirect_to=${encodeURIComponent(resetUrl)}`,
-      );
-      if (!confirmationUrl.includes("redirect_to")) {
-        confirmationUrl += `&redirect_to=${encodeURIComponent(resetUrl)}`;
-      }
-      console.log("DEBUG [send-email-hook] modified recovery URL:", confirmationUrl);
-    } else if (type === "signup" || type === "invite") {
-      // Signup confirmation - redirect to login
-      const loginUrl = `${appBaseUrl.replace(/\/$/, "")}/login`;
-      confirmationUrl = confirmationUrl.replace(
-        /&redirect_to=[^&]*/,
-        `&redirect_to=${encodeURIComponent(loginUrl)}`,
-      );
-      if (!confirmationUrl.includes("redirect_to")) {
-        confirmationUrl += `&redirect_to=${encodeURIComponent(loginUrl)}`;
-      }
-      console.log("DEBUG [send-email-hook] modified signup URL:", confirmationUrl);
+    // Get email content from Supabase (could be html or confirmation_url)
+    let html = email.html || "";
+    let subject = email.subject || getEmailSubject(type);
+
+    // If no HTML, construct from confirmation_url
+    if (!html && email.confirmation_url) {
+      html = getEmailHtml(type, email.confirmation_url);
     }
-    // Add more email types as needed (email_change, etc.)
+
+    // Modify redirect URL in HTML based on email type
+    if (html) {
+      if (type === "recovery") {
+        // Password reset - redirect to /reset-password
+        const resetUrl = `${appBaseUrl.replace(/\/$/, "")}/reset-password`;
+        html = html.replace(
+          /redirect_to=[^&"']*/g,
+          `redirect_to=${encodeURIComponent(resetUrl)}`,
+        );
+        console.log("DEBUG [send-email-hook] modified recovery redirect to:", resetUrl);
+      } else if (type === "signup" || type === "invite") {
+        // Signup/invite - redirect to /login
+        const loginUrl = `${appBaseUrl.replace(/\/$/, "")}/login`;
+        html = html.replace(
+          /redirect_to=[^&"']*/g,
+          `redirect_to=${encodeURIComponent(loginUrl)}`,
+        );
+        console.log("DEBUG [send-email-hook] modified signup redirect to:", loginUrl);
+      }
+    }
 
     // Send email via Resend
     const resendApiKey = process.env.RESEND_API_KEY;
@@ -70,12 +77,10 @@ export default async function handler(
     }
 
     const resend = new Resend(resendApiKey);
-    const subject = getEmailSubject(type);
-    const html = getEmailHtml(type, confirmationUrl);
 
     console.log("DEBUG [send-email-hook] sending email via Resend");
     await resend.emails.send({
-      from: "noreply@planutrip.com",
+      from: "Planutrip <contact@planutrip.com>",
       to: email.to,
       subject,
       html,
