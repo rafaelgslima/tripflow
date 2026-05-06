@@ -16,37 +16,36 @@ export default async function handler(
   }
 
   try {
-    const { token_hash, type, next, email } = req.query;
+    const { token, type, next, email } = req.query;
 
-    if (!token_hash || !type || !email) {
-      res.status(400).json({ success: false, message: "Missing token_hash, type, or email" });
+    if (!token || !type || !email) {
+      res.status(400).json({ success: false, message: "Missing token, type, or email" });
       return;
     }
 
+    const redirectUrl = next || process.env.APP_BASE_URL || "http://localhost:3000";
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
-    // For recovery: verify token and create session
+    // For password recovery: validate token on backend and redirect to frontend for session establishment
     if (type === "recovery") {
       const { data, error } = await supabaseAdmin.auth.verifyOtp({
         email: email as string,
-        token: token_hash as string,
+        token: token as string,
         type: "recovery",
       });
 
-      if (error || !data.session) {
-        const redirectUrl = next || process.env.APP_BASE_URL || "http://localhost:3000";
-        const errorUrl = `${redirectUrl}#error=invalid_token&error_description=Recovery link is invalid or expired`;
+      if (error || !data?.session) {
+        const errorUrl = `${redirectUrl}#error=invalid_token`;
         res.setHeader("Location", errorUrl);
         res.status(302).end();
         return;
       }
 
-      const redirectUrl = (next as string) || process.env.APP_BASE_URL || "http://localhost:3000";
-      const resetUrl = `${redirectUrl}#access_token=${encodeURIComponent(data.session.access_token)}&refresh_token=${encodeURIComponent(data.session.refresh_token)}&expires_in=${data.session.expires_in}&token_type=bearer&type=recovery`;
-
+      // Token is valid - redirect to frontend with token so it can establish the session
+      const resetUrl = `${redirectUrl}?token=${encodeURIComponent(token as string)}&type=recovery&email=${encodeURIComponent(email as string)}`;
       res.setHeader("Location", resetUrl);
       res.status(302).end();
       return;
@@ -54,8 +53,6 @@ export default async function handler(
 
     // For signup: mark user as email confirmed
     if (type === "signup") {
-      const redirectUrl = next || process.env.APP_BASE_URL || "http://localhost:3000";
-
       const { data: userData } = await supabaseAdmin.auth.admin.listUsers();
       const user = userData?.users?.find((u) => u.email === (email as string));
 
@@ -74,6 +71,8 @@ export default async function handler(
       res.status(302).end();
       return;
     }
+
+    res.status(400).json({ success: false, message: "Invalid type" });
   } catch (error) {
     const next = req.query.next as string || process.env.APP_BASE_URL || "http://localhost:3000";
     const errorUrl = `${next}#error=server_error`;
