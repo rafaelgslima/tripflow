@@ -32,11 +32,15 @@ export default async function handler(
   }
 
   try {
+    console.log("DEBUG [send-email-hook] full body:", JSON.stringify(req.body, null, 2));
+    console.log("DEBUG [send-email-hook] body keys:", Object.keys(req.body));
+
     const { type, email } = req.body as SendEmailRequest;
     const appBaseUrl = process.env.APP_BASE_URL ?? "http://localhost:3000";
 
     console.log("DEBUG [send-email-hook] type:", type);
-    console.log("DEBUG [send-email-hook] to:", email.to);
+    console.log("DEBUG [send-email-hook] email:", email);
+    console.log("DEBUG [send-email-hook] to:", email?.to);
 
     // Get email content from Supabase (could be html or confirmation_url)
     let html = email.html || "";
