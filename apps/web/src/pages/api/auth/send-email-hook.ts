@@ -30,6 +30,9 @@ export default async function handler(
 
     console.log("DEBUG [send-email-hook] toEmail:", toEmail);
     console.log("DEBUG [send-email-hook] emailActionType:", emailActionType);
+    console.log("DEBUG [send-email-hook] token:", email_data.token);
+    console.log("DEBUG [send-email-hook] site_url:", email_data.site_url);
+    console.log("DEBUG [send-email-hook] full email_data:", JSON.stringify(email_data, null, 2));
 
     // Determine redirect URL based on email action type
     let redirectUrl = email_data.redirect_to || appBaseUrl;
@@ -45,6 +48,7 @@ export default async function handler(
 
     // Build Supabase recovery link with modified redirect_to
     const recoveryUrl = `${email_data.site_url}/recover?token=${email_data.token}&type=${emailActionType}&redirect_to=${encodeURIComponent(redirectUrl)}`;
+    console.log("DEBUG [send-email-hook] recovery URL:", recoveryUrl);
 
     // Generate HTML email
     let html = getEmailHtml(emailActionType, recoveryUrl);
