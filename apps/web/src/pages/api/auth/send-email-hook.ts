@@ -46,8 +46,10 @@ export default async function handler(
       console.log("DEBUG [send-email-hook] signup/email change - redirecting to:", redirectUrl);
     }
 
-    // Build Supabase recovery link with modified redirect_to using token_hash
-    const recoveryUrl = `${email_data.site_url}/verify?token=${email_data.token_hash}&type=${emailActionType}&redirect_to=${encodeURIComponent(redirectUrl)}`;
+    // Build Supabase recovery link with modified redirect using token_hash
+    // Format: https://supabase.co/auth/confirm?token_hash=...&type=recovery&next=...
+    const baseUrl = email_data.site_url.replace('/auth/v1', '');
+    const recoveryUrl = `${baseUrl}/auth/confirm?token_hash=${email_data.token_hash}&type=${emailActionType}&next=${encodeURIComponent(redirectUrl)}`;
     console.log("DEBUG [send-email-hook] recovery URL:", recoveryUrl);
 
     // Generate HTML email
