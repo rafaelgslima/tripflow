@@ -16,10 +16,10 @@ export default async function handler(
   }
 
   try {
-    const { token_hash, type, next } = req.query;
+    const { token_hash, type, next, email } = req.query;
 
-    if (!token_hash || !type) {
-      res.status(400).json({ success: false, message: "Missing token or type" });
+    if (!token_hash || !type || !email) {
+      res.status(400).json({ success: false, message: "Missing token, type, or email" });
       return;
     }
 
@@ -29,10 +29,16 @@ export default async function handler(
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
+    // Map email action types to verifyOtp types
+    let verifyType: "signup" | "recovery" | "invite" | "email_change" | "email" = type as any;
+    if (type === "signup") {
+      verifyType = "email";
+    }
+
     const { data, error } = await supabaseAdmin.auth.verifyOtp({
-      email: req.query.email as string,
+      email: email as string,
       token: token_hash as string,
-      type: type as any,
+      type: verifyType,
     });
 
     if (error || !data.session) {
