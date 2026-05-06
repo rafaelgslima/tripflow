@@ -1,23 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Resend } from "resend";
 
-interface SendEmailRequest {
-  token?: string;
-  type: string;
-  email: {
-    to: string;
-    subject?: string;
-    html?: string;
-    text?: string;
-    otp?: string;
-    confirmation_url?: string;
-    email_change_token_new?: string;
-    email_change_email_new?: string;
-    new_email_change_token?: string;
-    [key: string]: any;
-  };
-}
-
 interface SendEmailResponse {
   success: boolean;
 }
@@ -32,45 +15,40 @@ export default async function handler(
   }
 
   try {
-    console.log("DEBUG [send-email-hook] full body:", JSON.stringify(req.body, null, 2));
-    console.log("DEBUG [send-email-hook] body keys:", Object.keys(req.body));
+    const body = req.body as any;
+    const { user, email_data } = body;
 
-    const { type, email } = req.body as SendEmailRequest;
+    if (!user || !email_data) {
+      console.error("DEBUG [send-email-hook] missing user or email_data");
+      res.status(400).json({ success: false });
+      return;
+    }
+
+    const toEmail = user.email;
+    const emailActionType = email_data.email_action_type;
     const appBaseUrl = process.env.APP_BASE_URL ?? "http://localhost:3000";
 
-    console.log("DEBUG [send-email-hook] type:", type);
-    console.log("DEBUG [send-email-hook] email:", email);
-    console.log("DEBUG [send-email-hook] to:", email?.to);
+    console.log("DEBUG [send-email-hook] toEmail:", toEmail);
+    console.log("DEBUG [send-email-hook] emailActionType:", emailActionType);
 
-    // Get email content from Supabase (could be html or confirmation_url)
-    let html = email.html || "";
-    let subject = email.subject || getEmailSubject(type);
-
-    // If no HTML, construct from confirmation_url
-    if (!html && email.confirmation_url) {
-      html = getEmailHtml(type, email.confirmation_url);
+    // Determine redirect URL based on email action type
+    let redirectUrl = email_data.redirect_to || appBaseUrl;
+    if (emailActionType === "recovery") {
+      // Password reset - redirect to /reset-password
+      redirectUrl = `${appBaseUrl.replace(/\/$/, "")}/reset-password`;
+      console.log("DEBUG [send-email-hook] recovery email - redirecting to:", redirectUrl);
+    } else if (emailActionType === "signup" || emailActionType === "email_change") {
+      // Signup/email change - redirect to /login
+      redirectUrl = `${appBaseUrl.replace(/\/$/, "")}/login`;
+      console.log("DEBUG [send-email-hook] signup/email change - redirecting to:", redirectUrl);
     }
 
-    // Modify redirect URL in HTML based on email type
-    if (html) {
-      if (type === "recovery") {
-        // Password reset - redirect to /reset-password
-        const resetUrl = `${appBaseUrl.replace(/\/$/, "")}/reset-password`;
-        html = html.replace(
-          /redirect_to=[^&"']*/g,
-          `redirect_to=${encodeURIComponent(resetUrl)}`,
-        );
-        console.log("DEBUG [send-email-hook] modified recovery redirect to:", resetUrl);
-      } else if (type === "signup" || type === "invite") {
-        // Signup/invite - redirect to /login
-        const loginUrl = `${appBaseUrl.replace(/\/$/, "")}/login`;
-        html = html.replace(
-          /redirect_to=[^&"']*/g,
-          `redirect_to=${encodeURIComponent(loginUrl)}`,
-        );
-        console.log("DEBUG [send-email-hook] modified signup redirect to:", loginUrl);
-      }
-    }
+    // Build Supabase recovery link with modified redirect_to
+    const recoveryUrl = `${email_data.site_url}/recover?token=${email_data.token}&type=${emailActionType}&redirect_to=${encodeURIComponent(redirectUrl)}`;
+
+    // Generate HTML email
+    let html = getEmailHtml(emailActionType, recoveryUrl);
+    const subject = getEmailSubject(emailActionType);
 
     // Send email via Resend
     const resendApiKey = process.env.RESEND_API_KEY;
@@ -85,7 +63,7 @@ export default async function handler(
     console.log("DEBUG [send-email-hook] sending email via Resend");
     await resend.emails.send({
       from: "Planutrip <contact@planutrip.com>",
-      to: email.to,
+      to: toEmail,
       subject,
       html,
     });
@@ -98,8 +76,8 @@ export default async function handler(
   }
 }
 
-function getEmailSubject(type: string): string {
-  switch (type) {
+function getEmailSubject(actionType: string): string {
+  switch (actionType) {
     case "recovery":
       return "Reset Your Password";
     case "signup":
@@ -113,12 +91,12 @@ function getEmailSubject(type: string): string {
 }
 
 function getEmailHtml(
-  type: string,
-  confirmationUrl: string,
+  actionType: string,
+  recoveryUrl: string,
 ): string {
   const privacyPolicyUrl = `${process.env.APP_BASE_URL ?? "http://localhost:3000"}/privacy-policy`;
 
-  if (type === "recovery") {
+  if (actionType === "recovery") {
     return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -139,7 +117,7 @@ function getEmailHtml(
               We received a request to reset your Planutrip password.
               Click the button below to create a new password.
             </p>
-            <a href="${confirmationUrl}"
+            <a href="${recoveryUrl}"
                style="display:inline-block;padding:12px 28px;background:#E8A23A;color:#0E0B09;
                       font-size:15px;font-weight:600;text-decoration:none;border-radius:6px;">
               Reset password
@@ -154,7 +132,7 @@ function getEmailHtml(
             </p>
             <p style="margin:0;font-size:12px;color:#9ca3af;">
               If the button doesn't work, copy and paste this URL into your browser:<br>
-              <a href="${confirmationUrl}" style="color:#E8A23A;word-break:break-all;">${confirmationUrl}</a>
+              <a href="${recoveryUrl}" style="color:#E8A23A;word-break:break-all;">${recoveryUrl}</a>
             </p>
           </td>
         </tr>
@@ -185,7 +163,7 @@ function getEmailHtml(
             <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
               Click the button below to confirm your email address.
             </p>
-            <a href="${confirmationUrl}"
+            <a href="${recoveryUrl}"
                style="display:inline-block;padding:12px 28px;background:#E8A23A;color:#0E0B09;
                       font-size:15px;font-weight:600;text-decoration:none;border-radius:6px;">
               Confirm email
@@ -196,7 +174,7 @@ function getEmailHtml(
             <hr style="margin:24px 0;border:none;border-top:1px solid #e5e7eb;">
             <p style="margin:0;font-size:12px;color:#9ca3af;">
               If the button doesn't work, copy and paste this URL into your browser:<br>
-              <a href="${confirmationUrl}" style="color:#E8A23A;word-break:break-all;">${confirmationUrl}</a>
+              <a href="${recoveryUrl}" style="color:#E8A23A;word-break:break-all;">${recoveryUrl}</a>
             </p>
           </td>
         </tr>
