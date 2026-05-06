@@ -33,11 +33,15 @@ export default async function handler(
     if (type === "recovery" || type === "invite" || type === "email_change") {
       const verifyToken = token_hash as string;
 
+      console.log("DEBUG [recover] recovery type:", { type, email, tokenLength: String(verifyToken).length });
+
       const { data, error } = await supabaseAdmin.auth.verifyOtp({
         email: email as string,
         token: verifyToken,
         type: type as "recovery" | "invite" | "email_change",
       });
+
+      console.log("DEBUG [recover] verifyOtp result:", { error: error?.message, hasSession: !!data.session });
 
       if (error || !data.session) {
         const redirectUrl = next || process.env.APP_BASE_URL || "http://localhost:3000";
